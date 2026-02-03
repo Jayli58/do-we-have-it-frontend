@@ -6,6 +6,7 @@ import {
   Dialog,
   DialogActions,
   DialogContent,
+  Stack,
   Typography,
 } from "@mui/material";
 
@@ -64,6 +65,7 @@ export default function DeleteConfirmDialog({
             <Typography id="delete-confirm-title" variant="h6" fontWeight={700}>
               {title ?? "Delete"}
             </Typography>
+            <Stack paddingTop={2} />
             <Typography color="text.secondary">
               {description ?? "Are you sure you want to delete this?"}
             </Typography>

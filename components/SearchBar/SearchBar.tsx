@@ -8,6 +8,8 @@ interface SearchBarProps {
   onChange: (value: string) => void;
   onSearch: () => void;
   placeholder?: string;
+  autoFocus?: boolean;
+  variant?: "card" | "plain";
 }
 
 export default function SearchBar({
@@ -15,11 +17,17 @@ export default function SearchBar({
   onChange,
   onSearch,
   placeholder,
+  autoFocus,
+  variant = "card",
 }: SearchBarProps) {
+  const wrapperClassName = variant === "card" ? "mat-card mat-card-compact" : undefined;
+  const wrapperSx = variant === "card" ? { padding: 0 } : undefined;
+
   return (
-    <Box className="mat-card mat-card-compact" sx={{ padding: 0 }}>
+    <Box className={wrapperClassName} sx={wrapperSx}>
       <TextField
         fullWidth
+        autoFocus={autoFocus}
         value={value}
         placeholder={placeholder ?? "Search items and folders..."}
         onChange={(event) => onChange(event.target.value)}

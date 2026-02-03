@@ -1,7 +1,15 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { Box, Container, Typography } from "@mui/material";
+import {
+  Box,
+  Container,
+  Dialog,
+  DialogContent,
+  IconButton,
+  Typography,
+} from "@mui/material";
+import SearchIcon from "@mui/icons-material/Search";
 
 import ActionBar from "@/components/ActionBar/ActionBar";
 import CreateFolderDialog from "@/components/ActionBar/CreateFolderDialog/CreateFolderDialog";
@@ -49,6 +57,7 @@ export default function Home() {
   const [editFolderData, setEditFolderData] = useState<Folder | null>(null);
   const [isTemplateManagerOpen, setTemplateManagerOpen] = useState(false);
   const [isImportTemplateOpen, setImportTemplateOpen] = useState(false);
+  const [isSearchOpen, setSearchOpen] = useState(false);
   const [selectedTemplate, setSelectedTemplate] =
     useState<FormTemplate | null>(null);
   const [createFolderResetKey, setCreateFolderResetKey] = useState(0);
@@ -100,6 +109,11 @@ export default function Home() {
       return;
     }
     await runSearch(query, currentFolderId);
+  };
+
+  const handleSearchSubmit = async () => {
+    await handleSearch();
+    setSearchOpen(false);
   };
 
   const handleCreateFolder = async (name: string) => {
@@ -198,8 +212,14 @@ export default function Home() {
           </Typography>
         </Box>
 
-        <Breadcrumb items={breadcrumbs} onNavigate={handleNavigate} />
-        <SearchBar value={query} onChange={setQuery} onSearch={handleSearch} />
+        <Box display="flex" alignItems="center" justifyContent="space-between" gap={2}>
+          <Box flex={1} minWidth={0}>
+            <Breadcrumb items={breadcrumbs} onNavigate={handleNavigate} />
+          </Box>
+          <IconButton aria-label="open search" onClick={() => setSearchOpen(true)}>
+            <SearchIcon />
+          </IconButton>
+        </Box>
 
         <InventoryList
           folders={query.trim() ? [] : folders}
@@ -295,6 +315,24 @@ export default function Home() {
         onClose={() => setImportTemplateOpen(false)}
         onSelect={handleSelectTemplate}
       />
+
+      <Dialog
+        open={isSearchOpen}
+        onClose={() => setSearchOpen(false)}
+        fullWidth
+        maxWidth="sm"
+        aria-label="Search"
+      >
+        <DialogContent>
+          <SearchBar
+            value={query}
+            onChange={setQuery}
+            onSearch={handleSearchSubmit}
+            autoFocus
+            variant="plain"
+          />
+        </DialogContent>
+      </Dialog>
     </Box>
   );
 }

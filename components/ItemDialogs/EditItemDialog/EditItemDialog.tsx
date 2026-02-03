@@ -128,7 +128,7 @@ export default function EditItemDialog({
             <Typography id="edit-item-title" variant="h6" fontWeight={700}>
               Edit item
             </Typography>
-            <Stack spacing={2} paddingTop={1}>
+            <Stack spacing={1} paddingTop={4}>
           <TextField
             label="Item name"
             value={name}
@@ -139,7 +139,7 @@ export default function EditItemDialog({
           />
           {(fields ?? []).length > 0 && (
             <Box>
-              <Stack spacing={2}>
+              <Stack spacing={1}>
                 {(fields ?? []).map((field) => (
                   <TextField
                     key={field.id}

@@ -1,65 +1,89 @@
-import Image from "next/image";
+"use client";
+
+import { useEffect, useMemo } from "react";
+import { Box, Container, Typography } from "@mui/material";
+
+import ActionBar from "@/components/ActionBar/ActionBar";
+import Breadcrumb from "@/components/Breadcrumb/Breadcrumb";
+import InventoryList from "@/components/InventoryList/InventoryList";
+import SearchBar from "@/components/SearchBar/SearchBar";
+import { useInventoryStore } from "@/store/inventoryStore";
+import { useSearchStore } from "@/store/searchStore";
 
 export default function Home() {
+  const {
+    currentFolderId,
+    breadcrumbs,
+    folders,
+    items,
+    loadContents,
+    setBreadcrumbs,
+  } = useInventoryStore();
+  const { query, results, setQuery, runSearch, clear } = useSearchStore();
+
+  useEffect(() => {
+    void loadContents(null);
+  }, [loadContents]);
+
+  const listItems = useMemo(() => {
+    if (query.trim()) {
+      return results;
+    }
+    return items;
+  }, [items, query, results]);
+
+  const handleFolderOpen = async (folderId: string, name: string) => {
+    const nextBreadcrumbs = [...breadcrumbs, { id: folderId, name }];
+    setBreadcrumbs(nextBreadcrumbs);
+    clear();
+    await loadContents(folderId);
+  };
+
+  const handleNavigate = async (id: string | null) => {
+    const index = breadcrumbs.findIndex((crumb) => crumb.id === id);
+    const nextBreadcrumbs =
+      index >= 0 ? breadcrumbs.slice(0, index + 1) : breadcrumbs;
+    setBreadcrumbs(nextBreadcrumbs);
+    clear();
+    await loadContents(id);
+  };
+
+  const handleSearch = async () => {
+    if (!query.trim()) {
+      clear();
+      return;
+    }
+    await runSearch(query, currentFolderId);
+  };
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
+    <Box className="min-h-screen px-4 pb-16 pt-10">
+      <Container maxWidth="md" className="flex flex-col gap-6">
+        <Box display="flex" flexDirection="column" gap={1}>
+          <Typography variant="h4" fontWeight={700}>
+            Do we have it?
+          </Typography>
+          <Typography color="text.secondary">
+            Track folders, items, and custom attributes for everything you own.
+          </Typography>
+        </Box>
+
+        <Breadcrumb items={breadcrumbs} onNavigate={handleNavigate} />
+        <SearchBar value={query} onChange={setQuery} onSearch={handleSearch} />
+
+        <InventoryList
+          folders={query.trim() ? [] : folders}
+          items={listItems}
+          emptyMessage={
+            query.trim()
+              ? "No matches yet. Try a different keyword."
+              : "Create folders and items to start your inventory."
+          }
+          onOpenFolder={(folder) => handleFolderOpen(folder.id, folder.name)}
         />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
-    </div>
+
+        <ActionBar />
+      </Container>
+    </Box>
   );
 }

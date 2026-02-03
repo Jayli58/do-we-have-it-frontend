@@ -164,6 +164,28 @@ export default function Home() {
     setImportTemplateOpen(false);
   };
 
+  const requiredTemplateFields = useMemo(() => {
+    const map = new Map<string, boolean>();
+    templates.forEach((template) => {
+      template.fields.forEach((field) => {
+        if (field.required) {
+          map.set(field.name.toLowerCase(), true);
+        }
+      });
+    });
+    return map;
+  }, [templates]);
+
+  const editItemFields = editItemData
+    ? editItemData.attributes.map((attribute) => ({
+        id: attribute.fieldId,
+        name: attribute.fieldName,
+        type: "text" as const,
+        required:
+          requiredTemplateFields.get(attribute.fieldName.toLowerCase()) ?? false,
+      }))
+    : [];
+
   return (
     <Box className="min-h-screen px-3 pb-16 pt-6 sm:px-4 sm:pt-10">
       <Container maxWidth="md" className="flex flex-col gap-4">
@@ -243,6 +265,7 @@ export default function Home() {
         item={editItemData}
         onClose={() => setEditItemData(null)}
         onSave={handleEditItem}
+        fields={editItemFields}
       />
 
       <EditFolderDialog

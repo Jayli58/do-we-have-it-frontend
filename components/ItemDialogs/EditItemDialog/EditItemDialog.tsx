@@ -47,7 +47,7 @@ export default function EditItemDialog({
   const lastItemId = useRef<string | null>(null);
 
   useEffect(() => {
-    if (item && item.id !== lastItemId.current) {
+    if (item && open) {
       setName(item.name);
       setComments(item.comments);
       const nextAttributes: Record<string, string> = {};
@@ -60,7 +60,7 @@ export default function EditItemDialog({
       setAttributeTouched({});
       lastItemId.current = item.id;
     }
-  }, [item]);
+  }, [item, open]);
 
   const requiredMissing = useMemo(() => {
     const missing: string[] = [];
@@ -80,6 +80,20 @@ export default function EditItemDialog({
 
   const handleSubmit = () => {
     if (!item) {
+      return;
+    }
+    if (requiredMissing.length > 0) {
+      setNameTouched(true);
+      setCommentsTouched(true);
+      setAttributeTouched((prev) => {
+        const next = { ...prev };
+        requiredMissing.forEach((fieldId) => {
+          if (fieldId !== "name" && fieldId !== "comments") {
+            next[fieldId] = true;
+          }
+        });
+        return next;
+      });
       return;
     }
     const mappedAttributes: ItemAttribute[] = (fields ?? []).map((field) => ({
@@ -172,7 +186,7 @@ export default function EditItemDialog({
         <Button
           variant="contained"
           onClick={handleSubmit}
-          disabled={requiredMissing.length > 0 || !item}
+          disabled={!item}
         >
           Save
         </Button>

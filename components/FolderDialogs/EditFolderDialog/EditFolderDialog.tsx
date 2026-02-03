@@ -34,6 +34,11 @@ export default function EditFolderDialog({
   const [touched, setTouched] = useState(false);
   const lastFolderId = useRef<string | null>(null);
 
+  const handleClose = () => {
+    setTouched(false);
+    onClose();
+  };
+
   useEffect(() => {
     if (folder && folder.id !== lastFolderId.current) {
       setName(folder.name);
@@ -63,7 +68,7 @@ export default function EditFolderDialog({
   const showError = touched && Boolean(validation);
 
   return (
-    <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
+    <Dialog open={open} onClose={handleClose} fullWidth maxWidth="sm">
       <DialogTitle>
         <Box display="flex" alignItems="flex-start" gap={2}>
           <Box className="dialog-icon-blue" sx={{ marginTop: 0.5 }}>
@@ -88,7 +93,7 @@ export default function EditFolderDialog({
         />
       </DialogContent>
       <DialogActions>
-        <Button onClick={onClose}>Cancel</Button>
+        <Button onClick={handleClose}>Cancel</Button>
         <Button
           variant="contained"
           onClick={() => folder && onSave(folder.id, name.trim())}

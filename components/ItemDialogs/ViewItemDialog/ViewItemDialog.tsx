@@ -42,28 +42,16 @@ export default function ViewItemDialog({
         {item ? (
           <Stack spacing={2} paddingTop={1}>
             <div>
-              <Typography variant="subtitle2" color="text.secondary">
-                Name
-              </Typography>
               <Typography variant="h6" fontWeight={700}>
                 {item.name}
               </Typography>
             </div>
-            <div>
-              <Typography variant="subtitle2" color="text.secondary">
-                Comments
-              </Typography>
-              <Typography>{item.comments || "—"}</Typography>
-            </div>
             {item.attributes.length > 0 && (
               <Stack spacing={1}>
                 <Divider />
-                <Typography variant="subtitle2" fontWeight={600}>
-                  Attributes
-                </Typography>
                 {item.attributes.map((attribute) => (
                   <Stack key={attribute.fieldId} direction="row" spacing={1}>
-                    <Typography fontWeight={600}>
+                    <Typography sx={{ minWidth: 110 }}>
                       {attribute.fieldName}:
                     </Typography>
                     <Typography color="text.secondary">
@@ -73,6 +61,12 @@ export default function ViewItemDialog({
                 ))}
               </Stack>
             )}
+            <Stack direction="row" spacing={1}>
+              <Typography sx={{ minWidth: 110 }}>Comments:</Typography>
+              <Typography color="text.secondary">
+                {item.comments || "—"}
+              </Typography>
+            </Stack>
           </Stack>
         ) : (
           <Typography color="text.secondary">No item selected.</Typography>

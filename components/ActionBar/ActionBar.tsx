@@ -2,7 +2,7 @@
 
 import { Box, Button, Paper } from "@mui/material";
 import CreateNewFolderIcon from "@mui/icons-material/CreateNewFolder";
-import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
+import Inventory2OutlinedIcon from "@mui/icons-material/Inventory2Outlined";
 import ViewListIcon from "@mui/icons-material/ViewList";
 
 interface ActionBarProps {
@@ -34,22 +34,24 @@ export default function ActionBar({
         justifyContent="space-between"
         gap={2}
       >
-        <Button
-          variant="outlined"
-          startIcon={<CreateNewFolderIcon />}
-          onClick={onCreateFolder}
-          disabled={!onCreateFolder}
-        >
-          + Folder
-        </Button>
-        <Button
-          variant="contained"
-          startIcon={<AddCircleOutlineIcon />}
-          onClick={onCreateItem}
-          disabled={!onCreateItem}
-        >
-          + Item
-        </Button>
+        <Box display="flex" flexWrap="wrap" alignItems="center" gap={2}>
+          <Button
+            variant="outlined"
+            startIcon={<CreateNewFolderIcon />}
+            onClick={onCreateFolder}
+            disabled={!onCreateFolder}
+          >
+            + Folder
+          </Button>
+          <Button
+            variant="contained"
+            startIcon={<Inventory2OutlinedIcon />}
+            onClick={onCreateItem}
+            disabled={!onCreateItem}
+          >
+            + Item
+          </Button>
+        </Box>
         <Button
           variant="text"
           startIcon={<ViewListIcon />}

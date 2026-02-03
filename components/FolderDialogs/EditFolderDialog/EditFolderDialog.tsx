@@ -1,14 +1,17 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
+  Box,
   Button,
   Dialog,
   DialogActions,
   DialogContent,
   DialogTitle,
   TextField,
+  Typography,
 } from "@mui/material";
+import DriveFileRenameOutlineIcon from "@mui/icons-material/DriveFileRenameOutline";
 
 import type { Folder } from "@/types";
 
@@ -28,12 +31,16 @@ export default function EditFolderDialog({
   onSave,
 }: EditFolderDialogProps) {
   const [name, setName] = useState("");
+  const [touched, setTouched] = useState(false);
+  const lastFolderId = useRef<string | null>(null);
 
   useEffect(() => {
-    if (folder && open) {
+    if (folder && folder.id !== lastFolderId.current) {
       setName(folder.name);
+      setTouched(false);
+      lastFolderId.current = folder.id;
     }
-  }, [folder, open]);
+  }, [folder]);
 
   const validation = useMemo(() => {
     const trimmed = name.trim();
@@ -53,9 +60,20 @@ export default function EditFolderDialog({
     return "";
   }, [existingNames, folder?.name, name]);
 
+  const showError = touched && Boolean(validation);
+
   return (
     <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
-      <DialogTitle>Edit folder</DialogTitle>
+      <DialogTitle>
+        <Box display="flex" alignItems="center" gap={2}>
+          <Box className="dialog-icon-blue">
+            <DriveFileRenameOutlineIcon sx={{ color: "#2563eb" }} />
+          </Box>
+          <Typography variant="h6" fontWeight={700}>
+            Edit folder
+          </Typography>
+        </Box>
+      </DialogTitle>
       <DialogContent>
         <TextField
           autoFocus
@@ -64,8 +82,9 @@ export default function EditFolderDialog({
           label="Folder name"
           value={name}
           onChange={(event) => setName(event.target.value)}
-          error={Boolean(validation)}
-          helperText={validation || " "}
+          onBlur={() => setTouched(true)}
+          error={showError}
+          helperText={showError ? validation : " "}
         />
       </DialogContent>
       <DialogActions>

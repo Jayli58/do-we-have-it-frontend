@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   Box,
   Button,
@@ -15,12 +15,14 @@ import {
   Typography,
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
+import EditNoteIcon from "@mui/icons-material/EditNote";
 
 import type { FormField, FormTemplate } from "@/types";
 
 interface EditFormTemplateDialogProps {
   open: boolean;
   template: FormTemplate | null;
+  existingNames?: string[];
   onClose: () => void;
   onSave: (data: { id: string; name: string; fields: FormField[] }) => void;
 }
@@ -37,18 +39,25 @@ const createField = (): FormField => ({
 export default function EditFormTemplateDialog({
   open,
   template,
+  existingNames,
   onClose,
   onSave,
 }: EditFormTemplateDialogProps) {
   const [name, setName] = useState("");
   const [fields, setFields] = useState<FormField[]>([]);
+  const [nameTouched, setNameTouched] = useState(false);
+  const [fieldTouched, setFieldTouched] = useState<Record<string, boolean>>({});
+  const lastTemplateId = useRef<string | null>(null);
 
   useEffect(() => {
-    if (template && open) {
+    if (template && template.id !== lastTemplateId.current) {
       setName(template.name);
       setFields(template.fields.length ? template.fields : [createField()]);
+      setNameTouched(false);
+      setFieldTouched({});
+      lastTemplateId.current = template.id;
     }
-  }, [template, open]);
+  }, [template]);
 
   const validation = useMemo(() => {
     if (!name.trim()) {
@@ -57,19 +66,44 @@ export default function EditFormTemplateDialog({
     if (fields.some((field) => !field.name.trim())) {
       return "Each field needs a name.";
     }
+    if (
+      existingNames?.some((existing) => {
+        if (existing.toLowerCase() === template?.name.toLowerCase()) {
+          return false;
+        }
+        return existing.toLowerCase() === name.trim().toLowerCase();
+      })
+    ) {
+      return "Template name must be unique.";
+    }
     return "";
-  }, [fields, name]);
+  }, [existingNames, fields, name, template?.name]);
+
+  const showNameError = nameTouched && !name.trim();
 
   return (
     <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
-      <DialogTitle>Edit template</DialogTitle>
+      <DialogTitle>
+        <Box display="flex" alignItems="center" gap={2}>
+          <Box className="dialog-icon-blue">
+            <EditNoteIcon sx={{ color: "#2563eb" }} />
+          </Box>
+          <Typography variant="h6" fontWeight={700}>
+            Edit template
+          </Typography>
+        </Box>
+      </DialogTitle>
       <DialogContent>
         <Stack spacing={2} paddingTop={1}>
           <TextField
             label="Template name"
             value={name}
             onChange={(event) => setName(event.target.value)}
-            error={Boolean(validation) && !name.trim()}
+            onBlur={() => setNameTouched(true)}
+            error={showNameError || (nameTouched && validation.includes("unique"))}
+            helperText={
+              nameTouched && validation ? validation : " "
+            }
           />
           <Stack spacing={2}>
             {fields.map((field, index) => (
@@ -91,6 +125,20 @@ export default function EditFormTemplateDialog({
                           : entry,
                       ),
                     )
+                  }
+                  onBlur={() =>
+                    setFieldTouched((prev) => ({
+                      ...prev,
+                      [field.id]: true,
+                    }))
+                  }
+                  error={
+                    Boolean(fieldTouched[field.id]) && !field.name.trim()
+                  }
+                  helperText={
+                    Boolean(fieldTouched[field.id]) && !field.name.trim()
+                      ? "Field name is required."
+                      : " "
                   }
                 />
                 <Box display="flex" alignItems="center">
@@ -129,7 +177,7 @@ export default function EditFormTemplateDialog({
           >
             Add field
           </Button>
-          {validation && (
+          {validation && nameTouched && (
             <Typography color="error" variant="body2">
               {validation}
             </Typography>

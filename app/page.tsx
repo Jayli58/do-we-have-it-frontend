@@ -51,11 +51,17 @@ export default function Home() {
   const [isImportTemplateOpen, setImportTemplateOpen] = useState(false);
   const [selectedTemplate, setSelectedTemplate] =
     useState<FormTemplate | null>(null);
+  const [createFolderResetKey, setCreateFolderResetKey] = useState(0);
+  const [createItemResetKey, setCreateItemResetKey] = useState(0);
   const [deleteTarget, setDeleteTarget] = useState<
     | { type: "folder"; folder: Folder }
     | { type: "item"; item: Item }
     | null
   >(null);
+  const [deleteDialogInfo, setDeleteDialogInfo] = useState<{
+    title: string;
+    description: string;
+  } | null>(null);
 
   useEffect(() => {
     void loadContents(null);
@@ -98,6 +104,7 @@ export default function Home() {
 
   const handleCreateFolder = async (name: string) => {
     await addFolder(name);
+    setCreateFolderResetKey((prev) => prev + 1);
     setCreateFolderOpen(false);
   };
 
@@ -112,6 +119,7 @@ export default function Home() {
       attributes: data.attributes,
       parentId: currentFolderId,
     });
+    setCreateItemResetKey((prev) => prev + 1);
     setSelectedTemplate(null);
     selectTemplate(null);
     setCreateItemOpen(false);
@@ -146,6 +154,7 @@ export default function Home() {
       await removeItem(deleteTarget.item.id);
     }
     setDeleteTarget(null);
+    setDeleteDialogInfo(null);
   };
 
   const handleSelectTemplate = async (template: FormTemplate) => {
@@ -156,7 +165,7 @@ export default function Home() {
   };
 
   return (
-    <Box className="min-h-screen px-4 pb-16 pt-10">
+    <Box className="min-h-screen px-3 pb-16 pt-8 sm:px-4 sm:pt-10">
       <Container maxWidth="md" className="flex flex-col gap-6">
         <Box display="flex" flexDirection="column" gap={1}>
           <Typography variant="h4" fontWeight={700}>
@@ -182,10 +191,20 @@ export default function Home() {
           onViewItem={(item) => setViewItem(item)}
           onEditFolder={(folder) => setEditFolderData(folder)}
           onEditItem={(item) => setEditItemData(item)}
-          onDeleteFolder={(folder) =>
-            setDeleteTarget({ type: "folder", folder })
-          }
-          onDeleteItem={(item) => setDeleteTarget({ type: "item", item })}
+          onDeleteFolder={(folder) => {
+            setDeleteTarget({ type: "folder", folder });
+            setDeleteDialogInfo({
+              title: "Delete folder",
+              description: `Delete "${folder.name}" and its contents?`,
+            });
+          }}
+          onDeleteItem={(item) => {
+            setDeleteTarget({ type: "item", item });
+            setDeleteDialogInfo({
+              title: "Delete item",
+              description: `Delete "${item.name}"?`,
+            });
+          }}
         />
 
         <ActionBar
@@ -200,19 +219,17 @@ export default function Home() {
         onClose={() => setCreateFolderOpen(false)}
         onCreate={handleCreateFolder}
         existingNames={folders.map((folder) => folder.name)}
+        resetKey={createFolderResetKey}
       />
 
       <CreateItemDialog
         open={isCreateItemOpen}
-        onClose={() => {
-          setCreateItemOpen(false);
-          setSelectedTemplate(null);
-          selectTemplate(null);
-        }}
+        onClose={() => setCreateItemOpen(false)}
         onCreate={handleCreateItem}
         fields={selectedTemplate?.fields}
         templateName={selectedTemplate?.name ?? null}
         onOpenTemplateImport={() => setImportTemplateOpen(true)}
+        resetKey={createItemResetKey}
       />
 
       <ViewItemDialog
@@ -240,14 +257,8 @@ export default function Home() {
         open={Boolean(deleteTarget)}
         onCancel={() => setDeleteTarget(null)}
         onConfirm={handleConfirmDelete}
-        title={`Delete ${deleteTarget?.type === "folder" ? "folder" : "item"}`}
-        description={
-          deleteTarget?.type === "folder"
-            ? `Delete "${deleteTarget.folder.name}" and its contents?`
-            : deleteTarget?.item
-              ? `Delete "${deleteTarget.item.name}"?`
-              : "Are you sure you want to delete this?"
-        }
+        title={deleteDialogInfo?.title}
+        description={deleteDialogInfo?.description}
       />
 
       <FormTemplateManager

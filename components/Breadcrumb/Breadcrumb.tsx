@@ -11,7 +11,7 @@ interface BreadcrumbProps {
 
 export default function Breadcrumb({ items, onNavigate }: BreadcrumbProps) {
   return (
-    <Box className="mat-card" sx={{ padding: 2 }}>
+    <Box sx={{ paddingX: 1, paddingY: 0.5 }}>
       <Breadcrumbs separator=">" aria-label="breadcrumb">
         {items.map((item, index) => {
           const isLast = index === items.length - 1;

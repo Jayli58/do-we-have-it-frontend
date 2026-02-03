@@ -1,7 +1,8 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
+  Box,
   Button,
   Dialog,
   DialogActions,
@@ -10,8 +11,8 @@ import {
   Stack,
   TextField,
   Typography,
-  Box,
 } from "@mui/material";
+import EditNoteIcon from "@mui/icons-material/EditNote";
 
 import type { FormField, Item, ItemAttribute } from "@/types";
 
@@ -38,9 +39,15 @@ export default function EditItemDialog({
   const [name, setName] = useState("");
   const [comments, setComments] = useState("");
   const [attributes, setAttributes] = useState<Record<string, string>>({});
+  const [nameTouched, setNameTouched] = useState(false);
+  const [commentsTouched, setCommentsTouched] = useState(false);
+  const [attributeTouched, setAttributeTouched] = useState<
+    Record<string, boolean>
+  >({});
+  const lastItemId = useRef<string | null>(null);
 
   useEffect(() => {
-    if (item && open) {
+    if (item && item.id !== lastItemId.current) {
       setName(item.name);
       setComments(item.comments);
       const nextAttributes: Record<string, string> = {};
@@ -48,8 +55,12 @@ export default function EditItemDialog({
         nextAttributes[attribute.fieldId] = attribute.value;
       });
       setAttributes(nextAttributes);
+      setNameTouched(false);
+      setCommentsTouched(false);
+      setAttributeTouched({});
+      lastItemId.current = item.id;
     }
-  }, [item, open]);
+  }, [item]);
 
   const requiredMissing = useMemo(() => {
     const missing: string[] = [];
@@ -84,32 +95,38 @@ export default function EditItemDialog({
     });
   };
 
+  const nameError = nameTouched && !name.trim();
+  const commentsError = commentsTouched && !comments.trim();
+
   return (
     <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
-      <DialogTitle>Edit item</DialogTitle>
+      <DialogTitle>
+        <Box display="flex" alignItems="center" gap={2}>
+          <Box className="dialog-icon-blue">
+            <EditNoteIcon sx={{ color: "#2563eb" }} />
+          </Box>
+          <Typography variant="h6" fontWeight={700}>
+            Edit item
+          </Typography>
+        </Box>
+      </DialogTitle>
       <DialogContent>
         <Stack spacing={2} paddingTop={1}>
           <TextField
             label="Item name"
             value={name}
             onChange={(event) => setName(event.target.value)}
-            error={requiredMissing.includes("name")}
-            helperText={
-              requiredMissing.includes("name")
-                ? "Item name is required."
-                : " "
-            }
+            onBlur={() => setNameTouched(true)}
+            error={nameError}
+            helperText={nameError ? "Item name is required." : " "}
           />
           <TextField
             label="Comments"
             value={comments}
             onChange={(event) => setComments(event.target.value)}
-            error={requiredMissing.includes("comments")}
-            helperText={
-              requiredMissing.includes("comments")
-                ? "Comments are required."
-                : " "
-            }
+            onBlur={() => setCommentsTouched(true)}
+            error={commentsError}
+            helperText={commentsError ? "Comments are required." : " "}
             multiline
             minRows={3}
           />
@@ -130,8 +147,18 @@ export default function EditItemDialog({
                         [field.id]: event.target.value,
                       }))
                     }
-                    error={requiredMissing.includes(field.id)}
+                    onBlur={() =>
+                      setAttributeTouched((prev) => ({
+                        ...prev,
+                        [field.id]: true,
+                      }))
+                    }
+                    error={
+                      Boolean(attributeTouched[field.id]) &&
+                      requiredMissing.includes(field.id)
+                    }
                     helperText={
+                      Boolean(attributeTouched[field.id]) &&
                       requiredMissing.includes(field.id)
                         ? "Required"
                         : " "

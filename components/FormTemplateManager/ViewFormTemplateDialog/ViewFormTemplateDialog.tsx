@@ -1,6 +1,7 @@
 "use client";
 
 import {
+  Box,
   Button,
   Dialog,
   DialogActions,
@@ -11,6 +12,7 @@ import {
   ListItemText,
   Typography,
 } from "@mui/material";
+import VisibilityIcon from "@mui/icons-material/Visibility";
 
 import type { FormTemplate } from "@/types";
 
@@ -27,7 +29,16 @@ export default function ViewFormTemplateDialog({
 }: ViewFormTemplateDialogProps) {
   return (
     <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
-      <DialogTitle>Template details</DialogTitle>
+      <DialogTitle>
+        <Box display="flex" alignItems="center" gap={2}>
+          <Box className="dialog-icon-blue">
+            <VisibilityIcon sx={{ color: "#2563eb" }} />
+          </Box>
+          <Typography variant="h6" fontWeight={700}>
+            Template details
+          </Typography>
+        </Box>
+      </DialogTitle>
       <DialogContent>
         {template ? (
           <>

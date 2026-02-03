@@ -15,11 +15,14 @@ import {
   Typography,
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
+import PostAddIcon from "@mui/icons-material/PostAdd";
 
 import type { FormField } from "@/types";
 
 interface CreateFormTemplateDialogProps {
   open: boolean;
+  existingNames?: string[];
+  resetKey?: number;
   onClose: () => void;
   onSave: (data: { name: string; fields: FormField[] }) => void;
 }
@@ -35,18 +38,24 @@ const createField = (): FormField => ({
 
 export default function CreateFormTemplateDialog({
   open,
+  existingNames,
+  resetKey,
   onClose,
   onSave,
 }: CreateFormTemplateDialogProps) {
   const [name, setName] = useState("");
   const [fields, setFields] = useState<FormField[]>([createField()]);
+  const [nameTouched, setNameTouched] = useState(false);
+  const [fieldTouched, setFieldTouched] = useState<Record<string, boolean>>({});
 
   useEffect(() => {
-    if (open) {
+    if (resetKey !== undefined) {
       setName("");
       setFields([createField()]);
+      setNameTouched(false);
+      setFieldTouched({});
     }
-  }, [open]);
+  }, [resetKey]);
 
   const validation = useMemo(() => {
     if (!name.trim()) {
@@ -55,19 +64,41 @@ export default function CreateFormTemplateDialog({
     if (fields.some((field) => !field.name.trim())) {
       return "Each field needs a name.";
     }
+    if (
+      existingNames?.some(
+        (existing) => existing.toLowerCase() === name.trim().toLowerCase(),
+      )
+    ) {
+      return "Template name must be unique.";
+    }
     return "";
-  }, [fields, name]);
+  }, [existingNames, fields, name]);
+
+  const showNameError = nameTouched && !name.trim();
 
   return (
     <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
-      <DialogTitle>Create template</DialogTitle>
+      <DialogTitle>
+        <Box display="flex" alignItems="center" gap={2}>
+          <Box className="dialog-icon-blue">
+            <PostAddIcon sx={{ color: "#2563eb" }} />
+          </Box>
+          <Typography variant="h6" fontWeight={700}>
+            Create template
+          </Typography>
+        </Box>
+      </DialogTitle>
       <DialogContent>
         <Stack spacing={2} paddingTop={1}>
           <TextField
             label="Template name"
             value={name}
             onChange={(event) => setName(event.target.value)}
-            error={Boolean(validation) && !name.trim()}
+            onBlur={() => setNameTouched(true)}
+            error={showNameError || (nameTouched && validation.includes("unique"))}
+            helperText={
+              nameTouched && validation ? validation : " "
+            }
           />
           <Stack spacing={2}>
             {fields.map((field, index) => (
@@ -89,6 +120,20 @@ export default function CreateFormTemplateDialog({
                           : entry,
                       ),
                     )
+                  }
+                  onBlur={() =>
+                    setFieldTouched((prev) => ({
+                      ...prev,
+                      [field.id]: true,
+                    }))
+                  }
+                  error={
+                    Boolean(fieldTouched[field.id]) && !field.name.trim()
+                  }
+                  helperText={
+                    Boolean(fieldTouched[field.id]) && !field.name.trim()
+                      ? "Field name is required."
+                      : " "
                   }
                 />
                 <Box display="flex" alignItems="center">
@@ -127,7 +172,7 @@ export default function CreateFormTemplateDialog({
           >
             Add field
           </Button>
-          {validation && (
+          {validation && nameTouched && (
             <Typography color="error" variant="body2">
               {validation}
             </Typography>

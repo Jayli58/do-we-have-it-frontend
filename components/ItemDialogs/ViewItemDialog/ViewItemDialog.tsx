@@ -1,6 +1,7 @@
 "use client";
 
 import {
+  Box,
   Dialog,
   DialogActions,
   DialogContent,
@@ -10,6 +11,7 @@ import {
   Typography,
   Divider,
 } from "@mui/material";
+import VisibilityIcon from "@mui/icons-material/Visibility";
 
 import type { Item } from "@/types";
 
@@ -26,7 +28,16 @@ export default function ViewItemDialog({
 }: ViewItemDialogProps) {
   return (
     <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
-      <DialogTitle>Item details</DialogTitle>
+      <DialogTitle>
+        <Box display="flex" alignItems="center" gap={2}>
+          <Box className="dialog-icon-blue">
+            <VisibilityIcon sx={{ color: "#2563eb" }} />
+          </Box>
+          <Typography variant="h6" fontWeight={700}>
+            Item details
+          </Typography>
+        </Box>
+      </DialogTitle>
       <DialogContent>
         {item ? (
           <Stack spacing={2} paddingTop={1}>

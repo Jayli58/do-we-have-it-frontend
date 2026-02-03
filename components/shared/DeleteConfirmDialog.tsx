@@ -1,6 +1,7 @@
 "use client";
 
 import {
+  Box,
   Button,
   Dialog,
   DialogActions,
@@ -8,6 +9,7 @@ import {
   DialogTitle,
   Typography,
 } from "@mui/material";
+import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
 
 interface DeleteConfirmDialogProps {
   open: boolean;
@@ -28,7 +30,16 @@ export default function DeleteConfirmDialog({
 }: DeleteConfirmDialogProps) {
   return (
     <Dialog open={open} onClose={onCancel} fullWidth maxWidth="xs">
-      <DialogTitle>{title ?? "Delete"}</DialogTitle>
+      <DialogTitle>
+        <Box display="flex" alignItems="center" gap={2}>
+          <Box className="dialog-icon-blue">
+            <DeleteForeverIcon sx={{ color: "#2563eb" }} />
+          </Box>
+          <Typography variant="h6" fontWeight={700}>
+            {title ?? "Delete"}
+          </Typography>
+        </Box>
+      </DialogTitle>
       <DialogContent>
         <Typography color="text.secondary">
           {description ?? "Are you sure you want to delete this?"}

@@ -18,6 +18,7 @@ import {
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
+import ViewListIcon from "@mui/icons-material/ViewList";
 
 import CreateFormTemplateDialog from "@/components/FormTemplateManager/CreateFormTemplateDialog/CreateFormTemplateDialog";
 import EditFormTemplateDialog from "@/components/FormTemplateManager/EditFormTemplateDialog/EditFormTemplateDialog";
@@ -49,6 +50,7 @@ export default function FormTemplateManager({
   );
   const [deleteTemplateData, setDeleteTemplateData] =
     useState<FormTemplate | null>(null);
+  const [createTemplateResetKey, setCreateTemplateResetKey] = useState(0);
 
   useEffect(() => {
     if (open) {
@@ -62,7 +64,16 @@ export default function FormTemplateManager({
 
   return (
     <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
-      <DialogTitle>Form templates</DialogTitle>
+      <DialogTitle>
+        <Box display="flex" alignItems="center" gap={2}>
+          <Box className="dialog-icon-blue">
+            <ViewListIcon sx={{ color: "#2563eb" }} />
+          </Box>
+          <Typography variant="h6" fontWeight={700}>
+            Form templates
+          </Typography>
+        </Box>
+      </DialogTitle>
       <DialogContent>
         {sortedTemplates.length === 0 ? (
           <Typography color="text.secondary">
@@ -113,8 +124,11 @@ export default function FormTemplateManager({
       <CreateFormTemplateDialog
         open={isCreateOpen}
         onClose={() => setCreateOpen(false)}
+        existingNames={templates.map((template) => template.name)}
+        resetKey={createTemplateResetKey}
         onSave={async (data) => {
           await addTemplate({ name: data.name, fields: data.fields });
+          setCreateTemplateResetKey((prev) => prev + 1);
           setCreateOpen(false);
         }}
       />
@@ -129,6 +143,7 @@ export default function FormTemplateManager({
         open={Boolean(editTemplateData)}
         template={editTemplateData}
         onClose={() => setEditTemplateData(null)}
+        existingNames={templates.map((template) => template.name)}
         onSave={async (data) => {
           await editTemplate(data.id, {
             name: data.name,

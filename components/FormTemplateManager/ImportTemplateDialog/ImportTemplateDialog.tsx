@@ -1,6 +1,7 @@
 "use client";
 
 import {
+  Box,
   Button,
   Dialog,
   DialogActions,
@@ -11,6 +12,7 @@ import {
   ListItemText,
   Typography,
 } from "@mui/material";
+import FileUploadIcon from "@mui/icons-material/FileUpload";
 
 import type { FormTemplate } from "@/types";
 
@@ -29,7 +31,16 @@ export default function ImportTemplateDialog({
 }: ImportTemplateDialogProps) {
   return (
     <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
-      <DialogTitle>Import template</DialogTitle>
+      <DialogTitle>
+        <Box display="flex" alignItems="center" gap={2}>
+          <Box className="dialog-icon-blue">
+            <FileUploadIcon sx={{ color: "#2563eb" }} />
+          </Box>
+          <Typography variant="h6" fontWeight={700}>
+            Import template
+          </Typography>
+        </Box>
+      </DialogTitle>
       <DialogContent>
         {templates.length === 0 ? (
           <Typography color="text.secondary">

@@ -14,6 +14,7 @@ import {
   Typography,
 } from "@mui/material";
 import FileUploadIcon from "@mui/icons-material/FileUpload";
+import InventoryIcon from "@mui/icons-material/Inventory2";
 
 import type { FormField, ItemAttribute } from "@/types";
 
@@ -22,6 +23,7 @@ interface CreateItemDialogProps {
   fields?: FormField[];
   templateName?: string | null;
   onOpenTemplateImport?: () => void;
+  resetKey?: number;
   onClose: () => void;
   onCreate: (data: {
     name: string;
@@ -35,20 +37,29 @@ export default function CreateItemDialog({
   fields,
   templateName,
   onOpenTemplateImport,
+  resetKey,
   onClose,
   onCreate,
 }: CreateItemDialogProps) {
   const [name, setName] = useState("");
   const [comments, setComments] = useState("");
   const [attributes, setAttributes] = useState<Record<string, string>>({});
+  const [nameTouched, setNameTouched] = useState(false);
+  const [commentsTouched, setCommentsTouched] = useState(false);
+  const [attributeTouched, setAttributeTouched] = useState<
+    Record<string, boolean>
+  >({});
 
   useEffect(() => {
-    if (open) {
+    if (resetKey !== undefined) {
       setName("");
       setComments("");
       setAttributes({});
+      setNameTouched(false);
+      setCommentsTouched(false);
+      setAttributeTouched({});
     }
-  }, [open]);
+  }, [resetKey]);
 
   const requiredMissing = useMemo(() => {
     const missing: string[] = [];
@@ -79,13 +90,21 @@ export default function CreateItemDialog({
     });
   };
 
+  const nameError = nameTouched && !name.trim();
+  const commentsError = commentsTouched && !comments.trim();
+
   return (
     <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
       <DialogTitle>
         <Box display="flex" alignItems="center" justifyContent="space-between">
-          <Typography variant="h6" fontWeight={700}>
-            Create item
-          </Typography>
+          <Box display="flex" alignItems="center" gap={2}>
+            <Box className="dialog-icon-blue">
+              <InventoryIcon sx={{ color: "#2563eb" }} />
+            </Box>
+            <Typography variant="h6" fontWeight={700}>
+              Create item
+            </Typography>
+          </Box>
           {onOpenTemplateImport && (
             <IconButton
               aria-label="import template"
@@ -107,23 +126,17 @@ export default function CreateItemDialog({
             label="Item name"
             value={name}
             onChange={(event) => setName(event.target.value)}
-            error={requiredMissing.includes("name")}
-            helperText={
-              requiredMissing.includes("name")
-                ? "Item name is required."
-                : " "
-            }
+            onBlur={() => setNameTouched(true)}
+            error={nameError}
+            helperText={nameError ? "Item name is required." : " "}
           />
           <TextField
             label="Comments"
             value={comments}
             onChange={(event) => setComments(event.target.value)}
-            error={requiredMissing.includes("comments")}
-            helperText={
-              requiredMissing.includes("comments")
-                ? "Comments are required."
-                : " "
-            }
+            onBlur={() => setCommentsTouched(true)}
+            error={commentsError}
+            helperText={commentsError ? "Comments are required." : " "}
             multiline
             minRows={3}
           />
@@ -144,8 +157,18 @@ export default function CreateItemDialog({
                         [field.id]: event.target.value,
                       }))
                     }
-                    error={requiredMissing.includes(field.id)}
+                    onBlur={() =>
+                      setAttributeTouched((prev) => ({
+                        ...prev,
+                        [field.id]: true,
+                      }))
+                    }
+                    error={
+                      Boolean(attributeTouched[field.id]) &&
+                      requiredMissing.includes(field.id)
+                    }
                     helperText={
+                      Boolean(attributeTouched[field.id]) &&
                       requiredMissing.includes(field.id)
                         ? "Required"
                         : " "

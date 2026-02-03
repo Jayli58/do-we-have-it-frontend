@@ -13,7 +13,7 @@ describe("FormTemplateManager", () => {
 
     await user.click(screen.getByRole("button", { name: "Create template" }));
     expect(
-      screen.getByRole("heading", { name: "Create template" }),
+      screen.getAllByRole("heading", { name: "Create template" })[0],
     ).toBeInTheDocument();
   });
 });

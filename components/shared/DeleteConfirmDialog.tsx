@@ -6,7 +6,6 @@ import {
   Dialog,
   DialogActions,
   DialogContent,
-  DialogTitle,
   Typography,
 } from "@mui/material";
 
@@ -28,10 +27,24 @@ export default function DeleteConfirmDialog({
   onConfirm,
 }: DeleteConfirmDialogProps) {
   return (
-    <Dialog open={open} onClose={onCancel} fullWidth maxWidth="xs">
-      <DialogTitle>
-        <Box display="flex" alignItems="flex-start" gap={2}>
-          <Box className="dialog-icon" sx={{ marginTop: 0.5 }}>
+    <Dialog
+      open={open}
+      onClose={onCancel}
+      fullWidth
+      maxWidth="xs"
+      aria-labelledby="delete-confirm-title"
+    >
+      <DialogContent>
+        <Box
+          display="flex"
+          gap={2}
+          alignItems="flex-start"
+          flexDirection={{ xs: "column", sm: "row" }}
+        >
+          <Box
+            className="dialog-icon"
+            sx={{ alignSelf: { xs: "center", sm: "flex-start" } }}
+          >
             <svg
               viewBox="0 0 24 24"
               fill="none"
@@ -47,15 +60,15 @@ export default function DeleteConfirmDialog({
               />
             </svg>
           </Box>
-          <Typography variant="h6" fontWeight={700}>
-            {title ?? "Delete"}
-          </Typography>
+          <Box flex={1}>
+            <Typography id="delete-confirm-title" variant="h6" fontWeight={700}>
+              {title ?? "Delete"}
+            </Typography>
+            <Typography color="text.secondary">
+              {description ?? "Are you sure you want to delete this?"}
+            </Typography>
+          </Box>
         </Box>
-      </DialogTitle>
-      <DialogContent>
-        <Typography color="text.secondary">
-          {description ?? "Are you sure you want to delete this?"}
-        </Typography>
       </DialogContent>
       <DialogActions>
         <Button onClick={onCancel}>Cancel</Button>

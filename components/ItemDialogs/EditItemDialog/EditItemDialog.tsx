@@ -7,7 +7,6 @@ import {
   Dialog,
   DialogActions,
   DialogContent,
-  DialogTitle,
   Stack,
   TextField,
   Typography,
@@ -113,19 +112,31 @@ export default function EditItemDialog({
   const commentsError = commentsTouched && !comments.trim();
 
   return (
-    <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
-      <DialogTitle>
-        <Box display="flex" alignItems="flex-start" gap={2}>
-          <Box className="dialog-icon-blue" sx={{ marginTop: 0.5 }}>
+    <Dialog
+      open={open}
+      onClose={onClose}
+      fullWidth
+      maxWidth="sm"
+      aria-labelledby="edit-item-title"
+    >
+      <DialogContent>
+        <Box
+          display="flex"
+          gap={2}
+          alignItems="flex-start"
+          flexDirection={{ xs: "column", sm: "row" }}
+        >
+          <Box
+            className="dialog-icon-blue"
+            sx={{ alignSelf: { xs: "center", sm: "flex-start" } }}
+          >
             <EditNoteIcon sx={{ color: "#2563eb" }} />
           </Box>
-          <Typography variant="h6" fontWeight={700}>
-            Edit item
-          </Typography>
-        </Box>
-      </DialogTitle>
-      <DialogContent>
-        <Stack spacing={2} paddingTop={1}>
+          <Box flex={1}>
+            <Typography id="edit-item-title" variant="h6" fontWeight={700}>
+              Edit item
+            </Typography>
+            <Stack spacing={2} paddingTop={1}>
           <TextField
             label="Item name"
             value={name}
@@ -179,7 +190,9 @@ export default function EditItemDialog({
             multiline
             minRows={3}
           />
-        </Stack>
+            </Stack>
+          </Box>
+        </Box>
       </DialogContent>
       <DialogActions>
         <Button onClick={onClose}>Cancel</Button>

@@ -6,10 +6,10 @@ import {
   Dialog,
   DialogActions,
   DialogContent,
-  DialogTitle,
   List,
   ListItem,
   ListItemText,
+  Stack,
   Typography,
 } from "@mui/material";
 import VisibilityIcon from "@mui/icons-material/Visibility";
@@ -28,37 +28,54 @@ export default function ViewFormTemplateDialog({
   onClose,
 }: ViewFormTemplateDialogProps) {
   return (
-    <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
-      <DialogTitle>
-        <Box display="flex" alignItems="flex-start" gap={2}>
-          <Box className="dialog-icon-blue" sx={{ marginTop: 0.5 }}>
+    <Dialog
+      open={open}
+      onClose={onClose}
+      fullWidth
+      maxWidth="sm"
+      aria-labelledby="view-template-title"
+    >
+      <DialogContent>
+        <Box
+          display="flex"
+          gap={2}
+          alignItems="flex-start"
+          flexDirection={{ xs: "column", sm: "row" }}
+        >
+          <Box
+            className="dialog-icon-blue"
+            sx={{ alignSelf: { xs: "center", sm: "flex-start" } }}
+          >
             <VisibilityIcon sx={{ color: "#2563eb" }} />
           </Box>
-          <Typography variant="h6" fontWeight={700}>
-            Template details
-          </Typography>
-        </Box>
-      </DialogTitle>
-      <DialogContent>
-        {template ? (
-          <>
-            <Typography variant="h6" fontWeight={700} gutterBottom>
-              {template.name}
+          <Box flex={1}>
+            <Typography id="view-template-title" variant="h6" fontWeight={700}>
+              Template details
             </Typography>
-            <List dense>
-              {template.fields.map((field) => (
-                <ListItem key={field.id} disableGutters>
-                  <ListItemText
-                    primary={field.name}
-                    secondary={field.required ? "Required" : "Optional"}
-                  />
-                </ListItem>
-              ))}
-            </List>
-          </>
-        ) : (
-          <Typography color="text.secondary">No template selected.</Typography>
-        )}
+            {template ? (
+              <>
+                <Stack paddingTop={2} />
+                <List dense>
+                  <Typography fontWeight={600}>
+                    {template.name}
+                  </Typography>
+                  {template.fields.map((field) => (
+                    <ListItem key={field.id} disableGutters>
+                      <ListItemText
+                        primary={field.name}
+                        secondary={field.required ? "Required" : "Optional"}
+                      />
+                    </ListItem>
+                  ))}
+                </List>
+              </>
+            ) : (
+              <Typography color="text.secondary">
+                No template selected.
+              </Typography>
+            )}
+          </Box>
+        </Box>
       </DialogContent>
       <DialogActions>
         <Button onClick={onClose}>Close</Button>

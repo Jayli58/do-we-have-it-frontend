@@ -1,17 +1,17 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import CreateNewFolderIcon from "@mui/icons-material/CreateNewFolder";
 import {
   Box,
   Button,
   Dialog,
   DialogActions,
   DialogContent,
-  DialogTitle,
+  Stack,
   TextField,
   Typography,
 } from "@mui/material";
-import CreateNewFolderIcon from "@mui/icons-material/CreateNewFolder";
+import { useEffect, useMemo, useRef, useState, type ChangeEvent } from "react";
 
 interface CreateFolderDialogProps {
   open: boolean;
@@ -30,11 +30,13 @@ export default function CreateFolderDialog({
 }: CreateFolderDialogProps) {
   const [name, setName] = useState("");
   const [touched, setTouched] = useState(false);
+  const hasUserInteracted = useRef(false);
 
   useEffect(() => {
     if (resetKey !== undefined) {
       setName("");
       setTouched(false);
+      hasUserInteracted.current = false;
     }
   }, [resetKey]);
 
@@ -63,37 +65,78 @@ export default function CreateFolderDialog({
     onCreate(name.trim());
   };
 
+  const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
+    if (!hasUserInteracted.current) {
+      hasUserInteracted.current = true;
+    }
+    if (!touched) {
+      setTouched(true);
+    }
+    setName(event.target.value);
+  };
+
+  const handlePointerDown = () => {
+    hasUserInteracted.current = true;
+  };
+
+  const handleKeyDown = () => {
+    hasUserInteracted.current = true;
+  };
+
+  const handleBlur = () => {
+    if (hasUserInteracted.current) {
+      setTouched(true);
+    }
+  };
+
   return (
-    <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
-      <DialogTitle>
-        <Box display="flex" alignItems="flex-start" gap={2}>
-          <Box className="dialog-icon-blue" sx={{ marginTop: 0.5 }}>
+    <Dialog
+      open={open}
+      onClose={onClose}
+      fullWidth
+      maxWidth="sm"
+      aria-labelledby="create-folder-title"
+    >
+      <DialogContent>
+        <Box
+          display="flex"
+          gap={2}
+          alignItems="flex-start"
+          flexDirection={{ xs: "column", sm: "row" }}
+        >
+          <Box
+            className="dialog-icon-blue"
+            sx={{ alignSelf: { xs: "center", sm: "flex-start" } }}
+          >
             <CreateNewFolderIcon sx={{ color: "#2563eb" }} />
           </Box>
-          <Typography variant="h6" fontWeight={700}>
-            Create folder
-          </Typography>
+          <Box flex={1}>
+            <Typography id="create-folder-title" variant="h6" fontWeight={700}>
+              Create folder
+            </Typography>
+            <Stack spacing={0} paddingTop={2} />
+            <TextField
+              autoFocus
+              margin="dense"
+              fullWidth
+              label="Folder name"
+              value={name}
+              onChange={handleChange}
+              onPointerDown={handlePointerDown}
+              onKeyDown={handleKeyDown}
+              onBlur={handleBlur}
+              error={showError}
+              helperText={showError ? validation : " "}
+            />
+          </Box>
         </Box>
-      </DialogTitle>
-      <DialogContent>
-        <TextField
-          autoFocus
-          margin="dense"
-          fullWidth
-          label="Folder name"
-          value={name}
-          onChange={(event) => setName(event.target.value)}
-          onBlur={() => setTouched(true)}
-          error={showError}
-          helperText={showError ? validation : " "}
-        />
       </DialogContent>
       <DialogActions>
         <Button onClick={onClose}>Cancel</Button>
         <Button
           variant="contained"
           onClick={handleSubmit}
-          disabled={Boolean(validation) && touched}
+          disabled={Boolean(validation)}
         >
           Create
         </Button>

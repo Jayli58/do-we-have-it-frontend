@@ -7,7 +7,6 @@ import {
   Dialog,
   DialogActions,
   DialogContent,
-  DialogTitle,
   TextField,
   Typography,
 } from "@mui/material";
@@ -68,29 +67,43 @@ export default function EditFolderDialog({
   const showError = touched && Boolean(validation);
 
   return (
-    <Dialog open={open} onClose={handleClose} fullWidth maxWidth="sm">
-      <DialogTitle>
-        <Box display="flex" alignItems="flex-start" gap={2}>
-          <Box className="dialog-icon-blue" sx={{ marginTop: 0.5 }}>
+    <Dialog
+      open={open}
+      onClose={handleClose}
+      fullWidth
+      maxWidth="sm"
+      aria-labelledby="edit-folder-title"
+    >
+      <DialogContent>
+        <Box
+          display="flex"
+          gap={2}
+          alignItems="flex-start"
+          flexDirection={{ xs: "column", sm: "row" }}
+        >
+          <Box
+            className="dialog-icon-blue"
+            sx={{ alignSelf: { xs: "center", sm: "flex-start" } }}
+          >
             <DriveFileRenameOutlineIcon sx={{ color: "#2563eb" }} />
           </Box>
-          <Typography variant="h6" fontWeight={700}>
-            Edit folder
-          </Typography>
+          <Box flex={1}>
+            <Typography id="edit-folder-title" variant="h6" fontWeight={700}>
+              Edit folder
+            </Typography>
+            <TextField
+              autoFocus
+              margin="dense"
+              fullWidth
+              label="Folder name"
+              value={name}
+              onChange={(event) => setName(event.target.value)}
+              onBlur={() => setTouched(true)}
+              error={showError}
+              helperText={showError ? validation : " "}
+            />
+          </Box>
         </Box>
-      </DialogTitle>
-      <DialogContent>
-        <TextField
-          autoFocus
-          margin="dense"
-          fullWidth
-          label="Folder name"
-          value={name}
-          onChange={(event) => setName(event.target.value)}
-          onBlur={() => setTouched(true)}
-          error={showError}
-          helperText={showError ? validation : " "}
-        />
       </DialogContent>
       <DialogActions>
         <Button onClick={handleClose}>Cancel</Button>

@@ -40,9 +40,13 @@ body {
 }
 
 .dialog-icon {
-  @apply mx-auto flex size-12 shrink-0 items-center justify-center rounded-full bg-red-100 sm:mx-0 sm:size-10;
+  @apply mx-auto flex size-10 shrink-0 items-center justify-center rounded-full bg-red-100 sm:mx-0 sm:size-10;
 }
 
 .dialog-icon-blue {
-  @apply flex size-12 shrink-0 items-center justify-center rounded-full bg-blue-100;
+  @apply flex size-10 shrink-0 items-center justify-center rounded-full bg-blue-100;
+}
+
+.form-template-meta {
+  @apply flex flex-1 flex-col items-start py-3 pl-4;
 }

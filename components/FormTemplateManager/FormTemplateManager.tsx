@@ -7,11 +7,9 @@ import {
   Dialog,
   DialogActions,
   DialogContent,
-  DialogTitle,
   IconButton,
   List,
   ListItem,
-  ListItemText,
   Stack,
   Typography,
 } from "@mui/material";
@@ -63,56 +61,80 @@ export default function FormTemplateManager({
   }, [templates]);
 
   return (
-    <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
-      <DialogTitle>
-        <Box display="flex" alignItems="flex-start" gap={2}>
-          <Box className="dialog-icon-blue" sx={{ marginTop: 0.5 }}>
+    <Dialog
+      open={open}
+      onClose={onClose}
+      fullWidth
+      maxWidth="sm"
+      aria-labelledby="form-templates-title"
+    >
+      <DialogContent>
+        <Box
+          display="flex"
+          gap={2}
+          alignItems="flex-start"
+          flexDirection={{ xs: "column", sm: "row" }}
+        >
+          <Box
+            className="dialog-icon-blue"
+            sx={{ alignSelf: { xs: "center", sm: "flex-start" } }}
+          >
             <ViewListIcon sx={{ color: "#2563eb" }} />
           </Box>
-          <Typography variant="h6" fontWeight={700}>
-            Form templates
-          </Typography>
+          <Box flex={1}>
+            <Typography id="form-templates-title" variant="h6" fontWeight={700}>
+              Form templates
+            </Typography>
+            {sortedTemplates.length === 0 ? (
+              <Typography color="text.secondary" paddingTop={1}>
+                No templates yet. Create one to reuse custom fields.
+              </Typography>
+            ) : (
+              <List>
+                {sortedTemplates.map((template) => (
+                  <ListItem key={template.id} divider disablePadding>
+                  <Box className="form-template-meta">
+                    <Typography
+                      onClick={() => setViewTemplate(template)}
+                      sx={{ cursor: "pointer", fontWeight: 600 }}
+                    >
+                      {template.name}
+                    </Typography>
+                    <Typography
+                      variant="body2"
+                      color="text.secondary"
+                      onClick={() => setViewTemplate(template)}
+                      sx={{ cursor: "pointer" }}
+                    >
+                      {`${template.fields.length} fields`}
+                    </Typography>
+                  </Box>
+                    <Box display="flex" gap={1} paddingRight={1.5}>
+                      <IconButton
+                        aria-label="view template"
+                        onClick={() => setViewTemplate(template)}
+                      >
+                        <VisibilityIcon fontSize="small" />
+                      </IconButton>
+                      <IconButton
+                        aria-label="edit template"
+                        onClick={() => setEditTemplateData(template)}
+                      >
+                        <EditIcon fontSize="small" />
+                      </IconButton>
+                      <IconButton
+                        aria-label="delete template"
+                        onClick={() => setDeleteTemplateData(template)}
+                      >
+                        <DeleteIcon fontSize="small" />
+                      </IconButton>
+                    </Box>
+                  </ListItem>
+                ))}
+              </List>
+            )}
+          </Box>
         </Box>
-      </DialogTitle>
-      <DialogContent>
-        {sortedTemplates.length === 0 ? (
-          <Typography color="text.secondary">
-            No templates yet. Create one to reuse custom fields.
-          </Typography>
-        ) : (
-          <List>
-            {sortedTemplates.map((template) => (
-              <ListItem key={template.id} divider disablePadding>
-                <ListItemText
-                  onClick={() => setViewTemplate(template)}
-                  primary={template.name}
-                  secondary={`${template.fields.length} fields`}
-                  sx={{ paddingY: 1.5, paddingLeft: 2, cursor: "pointer" }}
-                />
-                <Box display="flex" gap={1} paddingRight={1.5}>
-                  <IconButton
-                    aria-label="view template"
-                    onClick={() => setViewTemplate(template)}
-                  >
-                    <VisibilityIcon fontSize="small" />
-                  </IconButton>
-                  <IconButton
-                    aria-label="edit template"
-                    onClick={() => setEditTemplateData(template)}
-                  >
-                    <EditIcon fontSize="small" />
-                  </IconButton>
-                  <IconButton
-                    aria-label="delete template"
-                    onClick={() => setDeleteTemplateData(template)}
-                  >
-                    <DeleteIcon fontSize="small" />
-                  </IconButton>
-                </Box>
-              </ListItem>
-            ))}
-          </List>
-        )}
       </DialogContent>
       <DialogActions>
         <Stack width="100%" direction="row" justifyContent="flex-end" gap={1.5}>

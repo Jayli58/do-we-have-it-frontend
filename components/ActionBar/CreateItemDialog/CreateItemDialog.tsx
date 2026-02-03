@@ -7,7 +7,6 @@ import {
   Dialog,
   DialogActions,
   DialogContent,
-  DialogTitle,
   IconButton,
   Stack,
   TextField,
@@ -94,34 +93,46 @@ export default function CreateItemDialog({
   const commentsError = commentsTouched && !comments.trim();
 
   return (
-    <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
-      <DialogTitle>
-        <Box display="flex" alignItems="flex-start" justifyContent="space-between">
-          <Box display="flex" alignItems="flex-start" gap={2}>
-            <Box className="dialog-icon-blue" sx={{ marginTop: 0.5 }}>
-              <InventoryIcon sx={{ color: "#2563eb" }} />
-            </Box>
-            <Typography variant="h6" fontWeight={700}>
-              Create item
-            </Typography>
-          </Box>
-          {onOpenTemplateImport && (
-            <IconButton
-              aria-label="import template"
-              onClick={onOpenTemplateImport}
-            >
-              <FileUploadIcon />
-            </IconButton>
-          )}
-        </Box>
-        {templateName && (
-          <Typography variant="body2" color="text.secondary">
-            Using template: {templateName}
-          </Typography>
-        )}
-      </DialogTitle>
+    <Dialog
+      open={open}
+      onClose={onClose}
+      fullWidth
+      maxWidth="sm"
+      aria-labelledby="create-item-title"
+    >
       <DialogContent>
-        <Stack spacing={2} paddingTop={1}>
+        <Box
+          display="flex"
+          gap={2}
+          alignItems="flex-start"
+          flexDirection={{ xs: "column", sm: "row" }}
+        >
+          <Box
+            className="dialog-icon-blue"
+            sx={{ alignSelf: { xs: "center", sm: "flex-start" } }}
+          >
+            <InventoryIcon sx={{ color: "#2563eb" }} />
+          </Box>
+          <Box flex={1}>
+            <Box display="flex" alignItems="flex-start" justifyContent="space-between">
+              <Typography id="create-item-title" variant="h6" fontWeight={700}>
+                Create item
+              </Typography>
+              {onOpenTemplateImport && (
+                <IconButton
+                  aria-label="import template"
+                  onClick={onOpenTemplateImport}
+                >
+                  <FileUploadIcon />
+                </IconButton>
+              )}
+            </Box>
+            {templateName && (
+              <Typography variant="body2" color="text.secondary">
+                Using template: {templateName}
+              </Typography>
+            )}
+            <Stack spacing={0} paddingTop={2}>
           <TextField
             label="Item name"
             value={name}
@@ -132,7 +143,7 @@ export default function CreateItemDialog({
           />
           {(fields ?? []).length > 0 && (
             <Box>
-              <Stack spacing={2}>
+              <Stack spacing={0}>
                 {(fields ?? []).map((field) => (
                   <TextField
                     key={field.id}
@@ -175,7 +186,9 @@ export default function CreateItemDialog({
             multiline
             minRows={3}
           />
-        </Stack>
+            </Stack>
+          </Box>
+        </Box>
       </DialogContent>
       <DialogActions>
         <Button onClick={onClose}>Cancel</Button>

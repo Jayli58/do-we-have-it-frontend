@@ -8,7 +8,6 @@ import {
   Dialog,
   DialogActions,
   DialogContent,
-  DialogTitle,
   IconButton,
   Stack,
   TextField,
@@ -82,19 +81,31 @@ export default function EditFormTemplateDialog({
   const showNameError = nameTouched && !name.trim();
 
   return (
-    <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
-      <DialogTitle>
-        <Box display="flex" alignItems="flex-start" gap={2}>
-          <Box className="dialog-icon-blue" sx={{ marginTop: 0.5 }}>
+    <Dialog
+      open={open}
+      onClose={onClose}
+      fullWidth
+      maxWidth="sm"
+      aria-labelledby="edit-template-title"
+    >
+      <DialogContent>
+        <Box
+          display="flex"
+          gap={2}
+          alignItems="flex-start"
+          flexDirection={{ xs: "column", sm: "row" }}
+        >
+          <Box
+            className="dialog-icon-blue"
+            sx={{ alignSelf: { xs: "center", sm: "flex-start" } }}
+          >
             <EditNoteIcon sx={{ color: "#2563eb" }} />
           </Box>
-          <Typography variant="h6" fontWeight={700}>
-            Edit template
-          </Typography>
-        </Box>
-      </DialogTitle>
-      <DialogContent>
-        <Stack spacing={2} paddingTop={1}>
+          <Box flex={1}>
+            <Typography id="edit-template-title" variant="h6" fontWeight={700}>
+              Edit template
+            </Typography>
+            <Stack spacing={2} paddingTop={3}>
           <TextField
             label="Template name"
             value={name}
@@ -182,7 +193,9 @@ export default function EditFormTemplateDialog({
               {validation}
             </Typography>
           )}
-        </Stack>
+            </Stack>
+          </Box>
+        </Box>
       </DialogContent>
       <DialogActions>
         <Button onClick={onClose}>Cancel</Button>

@@ -59,6 +59,9 @@ export default function ViewFormTemplateDialog({
                   <Typography fontWeight={600}>
                     {template.name}
                   </Typography>
+                  <ListItem disableGutters>
+                    <ListItemText primary="Item name" secondary="Required" />
+                  </ListItem>
                   {template.fields.map((field) => (
                     <ListItem key={field.id} disableGutters>
                       <ListItemText
@@ -67,6 +70,9 @@ export default function ViewFormTemplateDialog({
                       />
                     </ListItem>
                   ))}
+                  <ListItem disableGutters>
+                    <ListItemText primary="Comments" secondary="Optional" />
+                  </ListItem>
                 </List>
               </>
             ) : (

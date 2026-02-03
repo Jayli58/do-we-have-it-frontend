@@ -39,7 +39,6 @@ export default function EditItemDialog({
   const [comments, setComments] = useState("");
   const [attributes, setAttributes] = useState<Record<string, string>>({});
   const [nameTouched, setNameTouched] = useState(false);
-  const [commentsTouched, setCommentsTouched] = useState(false);
   const [attributeTouched, setAttributeTouched] = useState<
     Record<string, boolean>
   >({});
@@ -55,7 +54,6 @@ export default function EditItemDialog({
       });
       setAttributes(nextAttributes);
       setNameTouched(false);
-      setCommentsTouched(false);
       setAttributeTouched({});
       lastItemId.current = item.id;
     }
@@ -65,9 +63,6 @@ export default function EditItemDialog({
     const missing: string[] = [];
     if (!name.trim()) {
       missing.push("name");
-    }
-    if (!comments.trim()) {
-      missing.push("comments");
     }
     (fields ?? []).forEach((field) => {
       if (field.required && !attributes[field.id]?.trim()) {
@@ -83,11 +78,10 @@ export default function EditItemDialog({
     }
     if (requiredMissing.length > 0) {
       setNameTouched(true);
-      setCommentsTouched(true);
       setAttributeTouched((prev) => {
         const next = { ...prev };
         requiredMissing.forEach((fieldId) => {
-          if (fieldId !== "name" && fieldId !== "comments") {
+          if (fieldId !== "name") {
             next[fieldId] = true;
           }
         });
@@ -109,8 +103,6 @@ export default function EditItemDialog({
   };
 
   const nameError = nameTouched && !name.trim();
-  const commentsError = commentsTouched && !comments.trim();
-
   return (
     <Dialog
       open={open}
@@ -184,9 +176,7 @@ export default function EditItemDialog({
             label="Comments"
             value={comments}
             onChange={(event) => setComments(event.target.value)}
-            onBlur={() => setCommentsTouched(true)}
-            error={commentsError}
-            helperText={commentsError ? "Comments are required." : " "}
+            helperText="Optional"
             multiline
             minRows={3}
           />

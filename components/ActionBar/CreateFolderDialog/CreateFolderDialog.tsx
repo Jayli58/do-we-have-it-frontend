@@ -114,7 +114,7 @@ export default function CreateFolderDialog({
             <Typography id="create-folder-title" variant="h6" fontWeight={700}>
               Create folder
             </Typography>
-            <Stack spacing={0} paddingTop={2} />
+            <Stack spacing={1} paddingTop={2} />
             <TextField
               autoFocus
               margin="dense"

@@ -66,7 +66,7 @@ export default function ImportTemplateDialog({
                   >
                     <ListItemText
                       primary={template.name}
-                      secondary={`${template.fields.length} fields`}
+                      secondary={`${template.fields.length + 2} fields`}
                     />
                   </ListItemButton>
                 ))}

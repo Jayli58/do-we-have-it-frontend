@@ -2,7 +2,15 @@ import type { FormTemplate } from "@/types";
 
 const seedTimestamp = new Date().toISOString();
 
+export const DEFAULT_TEMPLATE_ID = "tmpl-default";
+
 const templates: FormTemplate[] = [
+  {
+    id: DEFAULT_TEMPLATE_ID,
+    name: "Default",
+    createdAt: seedTimestamp,
+    fields: [],
+  },
   {
     id: "tmpl-appliance",
     name: "Appliance Details",
@@ -65,6 +73,9 @@ export const createTemplate = async (
 };
 
 export const deleteTemplate = async (id: string) => {
+  if (id === DEFAULT_TEMPLATE_ID) {
+    return false;
+  }
   const index = templates.findIndex((entry) => entry.id === id);
   if (index === -1) {
     return false;

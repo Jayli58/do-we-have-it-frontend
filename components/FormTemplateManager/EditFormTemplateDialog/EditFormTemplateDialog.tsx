@@ -105,7 +105,7 @@ export default function EditFormTemplateDialog({
             <Typography id="edit-template-title" variant="h6" fontWeight={700}>
               Edit template
             </Typography>
-            <Stack spacing={2} paddingTop={3}>
+            <Stack spacing={1} paddingTop={4}>
           <TextField
             label="Template name"
             value={name}
@@ -116,7 +116,7 @@ export default function EditFormTemplateDialog({
               nameTouched && validation ? validation : " "
             }
           />
-          <Stack spacing={2}>
+          <Stack spacing={1}>
             {fields.map((field, index) => (
               <Box
                 key={field.id}

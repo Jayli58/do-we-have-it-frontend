@@ -44,7 +44,6 @@ export default function CreateItemDialog({
   const [comments, setComments] = useState("");
   const [attributes, setAttributes] = useState<Record<string, string>>({});
   const [nameTouched, setNameTouched] = useState(false);
-  const [commentsTouched, setCommentsTouched] = useState(false);
   const [attributeTouched, setAttributeTouched] = useState<
     Record<string, boolean>
   >({});
@@ -55,7 +54,6 @@ export default function CreateItemDialog({
       setComments("");
       setAttributes({});
       setNameTouched(false);
-      setCommentsTouched(false);
       setAttributeTouched({});
     }
   }, [resetKey]);
@@ -64,9 +62,6 @@ export default function CreateItemDialog({
     const missing: string[] = [];
     if (!name.trim()) {
       missing.push("name");
-    }
-    if (!comments.trim()) {
-      missing.push("comments");
     }
     (fields ?? []).forEach((field) => {
       if (field.required && !attributes[field.id]?.trim()) {
@@ -90,8 +85,6 @@ export default function CreateItemDialog({
   };
 
   const nameError = nameTouched && !name.trim();
-  const commentsError = commentsTouched && !comments.trim();
-
   return (
     <Dialog
       open={open}
@@ -132,7 +125,7 @@ export default function CreateItemDialog({
                 Using template: {templateName}
               </Typography>
             )}
-            <Stack spacing={0} paddingTop={2}>
+            <Stack spacing={1} paddingTop={2}>
           <TextField
             label="Item name"
             value={name}
@@ -143,7 +136,7 @@ export default function CreateItemDialog({
           />
           {(fields ?? []).length > 0 && (
             <Box>
-              <Stack spacing={0}>
+              <Stack spacing={1}>
                 {(fields ?? []).map((field) => (
                   <TextField
                     key={field.id}
@@ -176,16 +169,14 @@ export default function CreateItemDialog({
               </Stack>
             </Box>
           )}
-          <TextField
-            label="Comments"
-            value={comments}
-            onChange={(event) => setComments(event.target.value)}
-            onBlur={() => setCommentsTouched(true)}
-            error={commentsError}
-            helperText={commentsError ? "Comments are required." : " "}
-            multiline
-            minRows={3}
-          />
+            <TextField
+              label="Comments"
+              value={comments}
+              onChange={(event) => setComments(event.target.value)}
+              helperText="Optional"
+              multiline
+              minRows={3}
+            />
             </Stack>
           </Box>
         </Box>

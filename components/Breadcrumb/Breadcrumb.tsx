@@ -26,7 +26,16 @@ const StyledBreadcrumb = styled(Chip)(({ theme }) => ({
 export default function Breadcrumb({ items, onNavigate }: BreadcrumbProps) {
   return (
     <Box sx={{ paddingX: 0, paddingY: 0 }}>
-      <Breadcrumbs separator=">" aria-label="breadcrumb">
+      <Breadcrumbs
+        separator=">"
+        aria-label="breadcrumb"
+        sx={{
+          "& .MuiBreadcrumbs-ol": {
+            flexWrap: "wrap",
+            rowGap: 1,
+          },
+        }}
+      >
         {items.map((item, index) => {
           const isLast = index === items.length - 1;
           return (

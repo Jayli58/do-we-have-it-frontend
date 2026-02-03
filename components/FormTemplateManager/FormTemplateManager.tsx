@@ -22,6 +22,7 @@ import CreateFormTemplateDialog from "@/components/FormTemplateManager/CreateFor
 import EditFormTemplateDialog from "@/components/FormTemplateManager/EditFormTemplateDialog/EditFormTemplateDialog";
 import ViewFormTemplateDialog from "@/components/FormTemplateManager/ViewFormTemplateDialog/ViewFormTemplateDialog";
 import DeleteConfirmDialog from "@/components/shared/DeleteConfirmDialog";
+import { DEFAULT_TEMPLATE_ID } from "@/lib/api/formTemplates";
 import { useFormTemplateStore } from "@/store/formTemplateStore";
 import type { FormTemplate } from "@/types";
 
@@ -57,7 +58,15 @@ export default function FormTemplateManager({
   }, [loadTemplates, open]);
 
   const sortedTemplates = useMemo(() => {
-    return [...templates].sort((a, b) => a.name.localeCompare(b.name));
+    return [...templates].sort((a, b) => {
+      if (a.id === DEFAULT_TEMPLATE_ID) {
+        return -1;
+      }
+      if (b.id === DEFAULT_TEMPLATE_ID) {
+        return 1;
+      }
+      return a.name.localeCompare(b.name);
+    });
   }, [templates]);
 
   return (
@@ -91,46 +100,55 @@ export default function FormTemplateManager({
               </Typography>
             ) : (
               <List>
-                {sortedTemplates.map((template) => (
-                  <ListItem key={template.id} divider disablePadding>
-                  <Box className="form-template-meta">
-                    <Typography
-                      onClick={() => setViewTemplate(template)}
-                      sx={{ cursor: "pointer", fontWeight: 600 }}
-                    >
-                      {template.name}
-                    </Typography>
-                    <Typography
-                      variant="body2"
-                      color="text.secondary"
-                      onClick={() => setViewTemplate(template)}
-                      sx={{ cursor: "pointer" }}
-                    >
-                      {`${template.fields.length} fields`}
-                    </Typography>
-                  </Box>
-                    <Box display="flex" gap={1} paddingRight={1.5}>
-                      <IconButton
-                        aria-label="view template"
-                        onClick={() => setViewTemplate(template)}
-                      >
-                        <VisibilityIcon fontSize="small" />
-                      </IconButton>
-                      <IconButton
-                        aria-label="edit template"
-                        onClick={() => setEditTemplateData(template)}
-                      >
-                        <EditIcon fontSize="small" />
-                      </IconButton>
-                      <IconButton
-                        aria-label="delete template"
-                        onClick={() => setDeleteTemplateData(template)}
-                      >
-                        <DeleteIcon fontSize="small" />
-                      </IconButton>
-                    </Box>
-                  </ListItem>
-                ))}
+                {sortedTemplates.map((template) => {
+                  const isDefault = template.id === DEFAULT_TEMPLATE_ID;
+                  return (
+                    <ListItem key={template.id} divider disablePadding>
+                      <Box className="form-template-meta">
+                        <Typography
+                          onClick={() => setViewTemplate(template)}
+                          sx={{ cursor: "pointer", fontWeight: 600 }}
+                        >
+                          {template.name}
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          color="text.secondary"
+                          onClick={() => setViewTemplate(template)}
+                          sx={{ cursor: "pointer" }}
+                        >
+                          {`${template.fields.length + 2} fields`}
+                        </Typography>
+                      </Box>
+                      <Box display="flex" gap={1} paddingRight={1.5}>
+                        <IconButton
+                          aria-label="view template"
+                          onClick={() => setViewTemplate(template)}
+                        >
+                          <VisibilityIcon fontSize="small" />
+                        </IconButton>
+                        <IconButton
+                          aria-label="edit template"
+                          onClick={() => setEditTemplateData(template)}
+                          disabled={isDefault}
+                        >
+                          <EditIcon fontSize="small" />
+                        </IconButton>
+                        <IconButton
+                          aria-label="delete template"
+                          onClick={() => {
+                            if (!isDefault) {
+                              setDeleteTemplateData(template);
+                            }
+                          }}
+                          disabled={isDefault}
+                        >
+                          <DeleteIcon fontSize="small" />
+                        </IconButton>
+                      </Box>
+                    </ListItem>
+                  );
+                })}
               </List>
             )}
           </Box>

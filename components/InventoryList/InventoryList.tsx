@@ -45,6 +45,7 @@ export default function InventoryList({
           justifyContent="center"
           paddingY={6}
           gap={1}
+          textAlign="center"
         >
           <Typography variant="h6" fontWeight={700}>
             Nothing here yet

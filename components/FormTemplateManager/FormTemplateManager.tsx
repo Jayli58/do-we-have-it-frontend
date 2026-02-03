@@ -65,8 +65,8 @@ export default function FormTemplateManager({
   return (
     <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
       <DialogTitle>
-        <Box display="flex" alignItems="center" gap={2}>
-          <Box className="dialog-icon-blue">
+        <Box display="flex" alignItems="flex-start" gap={2}>
+          <Box className="dialog-icon-blue" sx={{ marginTop: 0.5 }}>
             <ViewListIcon sx={{ color: "#2563eb" }} />
           </Box>
           <Typography variant="h6" fontWeight={700}>
@@ -82,12 +82,14 @@ export default function FormTemplateManager({
         ) : (
           <List>
             {sortedTemplates.map((template) => (
-              <ListItem key={template.id} divider>
+              <ListItem key={template.id} divider disablePadding>
                 <ListItemText
+                  onClick={() => setViewTemplate(template)}
                   primary={template.name}
                   secondary={`${template.fields.length} fields`}
+                  sx={{ paddingY: 1.5, paddingLeft: 2, cursor: "pointer" }}
                 />
-                <Box display="flex" gap={1}>
+                <Box display="flex" gap={1} paddingRight={1.5}>
                   <IconButton
                     aria-label="view template"
                     onClick={() => setViewTemplate(template)}

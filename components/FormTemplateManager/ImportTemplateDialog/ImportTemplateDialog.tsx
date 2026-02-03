@@ -32,8 +32,8 @@ export default function ImportTemplateDialog({
   return (
     <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
       <DialogTitle>
-        <Box display="flex" alignItems="center" gap={2}>
-          <Box className="dialog-icon-blue">
+        <Box display="flex" alignItems="flex-start" gap={2}>
+          <Box className="dialog-icon-blue" sx={{ marginTop: 0.5 }}>
             <FileUploadIcon sx={{ color: "#2563eb" }} />
           </Box>
           <Typography variant="h6" fontWeight={700}>

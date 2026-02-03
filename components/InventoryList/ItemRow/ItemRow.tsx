@@ -17,7 +17,7 @@ interface ItemRowProps {
 
 export default function ItemRow({ item, onView, onEdit, onDelete }: ItemRowProps) {
   return (
-    <Card className="mat-card" sx={{ padding: 2 }}>
+    <Card className="mat-card mat-card-compact" sx={{ padding: 0 }}>
       <Box display="flex" alignItems="center" justifyContent="space-between">
         <Box
           display="flex"

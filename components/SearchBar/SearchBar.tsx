@@ -17,7 +17,7 @@ export default function SearchBar({
   placeholder,
 }: SearchBarProps) {
   return (
-    <Box className="mat-card" sx={{ padding: 2 }}>
+    <Box className="mat-card mat-card-compact" sx={{ padding: 0 }}>
       <TextField
         fullWidth
         value={value}

@@ -16,7 +16,9 @@ describe("CreateFolderDialog", () => {
       />,
     );
 
-    await user.type(screen.getByLabelText("Folder name"), "Kitchen");
+    const input = screen.getByLabelText("Folder name");
+    await user.type(input, "Kitchen");
+    await user.tab();
 
     expect(screen.getByRole("button", { name: "Create" })).toBeDisabled();
   });

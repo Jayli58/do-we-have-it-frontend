@@ -96,9 +96,9 @@ export default function CreateItemDialog({
   return (
     <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
       <DialogTitle>
-        <Box display="flex" alignItems="center" justifyContent="space-between">
-          <Box display="flex" alignItems="center" gap={2}>
-            <Box className="dialog-icon-blue">
+        <Box display="flex" alignItems="flex-start" justifyContent="space-between">
+          <Box display="flex" alignItems="flex-start" gap={2}>
+            <Box className="dialog-icon-blue" sx={{ marginTop: 0.5 }}>
               <InventoryIcon sx={{ color: "#2563eb" }} />
             </Box>
             <Typography variant="h6" fontWeight={700}>
@@ -130,21 +130,8 @@ export default function CreateItemDialog({
             error={nameError}
             helperText={nameError ? "Item name is required." : " "}
           />
-          <TextField
-            label="Comments"
-            value={comments}
-            onChange={(event) => setComments(event.target.value)}
-            onBlur={() => setCommentsTouched(true)}
-            error={commentsError}
-            helperText={commentsError ? "Comments are required." : " "}
-            multiline
-            minRows={3}
-          />
           {(fields ?? []).length > 0 && (
             <Box>
-              <Typography variant="subtitle2" fontWeight={600} gutterBottom>
-                Attributes
-              </Typography>
               <Stack spacing={2}>
                 {(fields ?? []).map((field) => (
                   <TextField
@@ -178,6 +165,16 @@ export default function CreateItemDialog({
               </Stack>
             </Box>
           )}
+          <TextField
+            label="Comments"
+            value={comments}
+            onChange={(event) => setComments(event.target.value)}
+            onBlur={() => setCommentsTouched(true)}
+            error={commentsError}
+            helperText={commentsError ? "Comments are required." : " "}
+            multiline
+            minRows={3}
+          />
         </Stack>
       </DialogContent>
       <DialogActions>

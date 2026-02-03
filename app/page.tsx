@@ -165,8 +165,8 @@ export default function Home() {
   };
 
   return (
-    <Box className="min-h-screen px-3 pb-16 pt-8 sm:px-4 sm:pt-10">
-      <Container maxWidth="md" className="flex flex-col gap-6">
+    <Box className="min-h-screen px-3 pb-16 pt-6 sm:px-4 sm:pt-10">
+      <Container maxWidth="md" className="flex flex-col gap-4">
         <Box display="flex" flexDirection="column" gap={1}>
           <Typography variant="h4" fontWeight={700}>
             Do we have it?

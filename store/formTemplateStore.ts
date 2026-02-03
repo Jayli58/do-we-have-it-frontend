@@ -6,6 +6,7 @@ import {
   deleteTemplate,
   getTemplates,
   importTemplate,
+  updateTemplate,
 } from "@/lib/api/formTemplates";
 
 interface FormTemplateState {
@@ -14,6 +15,10 @@ interface FormTemplateState {
   isLoading: boolean;
   loadTemplates: () => Promise<void>;
   addTemplate: (
+    data: Omit<FormTemplate, "id" | "createdAt">,
+  ) => Promise<FormTemplate | null>;
+  editTemplate: (
+    id: string,
     data: Omit<FormTemplate, "id" | "createdAt">,
   ) => Promise<FormTemplate | null>;
   removeTemplate: (id: string) => Promise<boolean>;
@@ -33,6 +38,17 @@ export const useFormTemplateStore = create<FormTemplateState>((set, get) => ({
   addTemplate: async (data) => {
     const template = await createTemplate(data);
     set((state) => ({ templates: [...state.templates, template] }));
+    return template;
+  },
+  editTemplate: async (id, data) => {
+    const template = await updateTemplate(id, data);
+    if (template) {
+      set((state) => ({
+        templates: state.templates.map((entry) =>
+          entry.id === template.id ? template : entry,
+        ),
+      }));
+    }
     return template;
   },
   removeTemplate: async (id) => {

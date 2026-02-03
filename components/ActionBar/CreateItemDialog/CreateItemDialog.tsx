@@ -8,16 +8,20 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
+  IconButton,
   Stack,
   TextField,
   Typography,
 } from "@mui/material";
+import FileUploadIcon from "@mui/icons-material/FileUpload";
 
 import type { FormField, ItemAttribute } from "@/types";
 
 interface CreateItemDialogProps {
   open: boolean;
   fields?: FormField[];
+  templateName?: string | null;
+  onOpenTemplateImport?: () => void;
   onClose: () => void;
   onCreate: (data: {
     name: string;
@@ -29,6 +33,8 @@ interface CreateItemDialogProps {
 export default function CreateItemDialog({
   open,
   fields,
+  templateName,
+  onOpenTemplateImport,
   onClose,
   onCreate,
 }: CreateItemDialogProps) {
@@ -75,7 +81,26 @@ export default function CreateItemDialog({
 
   return (
     <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
-      <DialogTitle>Create item</DialogTitle>
+      <DialogTitle>
+        <Box display="flex" alignItems="center" justifyContent="space-between">
+          <Typography variant="h6" fontWeight={700}>
+            Create item
+          </Typography>
+          {onOpenTemplateImport && (
+            <IconButton
+              aria-label="import template"
+              onClick={onOpenTemplateImport}
+            >
+              <FileUploadIcon />
+            </IconButton>
+          )}
+        </Box>
+        {templateName && (
+          <Typography variant="body2" color="text.secondary">
+            Using template: {templateName}
+          </Typography>
+        )}
+      </DialogTitle>
       <DialogContent>
         <Stack spacing={2} paddingTop={1}>
           <TextField

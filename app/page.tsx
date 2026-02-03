@@ -8,14 +8,17 @@ import CreateFolderDialog from "@/components/ActionBar/CreateFolderDialog/Create
 import CreateItemDialog from "@/components/ActionBar/CreateItemDialog/CreateItemDialog";
 import Breadcrumb from "@/components/Breadcrumb/Breadcrumb";
 import EditFolderDialog from "@/components/FolderDialogs/EditFolderDialog/EditFolderDialog";
+import FormTemplateManager from "@/components/FormTemplateManager/FormTemplateManager";
+import ImportTemplateDialog from "@/components/FormTemplateManager/ImportTemplateDialog/ImportTemplateDialog";
 import InventoryList from "@/components/InventoryList/InventoryList";
 import EditItemDialog from "@/components/ItemDialogs/EditItemDialog/EditItemDialog";
 import ViewItemDialog from "@/components/ItemDialogs/ViewItemDialog/ViewItemDialog";
 import SearchBar from "@/components/SearchBar/SearchBar";
 import DeleteConfirmDialog from "@/components/shared/DeleteConfirmDialog";
+import { useFormTemplateStore } from "@/store/formTemplateStore";
 import { useInventoryStore } from "@/store/inventoryStore";
 import { useSearchStore } from "@/store/searchStore";
-import type { Folder, Item } from "@/types";
+import type { Folder, FormTemplate, Item } from "@/types";
 
 export default function Home() {
   const {
@@ -33,11 +36,21 @@ export default function Home() {
     removeItem,
   } = useInventoryStore();
   const { query, results, setQuery, runSearch, clear } = useSearchStore();
+  const {
+    templates,
+    loadTemplates,
+    selectTemplate,
+    getSelectedTemplate,
+  } = useFormTemplateStore();
   const [isCreateFolderOpen, setCreateFolderOpen] = useState(false);
   const [isCreateItemOpen, setCreateItemOpen] = useState(false);
   const [viewItem, setViewItem] = useState<Item | null>(null);
   const [editItemData, setEditItemData] = useState<Item | null>(null);
   const [editFolderData, setEditFolderData] = useState<Folder | null>(null);
+  const [isTemplateManagerOpen, setTemplateManagerOpen] = useState(false);
+  const [isImportTemplateOpen, setImportTemplateOpen] = useState(false);
+  const [selectedTemplate, setSelectedTemplate] =
+    useState<FormTemplate | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<
     | { type: "folder"; folder: Folder }
     | { type: "item"; item: Item }
@@ -47,6 +60,10 @@ export default function Home() {
   useEffect(() => {
     void loadContents(null);
   }, [loadContents]);
+
+  useEffect(() => {
+    void loadTemplates();
+  }, [loadTemplates]);
 
   const listItems = useMemo(() => {
     if (query.trim()) {
@@ -95,6 +112,8 @@ export default function Home() {
       attributes: data.attributes,
       parentId: currentFolderId,
     });
+    setSelectedTemplate(null);
+    selectTemplate(null);
     setCreateItemOpen(false);
   };
 
@@ -127,6 +146,13 @@ export default function Home() {
       await removeItem(deleteTarget.item.id);
     }
     setDeleteTarget(null);
+  };
+
+  const handleSelectTemplate = async (template: FormTemplate) => {
+    selectTemplate(template.id);
+    const loaded = await getSelectedTemplate();
+    setSelectedTemplate(loaded ?? template);
+    setImportTemplateOpen(false);
   };
 
   return (
@@ -165,6 +191,7 @@ export default function Home() {
         <ActionBar
           onCreateFolder={() => setCreateFolderOpen(true)}
           onCreateItem={() => setCreateItemOpen(true)}
+          onManageTemplates={() => setTemplateManagerOpen(true)}
         />
       </Container>
 
@@ -177,8 +204,15 @@ export default function Home() {
 
       <CreateItemDialog
         open={isCreateItemOpen}
-        onClose={() => setCreateItemOpen(false)}
+        onClose={() => {
+          setCreateItemOpen(false);
+          setSelectedTemplate(null);
+          selectTemplate(null);
+        }}
         onCreate={handleCreateItem}
+        fields={selectedTemplate?.fields}
+        templateName={selectedTemplate?.name ?? null}
+        onOpenTemplateImport={() => setImportTemplateOpen(true)}
       />
 
       <ViewItemDialog
@@ -214,6 +248,18 @@ export default function Home() {
               ? `Delete "${deleteTarget.item.name}"?`
               : "Are you sure you want to delete this?"
         }
+      />
+
+      <FormTemplateManager
+        open={isTemplateManagerOpen}
+        onClose={() => setTemplateManagerOpen(false)}
+      />
+
+      <ImportTemplateDialog
+        open={isImportTemplateOpen}
+        templates={templates}
+        onClose={() => setImportTemplateOpen(false)}
+        onSelect={handleSelectTemplate}
       />
     </Box>
   );

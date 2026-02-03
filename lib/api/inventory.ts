@@ -1,7 +1,67 @@
 import type { Folder, Item } from "@/types";
 
-const folders: Folder[] = [];
-const items: Item[] = [];
+const seedTimestamp = new Date().toISOString();
+
+const folders: Folder[] = [
+  {
+    id: "folder-kitchen",
+    name: "Kitchen",
+    parentId: null,
+    createdAt: seedTimestamp,
+    updatedAt: seedTimestamp,
+  },
+  {
+    id: "folder-garage",
+    name: "Garage",
+    parentId: null,
+    createdAt: seedTimestamp,
+    updatedAt: seedTimestamp,
+  },
+  {
+    id: "folder-appliances",
+    name: "Appliances",
+    parentId: "folder-kitchen",
+    createdAt: seedTimestamp,
+    updatedAt: seedTimestamp,
+  },
+];
+const items: Item[] = [
+  {
+    id: "item-toaster",
+    name: "Toaster",
+    comments: "Bottom shelf",
+    parentId: "folder-appliances",
+    createdAt: seedTimestamp,
+    updatedAt: seedTimestamp,
+    attributes: [
+      {
+        fieldId: "field-model",
+        fieldName: "Model",
+        value: "ToastPro 2",
+      },
+      {
+        fieldId: "field-serial",
+        fieldName: "Serial Number",
+        value: "TP-221-8841",
+      },
+    ],
+  },
+  {
+    id: "item-drill",
+    name: "Cordless Drill",
+    comments: "Top drawer",
+    parentId: "folder-garage",
+    createdAt: seedTimestamp,
+    updatedAt: seedTimestamp,
+    attributes: [
+      {
+        fieldId: "field-brand",
+        fieldName: "Brand",
+        value: "ProTorque",
+      },
+    ],
+  },
+];
 
 const createId = () =>
   `id-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`;

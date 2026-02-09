@@ -399,10 +399,8 @@ do-we-have-it/
 │   │       ├── CreateItemDialog.tsx
 │   │       └── ImportTemplateDialog.tsx
 │   ├── ItemDialogs/
-│   │   ├── ViewItemDialog/
-│   │   │   └── ViewItemDialog.tsx
-│   │   └── EditItemDialog/
-│   │       └── EditItemDialog.tsx
+│   │   ├── ViewItemDialog.tsx
+│   │   └── EditItemDialog.tsx
 │   ├── FolderDialogs/
 │   │   └── EditFolderDialog/
 │   │       └── EditFolderDialog.tsx
@@ -418,11 +416,11 @@ do-we-have-it/
 │   ├── inventoryStore.ts
 │   ├── formTemplateStore.ts
 │   └── searchStore.ts
+├── api/
+│   ├── inventory.ts
+│   └── formTemplates.ts
 ├── lib/
-│   ├── theme.ts
-│   └── api/
-│       ├── inventory.ts
-│       └── formTemplates.ts
+│   └── theme.ts
 └── types/
     └── index.ts
 ```

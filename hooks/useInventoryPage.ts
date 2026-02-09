@@ -246,6 +246,7 @@ export function useInventoryPage() {
             handleSelectTemplate,
             handleDeleteFolderPrompt,
             handleDeleteItemPrompt,
+            setDeleteTarget,
         }
     };
 }

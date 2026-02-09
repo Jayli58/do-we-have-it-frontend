@@ -49,7 +49,7 @@ export default function Home() {
             className="page-toolbar-search"
             size="small"
           >
-            <SearchIcon />
+            <SearchIcon fontSize="small" />
           </IconButton>
         </Box>
 

@@ -1,5 +1,6 @@
 "use client";
 
+import { MouseEvent } from "react";
 import { Box, Breadcrumbs, Chip } from "@mui/material";
 import HomeIcon from "@mui/icons-material/Home";
 
@@ -35,10 +36,10 @@ export default function Breadcrumb({ items, onNavigate }: BreadcrumbProps) {
               clickable={Boolean(onNavigate && !isLast)}
               onClick={
                 onNavigate && !isLast
-                  ? (event) => {
-                      event.preventDefault();
-                      onNavigate(item.id);
-                    }
+                  ? (event: MouseEvent) => {
+                    event.preventDefault();
+                    onNavigate(item.id);
+                  }
                   : undefined
               }
             />

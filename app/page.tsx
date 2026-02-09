@@ -1,6 +1,5 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
 import {
   Box,
   Container,
@@ -23,182 +22,10 @@ import EditItemDialog from "@/components/ItemDialogs/EditItemDialog/EditItemDial
 import ViewItemDialog from "@/components/ItemDialogs/ViewItemDialog/ViewItemDialog";
 import SearchBar from "@/components/SearchBar/SearchBar";
 import DeleteConfirmDialog from "@/components/shared/DeleteConfirmDialog";
-import { useFormTemplateStore } from "@/store/formTemplateStore";
-import { useInventoryStore } from "@/store/inventoryStore";
-import { useSearchStore } from "@/store/searchStore";
-import type { Folder, FormTemplate, Item } from "@/types";
+import { useInventoryPage } from "@/hooks/useInventoryPage";
 
 export default function Home() {
-  const {
-    currentFolderId,
-    breadcrumbs,
-    folders,
-    items,
-    loadContents,
-    setBreadcrumbs,
-    addFolder,
-    addItem,
-    renameFolder,
-    editItem,
-    removeFolder,
-    removeItem,
-  } = useInventoryStore();
-  const { query, results, setQuery, runSearch, clear } = useSearchStore();
-  const {
-    templates,
-    loadTemplates,
-    selectTemplate,
-    getSelectedTemplate,
-  } = useFormTemplateStore();
-  const [isCreateFolderOpen, setCreateFolderOpen] = useState(false);
-  const [isCreateItemOpen, setCreateItemOpen] = useState(false);
-  const [viewItem, setViewItem] = useState<Item | null>(null);
-  const [editItemData, setEditItemData] = useState<Item | null>(null);
-  const [editFolderData, setEditFolderData] = useState<Folder | null>(null);
-  const [isTemplateManagerOpen, setTemplateManagerOpen] = useState(false);
-  const [isImportTemplateOpen, setImportTemplateOpen] = useState(false);
-  const [isSearchOpen, setSearchOpen] = useState(false);
-  const [selectedTemplate, setSelectedTemplate] =
-    useState<FormTemplate | null>(null);
-  const [createFolderResetKey, setCreateFolderResetKey] = useState(0);
-  const [createItemResetKey, setCreateItemResetKey] = useState(0);
-  const [deleteTarget, setDeleteTarget] = useState<
-    | { type: "folder"; folder: Folder }
-    | { type: "item"; item: Item }
-    | null
-  >(null);
-  const [deleteDialogInfo, setDeleteDialogInfo] = useState<{
-    title: string;
-    description: string;
-  } | null>(null);
-
-  useEffect(() => {
-    void loadContents(null);
-  }, [loadContents]);
-
-  useEffect(() => {
-    void loadTemplates();
-  }, [loadTemplates]);
-
-  const listItems = useMemo(() => {
-    if (query.trim()) {
-      return results;
-    }
-    return items;
-  }, [items, query, results]);
-
-  const handleFolderOpen = async (folderId: string, name: string) => {
-    const nextBreadcrumbs = [...breadcrumbs, { id: folderId, name }];
-    setBreadcrumbs(nextBreadcrumbs);
-    clear();
-    await loadContents(folderId);
-  };
-
-  const handleNavigate = async (id: string | null) => {
-    const index = breadcrumbs.findIndex((crumb) => crumb.id === id);
-    const nextBreadcrumbs =
-      index >= 0 ? breadcrumbs.slice(0, index + 1) : breadcrumbs;
-    setBreadcrumbs(nextBreadcrumbs);
-    clear();
-    await loadContents(id);
-  };
-
-  const handleSearch = async () => {
-    if (!query.trim()) {
-      clear();
-      return;
-    }
-    await runSearch(query, currentFolderId);
-  };
-
-  const handleSearchSubmit = async () => {
-    await handleSearch();
-    setSearchOpen(false);
-  };
-
-  const handleCreateFolder = async (name: string) => {
-    await addFolder(name);
-    setCreateFolderResetKey((prev) => prev + 1);
-    setCreateFolderOpen(false);
-  };
-
-  const handleCreateItem = async (data: {
-    name: string;
-    comments: string;
-    attributes: Item["attributes"];
-  }) => {
-    await addItem({
-      name: data.name,
-      comments: data.comments,
-      attributes: data.attributes,
-      parentId: currentFolderId,
-    });
-    setCreateItemResetKey((prev) => prev + 1);
-    setSelectedTemplate(null);
-    selectTemplate(null);
-    setCreateItemOpen(false);
-  };
-
-  const handleEditFolder = async (id: string, name: string) => {
-    await renameFolder(id, name);
-    setEditFolderData(null);
-  };
-
-  const handleEditItem = async (data: {
-    id: string;
-    name: string;
-    comments: string;
-    attributes: Item["attributes"];
-  }) => {
-    await editItem(data.id, {
-      name: data.name,
-      comments: data.comments,
-      attributes: data.attributes,
-    });
-    setEditItemData(null);
-  };
-
-  const handleConfirmDelete = async () => {
-    if (!deleteTarget) {
-      return;
-    }
-    if (deleteTarget.type === "folder") {
-      await removeFolder(deleteTarget.folder.id);
-    } else {
-      await removeItem(deleteTarget.item.id);
-    }
-    setDeleteTarget(null);
-    setDeleteDialogInfo(null);
-  };
-
-  const handleSelectTemplate = async (template: FormTemplate) => {
-    selectTemplate(template.id);
-    const loaded = await getSelectedTemplate();
-    setSelectedTemplate(loaded ?? template);
-    setImportTemplateOpen(false);
-  };
-
-  const requiredTemplateFields = useMemo(() => {
-    const map = new Map<string, boolean>();
-    templates.forEach((template) => {
-      template.fields.forEach((field) => {
-        if (field.required) {
-          map.set(field.name.toLowerCase(), true);
-        }
-      });
-    });
-    return map;
-  }, [templates]);
-
-  const editItemFields = editItemData
-    ? editItemData.attributes.map((attribute) => ({
-        id: attribute.fieldId,
-        name: attribute.fieldName,
-        type: "text" as const,
-        required:
-          requiredTemplateFields.get(attribute.fieldName.toLowerCase()) ?? false,
-      }))
-    : [];
+  const { state, actions } = useInventoryPage();
 
   return (
     <Box className="min-h-screen px-3 pb-16 pt-6 sm:px-4 sm:pt-10">
@@ -214,120 +41,108 @@ export default function Home() {
 
         <Box display="flex" alignItems="center" justifyContent="space-between" gap={2}>
           <Box flex={1} minWidth={0}>
-            <Breadcrumb items={breadcrumbs} onNavigate={handleNavigate} />
+            <Breadcrumb items={state.breadcrumbs} onNavigate={actions.handleNavigate} />
           </Box>
-          <IconButton aria-label="open search" onClick={() => setSearchOpen(true)}>
+          <IconButton aria-label="open search" onClick={() => actions.setSearchOpen(true)}>
             <SearchIcon />
           </IconButton>
         </Box>
 
         <InventoryList
-          folders={query.trim() ? [] : folders}
-          items={listItems}
+          folders={state.query.trim() ? [] : state.folders}
+          items={state.listItems}
           emptyMessage={
-            query.trim()
+            state.query.trim()
               ? "No matches yet. Try a different keyword."
               : "Create folders and items to start your inventory."
           }
-          onOpenFolder={(folder) => handleFolderOpen(folder.id, folder.name)}
-          onViewItem={(item) => setViewItem(item)}
-          onEditFolder={(folder) => setEditFolderData(folder)}
-          onEditItem={(item) => setEditItemData(item)}
-          onDeleteFolder={(folder) => {
-            setDeleteTarget({ type: "folder", folder });
-            setDeleteDialogInfo({
-              title: "Delete folder",
-              description: `Delete "${folder.name}" and its contents?`,
-            });
-          }}
-          onDeleteItem={(item) => {
-            setDeleteTarget({ type: "item", item });
-            setDeleteDialogInfo({
-              title: "Delete item",
-              description: `Delete "${item.name}"?`,
-            });
-          }}
+          onOpenFolder={(folder) => actions.handleFolderOpen(folder.id, folder.name)}
+          onViewItem={(item) => actions.setViewItem(item)}
+          onEditFolder={(folder) => actions.setEditFolderData(folder)}
+          onEditItem={(item) => actions.setEditItemData(item)}
+          onDeleteFolder={actions.handleDeleteFolderPrompt}
+          onDeleteItem={actions.handleDeleteItemPrompt}
         />
 
         <ActionBar
-          onCreateFolder={() => setCreateFolderOpen(true)}
-          onCreateItem={() => setCreateItemOpen(true)}
-          onManageTemplates={() => setTemplateManagerOpen(true)}
+          onCreateFolder={() => actions.setCreateFolderOpen(true)}
+          onCreateItem={() => actions.setCreateItemOpen(true)}
+          onManageTemplates={() => actions.setTemplateManagerOpen(true)}
         />
       </Container>
 
       <CreateFolderDialog
-        open={isCreateFolderOpen}
-        onClose={() => setCreateFolderOpen(false)}
-        onCreate={handleCreateFolder}
-        existingNames={folders.map((folder) => folder.name)}
-        resetKey={createFolderResetKey}
+        open={state.isCreateFolderOpen}
+        onClose={() => actions.setCreateFolderOpen(false)}
+        onCreate={actions.handleCreateFolder}
+        existingNames={state.folders.map((folder) => folder.name)}
+        resetKey={state.createFolderResetKey}
       />
 
       <CreateItemDialog
-        open={isCreateItemOpen}
-        onClose={() => setCreateItemOpen(false)}
-        onCreate={handleCreateItem}
-        fields={selectedTemplate?.fields}
-        templateName={selectedTemplate?.name ?? null}
-        onOpenTemplateImport={() => setImportTemplateOpen(true)}
-        resetKey={createItemResetKey}
+        open={state.isCreateItemOpen}
+        onClose={() => actions.setCreateItemOpen(false)}
+        onCreate={actions.handleCreateItem}
+        fields={state.selectedTemplate?.fields}
+        templateName={state.selectedTemplate?.name ?? null}
+        onOpenTemplateImport={() => actions.setImportTemplateOpen(true)}
+        resetKey={state.createItemResetKey}
       />
 
       <ViewItemDialog
-        open={Boolean(viewItem)}
-        item={viewItem}
-        onClose={() => setViewItem(null)}
+        open={Boolean(state.viewItem)}
+        item={state.viewItem}
+        onClose={() => actions.setViewItem(null)}
       />
 
       <EditItemDialog
-        open={Boolean(editItemData)}
-        item={editItemData}
-        onClose={() => setEditItemData(null)}
-        onSave={handleEditItem}
-        fields={editItemFields}
+        open={Boolean(state.editItemData)}
+        item={state.editItemData}
+        onClose={() => actions.setEditItemData(null)}
+        onSave={actions.handleCreateEditItem}
+        fields={state.editItemFields}
       />
 
       <EditFolderDialog
-        open={Boolean(editFolderData)}
-        folder={editFolderData}
-        existingNames={folders.map((folder) => folder.name)}
-        onClose={() => setEditFolderData(null)}
-        onSave={handleEditFolder}
+        open={Boolean(state.editFolderData)}
+        folder={state.editFolderData}
+        existingNames={state.folders.map((folder) => folder.name)}
+        onClose={() => actions.setEditFolderData(null)}
+        onSave={actions.handleEditFolder}
       />
 
       <DeleteConfirmDialog
-        open={Boolean(deleteTarget)}
-        onCancel={() => setDeleteTarget(null)}
-        onConfirm={handleConfirmDelete}
-        title={deleteDialogInfo?.title}
-        description={deleteDialogInfo?.description}
+        open={Boolean(state.deleteTarget)}
+        onCancel={() => actions.setDeleteTarget(null)}
+        onConfirm={actions.handleConfirmDelete}
+        title={state.deleteDialogInfo?.title}
+        description={state.deleteDialogInfo?.description}
       />
 
       <FormTemplateManager
-        open={isTemplateManagerOpen}
-        onClose={() => setTemplateManagerOpen(false)}
+        open={state.isTemplateManagerOpen}
+        onClose={() => actions.setTemplateManagerOpen(false)}
       />
 
       <ImportTemplateDialog
-        open={isImportTemplateOpen}
-        templates={templates}
-        onClose={() => setImportTemplateOpen(false)}
-        onSelect={handleSelectTemplate}
+        open={state.isImportTemplateOpen}
+        templates={state.templates}
+        onClose={() => actions.setImportTemplateOpen(false)}
+        onSelect={actions.handleSelectTemplate}
       />
 
       <Dialog
-        open={isSearchOpen}
-        onClose={() => setSearchOpen(false)}
+        open={state.isSearchOpen}
+        onClose={() => actions.setSearchOpen(false)}
         fullWidth
         maxWidth="sm"
         aria-label="Search"
       >
         <DialogContent>
           <SearchBar
-            value={query}
-            onChange={setQuery}
-            onSearch={handleSearchSubmit}
+            value={state.query}
+            onChange={actions.setQuery}
+            onSearch={actions.handleSearchSubmit}
             autoFocus
             variant="plain"
           />

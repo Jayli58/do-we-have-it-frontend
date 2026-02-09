@@ -22,7 +22,7 @@ import CreateFormTemplateDialog from "@/components/FormTemplateManager/CreateFor
 import EditFormTemplateDialog from "@/components/FormTemplateManager/EditFormTemplateDialog/EditFormTemplateDialog";
 import ViewFormTemplateDialog from "@/components/FormTemplateManager/ViewFormTemplateDialog/ViewFormTemplateDialog";
 import DeleteConfirmDialog from "@/components/shared/DeleteConfirmDialog";
-import { DEFAULT_TEMPLATE_ID } from "@/lib/api/formTemplates";
+import { DEFAULT_TEMPLATE_ID } from "@/api/formTemplates";
 import { useFormTemplateStore } from "@/store/formTemplateStore";
 import type { FormTemplate } from "@/types";
 

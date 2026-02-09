@@ -18,8 +18,8 @@ import EditFolderDialog from "@/components/FolderDialogs/EditFolderDialog/EditFo
 import FormTemplateManager from "@/components/FormTemplateManager/FormTemplateManager";
 import ImportTemplateDialog from "@/components/FormTemplateManager/ImportTemplateDialog/ImportTemplateDialog";
 import InventoryList from "@/components/InventoryList/InventoryList";
-import EditItemDialog from "@/components/ItemDialogs/EditItemDialog/EditItemDialog";
-import ViewItemDialog from "@/components/ItemDialogs/ViewItemDialog/ViewItemDialog";
+import EditItemDialog from "@/components/ItemDialogs/EditItemDialog";
+import ViewItemDialog from "@/components/ItemDialogs/ViewItemDialog";
 import SearchBar from "@/components/SearchBar/SearchBar";
 import DeleteConfirmDialog from "@/components/shared/DeleteConfirmDialog";
 import { useInventoryPage } from "@/hooks/useInventoryPage";

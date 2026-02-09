@@ -1,7 +1,7 @@
 import { create } from "zustand";
 
 import type { Item } from "@/types";
-import { searchItems } from "@/lib/api/inventory";
+import { searchItems } from "@/api/inventory";
 
 interface SearchState {
   query: string;

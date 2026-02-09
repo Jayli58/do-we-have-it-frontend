@@ -21,6 +21,7 @@ export function useInventoryPage() {
         removeItem,
     } = useInventoryStore();
 
+    // todo: runsearch logic should be global search
     const { query, results, setQuery, runSearch, clear } = useSearchStore();
 
     const {
@@ -42,6 +43,7 @@ export function useInventoryPage() {
 
     // State for forms and operations
     const [selectedTemplate, setSelectedTemplate] = useState<FormTemplate | null>(null);
+    // reset keys for forms to force them to reset
     const [createFolderResetKey, setCreateFolderResetKey] = useState(0);
     const [createItemResetKey, setCreateItemResetKey] = useState(0);
     const [deleteTarget, setDeleteTarget] = useState<
@@ -64,6 +66,7 @@ export function useInventoryPage() {
     }, [loadTemplates]);
 
     // Computed values
+    // todo: may not need it with global search
     const listItems = useMemo(() => {
         if (query.trim()) {
             return results;
@@ -111,6 +114,7 @@ export function useInventoryPage() {
         await loadContents(id);
     };
 
+    // todo: may not need it with global search
     const handleSearch = async () => {
         if (!query.trim()) {
             clear();
@@ -119,6 +123,7 @@ export function useInventoryPage() {
         await runSearch(query, currentFolderId);
     };
 
+    // todo: may not need it with global search
     const handleSearchSubmit = async () => {
         await handleSearch();
         setSearchOpen(false);

@@ -7,7 +7,7 @@ import {
   getTemplates,
   importTemplate,
   updateTemplate,
-} from "@/lib/api/formTemplates";
+} from "@/api/formTemplates";
 
 interface FormTemplateState {
   templates: FormTemplate[];

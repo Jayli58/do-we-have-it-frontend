@@ -1,7 +1,7 @@
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
-import EditItemDialog from "@/components/ItemDialogs/EditItemDialog/EditItemDialog";
+import EditItemDialog from "@/components/ItemDialogs/EditItemDialog";
 import type { Item } from "@/types";
 
 const item: Item = {

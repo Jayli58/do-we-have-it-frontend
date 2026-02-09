@@ -9,7 +9,7 @@ import {
   getFolderContents,
   updateFolder,
   updateItem,
-} from "@/lib/api/inventory";
+} from "@/api/inventory";
 
 interface InventoryState {
   currentFolderId: string | null;

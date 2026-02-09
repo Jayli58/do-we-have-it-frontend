@@ -62,3 +62,35 @@ body {
 .breadcrumb-chip .MuiChip-label {
   @apply px-1;
 }
+
+.page-header {
+  @apply flex flex-col gap-1;
+}
+
+.page-title {
+  @apply font-bold;
+}
+
+.page-subtitle {
+  @apply text-slate-500;
+}
+
+.page-toolbar {
+  @apply flex items-center justify-between gap-2;
+}
+
+.page-toolbar-breadcrumb {
+  @apply flex-1 min-w-0;
+}
+
+.page-toolbar-search {
+  @apply h-7 w-7 p-0;
+}
+
+.page-shell {
+  @apply min-h-screen px-3 pb-16 pt-6 sm:px-4 sm:pt-10;
+}
+
+.page-container {
+  @apply flex flex-col gap-4;
+}

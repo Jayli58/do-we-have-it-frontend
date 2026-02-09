@@ -28,22 +28,27 @@ export default function Home() {
   const { state, actions } = useInventoryPage();
 
   return (
-    <Box className="min-h-screen px-3 pb-16 pt-6 sm:px-4 sm:pt-10">
-      <Container maxWidth="md" className="flex flex-col gap-4">
-        <Box display="flex" flexDirection="column" gap={1}>
-          <Typography variant="h4" fontWeight={700}>
+    <Box className="page-shell">
+      <Container maxWidth="md" className="page-container">
+        <Box className="page-header">
+          <Typography variant="h4" className="page-title">
             Do we have it?
           </Typography>
-          <Typography color="text.secondary">
+          <Typography className="page-subtitle">
             Track folders, items, and custom attributes for everything you own.
           </Typography>
         </Box>
 
-        <Box display="flex" alignItems="center" justifyContent="space-between" gap={2}>
-          <Box flex={1} minWidth={0}>
+        <Box className="page-toolbar">
+          <Box className="page-toolbar-breadcrumb">
             <Breadcrumb items={state.breadcrumbs} onNavigate={actions.handleNavigate} />
           </Box>
-          <IconButton aria-label="open search" onClick={() => actions.setSearchOpen(true)}>
+          <IconButton
+            aria-label="open search"
+            onClick={() => actions.setSearchOpen(true)}
+            className="page-toolbar-search"
+            size="small"
+          >
             <SearchIcon />
           </IconButton>
         </Box>

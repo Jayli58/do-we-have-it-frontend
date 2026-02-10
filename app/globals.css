@@ -95,6 +95,7 @@ body {
   @apply flex flex-col gap-4;
 }
 
-.folder-row-actions .item-row-actions {
-  @apply gap-0 md:gap-1;
+.folder-row-actions,
+.item-row-actions {
+  @apply gap-0 md:gap-4;
 }

@@ -38,7 +38,7 @@ export default function FolderRow({
             {folder.name}/
           </Typography>
         </Box>
-        <Box display="flex" gap={1}>
+        <Box display="flex" className="folder-row-actions">
           <IconButton aria-label="edit folder" onClick={() => onEdit?.(folder)}>
             <EditIcon fontSize="small" />
           </IconButton>

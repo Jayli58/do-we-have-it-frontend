@@ -31,7 +31,7 @@ export default function ItemRow({ item, onView, onEdit, onDelete }: ItemRowProps
             {item.name}
           </Typography>
         </Box>
-        <Box display="flex" gap={1}>
+        <Box display="flex" className="item-row-actions">
           <IconButton aria-label="view item" onClick={() => onView?.(item)}>
             <VisibilityIcon fontSize="small" />
           </IconButton>

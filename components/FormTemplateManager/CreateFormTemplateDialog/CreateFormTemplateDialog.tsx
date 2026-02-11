@@ -16,6 +16,7 @@ import {
 import DeleteIcon from "@mui/icons-material/Delete";
 import PostAddIcon from "@mui/icons-material/PostAdd";
 
+import { FIELD_MAX } from "@/constants/limits";
 import type { FormField } from "@/types";
 
 interface CreateFormTemplateDialogProps {
@@ -136,6 +137,7 @@ export default function CreateFormTemplateDialog({
             helperText={
               nameTouched && validation && shouldShowValidation ? validation : " "
             }
+            slotProps={{ htmlInput: { maxLength: FIELD_MAX } }}
           />
           <Stack spacing={2}>
             {fields.map((field, index) => (
@@ -176,6 +178,7 @@ export default function CreateFormTemplateDialog({
                       ? "Field name is required."
                       : " "
                   }
+                  slotProps={{ htmlInput: { maxLength: FIELD_MAX } }}
                 />
                 <Box display="flex" alignItems="center">
                   <Checkbox

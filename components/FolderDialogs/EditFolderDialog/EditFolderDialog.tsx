@@ -12,6 +12,7 @@ import {
 } from "@mui/material";
 import DriveFileRenameOutlineIcon from "@mui/icons-material/DriveFileRenameOutline";
 
+import { FIELD_MAX } from "@/constants/limits";
 import type { Folder } from "@/types";
 
 interface EditFolderDialogProps {
@@ -119,6 +120,7 @@ export default function EditFolderDialog({
               onBlur={() => setTouched(true)}
               error={showError}
               helperText={showError ? validation : " "}
+              slotProps={{ htmlInput: { maxLength: FIELD_MAX } }}
             />
           </Box>
         </Box>

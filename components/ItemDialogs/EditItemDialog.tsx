@@ -13,6 +13,7 @@ import {
 } from "@mui/material";
 import EditNoteIcon from "@mui/icons-material/EditNote";
 
+import { COMMENT_MAX, FIELD_MAX } from "@/constants/limits";
 import type { FormField, Item, ItemAttribute } from "@/types";
 
 interface EditItemDialogProps {
@@ -176,6 +177,7 @@ export default function EditItemDialog({
             onBlur={() => setNameTouched(true)}
             error={nameError}
             helperText={nameHelperText}
+            slotProps={{ htmlInput: { maxLength: FIELD_MAX } }}
           />
           {(fields ?? []).length > 0 && (
             <Box>
@@ -207,6 +209,7 @@ export default function EditItemDialog({
                         ? "Required"
                         : " "
                     }
+                    slotProps={{ htmlInput: { maxLength: FIELD_MAX } }}
                   />
                 ))}
               </Stack>
@@ -219,6 +222,7 @@ export default function EditItemDialog({
             helperText="Optional"
             multiline
             minRows={3}
+            slotProps={{ htmlInput: { maxLength: COMMENT_MAX } }}
           />
             </Stack>
           </Box>

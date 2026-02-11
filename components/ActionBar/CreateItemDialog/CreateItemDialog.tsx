@@ -15,6 +15,7 @@ import {
 import FileUploadIcon from "@mui/icons-material/FileUpload";
 import InventoryIcon from "@mui/icons-material/Inventory2";
 
+import { COMMENT_MAX, FIELD_MAX } from "@/constants/limits";
 import type { FormField, ItemAttribute } from "@/types";
 
 interface CreateItemDialogProps {
@@ -166,6 +167,7 @@ export default function CreateItemDialog({
             onBlur={() => setNameTouched(true)}
             error={nameError}
             helperText={nameHelperText}
+            slotProps={{ htmlInput: { maxLength: FIELD_MAX } }}
           />
           {(fields ?? []).length > 0 && (
             <Box>
@@ -191,11 +193,8 @@ export default function CreateItemDialog({
                       Boolean(attributeTouched[field.id]) &&
                       requiredMissing.includes(field.id)
                     }
-                    helperText={
-                      field.required
-                        ? "Required"
-                        : " "
-                    }
+                    helperText={field.required ? "Required" : " "}
+                    slotProps={{ htmlInput: { maxLength: FIELD_MAX } }}
                   />
                 ))}
               </Stack>
@@ -208,6 +207,7 @@ export default function CreateItemDialog({
               helperText="Optional"
               multiline
               minRows={3}
+              slotProps={{ htmlInput: { maxLength: COMMENT_MAX } }}
             />
             </Stack>
           </Box>

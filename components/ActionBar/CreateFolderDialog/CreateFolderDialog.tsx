@@ -13,6 +13,8 @@ import {
 } from "@mui/material";
 import { useEffect, useMemo, useRef, useState, type ChangeEvent } from "react";
 
+import { FIELD_MAX } from "@/constants/limits";
+
 interface CreateFolderDialogProps {
   open: boolean;
   existingNames?: string[];
@@ -146,6 +148,7 @@ export default function CreateFolderDialog({
               onBlur={handleBlur}
               error={showError}
               helperText={showError ? validation : " "}
+              slotProps={{ htmlInput: { maxLength: FIELD_MAX } }}
             />
           </Box>
         </Box>

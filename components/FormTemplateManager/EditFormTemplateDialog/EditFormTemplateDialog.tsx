@@ -16,6 +16,7 @@ import {
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditNoteIcon from "@mui/icons-material/EditNote";
 
+import { FIELD_MAX } from "@/constants/limits";
 import type { FormField, FormTemplate } from "@/types";
 
 interface EditFormTemplateDialogProps {
@@ -132,9 +133,8 @@ export default function EditFormTemplateDialog({
             onChange={(event) => setName(event.target.value)}
             onBlur={() => setNameTouched(true)}
             error={showNameError || (nameTouched && validation.includes("unique"))}
-            helperText={
-              nameTouched && validation ? validation : " "
-            }
+            helperText={nameTouched && validation ? validation : " "}
+            slotProps={{ htmlInput: { maxLength: FIELD_MAX } }}
           />
           <Stack spacing={1}>
             {fields.map((field, index) => (
@@ -171,6 +171,7 @@ export default function EditFormTemplateDialog({
                       ? "Field name is required."
                       : " "
                   }
+                  slotProps={{ htmlInput: { maxLength: FIELD_MAX } }}
                 />
                 <Box display="flex" alignItems="center">
                   <Checkbox

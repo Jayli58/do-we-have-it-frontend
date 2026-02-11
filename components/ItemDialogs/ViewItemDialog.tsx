@@ -10,6 +10,7 @@ import {
   Typography,
 } from "@mui/material";
 import VisibilityIcon from "@mui/icons-material/Visibility";
+import { useEffect, useState } from "react";
 
 import type { Item } from "@/types";
 
@@ -24,6 +25,14 @@ export default function ViewItemDialog({
   item,
   onClose,
 }: ViewItemDialogProps) {
+  const [displayItem, setDisplayItem] = useState<Item | null>(item);
+
+  useEffect(() => {
+    if (item) {
+      setDisplayItem(item);
+    }
+  }, [item]);
+
   return (
     <Dialog
       open={open}
@@ -31,6 +40,11 @@ export default function ViewItemDialog({
       fullWidth
       maxWidth="sm"
       aria-labelledby="view-item-title"
+      TransitionProps={{
+        onExited: () => {
+          setDisplayItem(null);
+        },
+      }}
     >
       <DialogContent>
         <Box
@@ -46,15 +60,15 @@ export default function ViewItemDialog({
             <Typography id="view-item-title" variant="h6" fontWeight={700}>
               Item details
             </Typography>
-            {item ? (
+            {displayItem ? (
               <Stack spacing={1} paddingTop={2}>
                 <Stack direction="row" spacing={4}>
                   <Typography sx={{ minWidth: 110 }}>Item name:</Typography>
-                  <Typography fontWeight={600}>{item.name}</Typography>
+                  <Typography fontWeight={600}>{displayItem.name}</Typography>
                 </Stack>
-                {item.attributes.length > 0 && (
+                {displayItem.attributes.length > 0 && (
                   <Stack spacing={1}>                
-                    {item.attributes.map((attribute) => (
+                    {displayItem.attributes.map((attribute) => (
                       <Stack key={attribute.fieldId} direction="row" spacing={4}>
                         <Typography sx={{ minWidth: 110 }}>
                           {attribute.fieldName}:
@@ -69,7 +83,7 @@ export default function ViewItemDialog({
                 <Stack direction="row" spacing={4}>
                   <Typography sx={{ minWidth: 110 }}>Comments:</Typography>
                   <Typography color="text.secondary">
-                    {item.comments || "—"}
+                    {displayItem.comments || "—"}
                   </Typography>
                 </Stack>
               </Stack>

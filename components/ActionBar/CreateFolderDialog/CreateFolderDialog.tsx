@@ -30,15 +30,15 @@ export default function CreateFolderDialog({
 }: CreateFolderDialogProps) {
   const [name, setName] = useState("");
   const [touched, setTouched] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
   const hasUserInteracted = useRef(false);
+  const lastResetKeyRef = useRef(resetKey);
 
-  useEffect(() => {
-    if (resetKey !== undefined) {
-      setName("");
-      setTouched(false);
-      hasUserInteracted.current = false;
-    }
-  }, [resetKey]);
+  const resetForm = () => {
+    setName("");
+    setTouched(false);
+    hasUserInteracted.current = false;
+  };
 
   const validation = useMemo(() => {
     const trimmed = name.trim();
@@ -55,14 +55,24 @@ export default function CreateFolderDialog({
     return "";
   }, [existingNames, name]);
 
-  const showError = touched && Boolean(validation);
+  const showError = !isSaving && touched && Boolean(validation);
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (validation) {
       setTouched(true);
       return;
     }
-    onCreate(name.trim());
+    if (isSaving) {
+      return;
+    }
+
+    setIsSaving(true);
+
+    try {
+      await Promise.resolve(onCreate(name.trim()));
+    } catch (error) {
+      setIsSaving(false);
+    }
   };
 
   const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -96,6 +106,15 @@ export default function CreateFolderDialog({
       fullWidth
       maxWidth="sm"
       aria-labelledby="create-folder-title"
+      TransitionProps={{
+        onExited: () => {
+          if (resetKey !== undefined && resetKey !== lastResetKeyRef.current) {
+            resetForm();
+            lastResetKeyRef.current = resetKey;
+          }
+          setIsSaving(false);
+        },
+      }}
     >
       <DialogContent>
         <Box
@@ -136,7 +155,7 @@ export default function CreateFolderDialog({
         <Button
           variant="contained"
           onClick={handleSubmit}
-          disabled={Boolean(validation)}
+          disabled={Boolean(validation) || isSaving}
         >
           Create
         </Button>

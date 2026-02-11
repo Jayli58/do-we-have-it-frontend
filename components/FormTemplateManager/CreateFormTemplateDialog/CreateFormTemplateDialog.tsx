@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import {
   Box,
   Button,
@@ -46,15 +46,15 @@ export default function CreateFormTemplateDialog({
   const [fields, setFields] = useState<FormField[]>([createField()]);
   const [nameTouched, setNameTouched] = useState(false);
   const [fieldTouched, setFieldTouched] = useState<Record<string, boolean>>({});
+  const [isSaving, setIsSaving] = useState(false);
+  const lastResetKeyRef = useRef(resetKey);
 
-  useEffect(() => {
-    if (resetKey !== undefined) {
-      setName("");
-      setFields([createField()]);
-      setNameTouched(false);
-      setFieldTouched({});
-    }
-  }, [resetKey]);
+  const resetForm = () => {
+    setName("");
+    setFields([createField()]);
+    setNameTouched(false);
+    setFieldTouched({});
+  };
 
   const validation = useMemo(() => {
     if (!name.trim()) {
@@ -74,6 +74,20 @@ export default function CreateFormTemplateDialog({
   }, [existingNames, fields, name]);
 
   const showNameError = nameTouched && !name.trim();
+  const shouldShowValidation = !isSaving;
+  const handleSave = async () => {
+    if (isSaving) {
+      return;
+    }
+
+    setIsSaving(true);
+
+    try {
+      await onSave({ name: name.trim(), fields });
+    } catch (error) {
+      setIsSaving(false);
+    }
+  };
 
   return (
     <Dialog
@@ -82,6 +96,15 @@ export default function CreateFormTemplateDialog({
       fullWidth
       maxWidth="sm"
       aria-labelledby="create-template-title"
+      TransitionProps={{
+        onExited: () => {
+          if (resetKey !== undefined && resetKey !== lastResetKeyRef.current) {
+            resetForm();
+            lastResetKeyRef.current = resetKey;
+          }
+          setIsSaving(false);
+        },
+      }}
     >
       <DialogContent>
         <Box
@@ -106,9 +129,12 @@ export default function CreateFormTemplateDialog({
             value={name}
             onChange={(event) => setName(event.target.value)}
             onBlur={() => setNameTouched(true)}
-            error={showNameError || (nameTouched && validation.includes("unique"))}
+            error={
+              shouldShowValidation &&
+              (showNameError || (nameTouched && validation.includes("unique")))
+            }
             helperText={
-              nameTouched && validation ? validation : " "
+              nameTouched && validation && shouldShowValidation ? validation : " "
             }
           />
           <Stack spacing={2}>
@@ -139,10 +165,14 @@ export default function CreateFormTemplateDialog({
                     }))
                   }
                   error={
-                    Boolean(fieldTouched[field.id]) && !field.name.trim()
+                    shouldShowValidation &&
+                    Boolean(fieldTouched[field.id]) &&
+                    !field.name.trim()
                   }
                   helperText={
-                    Boolean(fieldTouched[field.id]) && !field.name.trim()
+                    shouldShowValidation &&
+                    Boolean(fieldTouched[field.id]) &&
+                    !field.name.trim()
                       ? "Field name is required."
                       : " "
                   }
@@ -183,7 +213,7 @@ export default function CreateFormTemplateDialog({
           >
             Add field
           </Button>
-          {validation && nameTouched && (
+          {validation && nameTouched && shouldShowValidation && (
             <Typography color="error" variant="body2">
               {validation}
             </Typography>
@@ -196,8 +226,8 @@ export default function CreateFormTemplateDialog({
         <Button onClick={onClose}>Cancel</Button>
         <Button
           variant="contained"
-          onClick={() => onSave({ name: name.trim(), fields })}
-          disabled={Boolean(validation)}
+          onClick={handleSave}
+          disabled={Boolean(validation) || isSaving}
         >
           Save
         </Button>

@@ -196,6 +196,9 @@ export function useInventoryPage() {
         } else {
             await removeItem(deleteTarget.item.id);
         }
+        if (query.trim()) {
+            await runSearch(query);
+        }
         setDeleteTarget(null);
         setDeleteDialogInfo(null);
     };

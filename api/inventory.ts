@@ -120,13 +120,13 @@ export const deleteItem = async (id: string, parentId: string | null) => {
   return true;
 };
 
-export const searchItems = async (query: string, parentId: string | null) => {
+export const searchItems = async (query: string) => {
   const trimmed = query.trim();
   if (!trimmed) {
     return [];
   }
   const response = await apiFetch("/items/search", {
-    query: { query: trimmed, parentId: parentId ?? undefined },
+    query: { query: trimmed },
   });
   if (!response.ok) {
     throw new Error(await parseErrorMessage(response));

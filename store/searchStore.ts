@@ -8,7 +8,7 @@ interface SearchState {
   results: Item[];
   isSearching: boolean;
   setQuery: (query: string) => void;
-  runSearch: (query: string, parentId: string | null) => Promise<void>;
+  runSearch: (query: string) => Promise<void>;
   clear: () => void;
 }
 
@@ -17,9 +17,9 @@ export const useSearchStore = create<SearchState>((set) => ({
   results: [],
   isSearching: false,
   setQuery: (query) => set({ query }),
-  runSearch: async (query, parentId) => {
+  runSearch: async (query) => {
     set({ isSearching: true, query });
-    const results = await searchItems(query, parentId);
+    const results = await searchItems(query);
     set({ results, isSearching: false });
   },
   clear: () => set({ query: "", results: [], isSearching: false }),

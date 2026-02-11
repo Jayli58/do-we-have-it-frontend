@@ -114,16 +114,14 @@ export function useInventoryPage() {
         await loadContents(id);
     };
 
-    // todo: may not need it with global search
     const handleSearch = async () => {
         if (!query.trim()) {
             clear();
             return;
         }
-        await runSearch(query, currentFolderId);
+        await runSearch(query);
     };
 
-    // todo: may not need it with global search
     const handleSearchSubmit = async () => {
         await handleSearch();
         setSearchOpen(false);

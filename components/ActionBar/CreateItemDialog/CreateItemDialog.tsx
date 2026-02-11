@@ -175,8 +175,7 @@ export default function CreateItemDialog({
                       requiredMissing.includes(field.id)
                     }
                     helperText={
-                      Boolean(attributeTouched[field.id]) &&
-                      requiredMissing.includes(field.id)
+                      field.required
                         ? "Required"
                         : " "
                     }

@@ -8,6 +8,21 @@ import {
   importTemplate,
   updateTemplate,
 } from "@/api/formTemplates";
+import { DEFAULT_TEMPLATE_ID } from "@/api/formTemplates";
+
+const defaultTemplate: FormTemplate = {
+  id: DEFAULT_TEMPLATE_ID,
+  name: "Default template",
+  fields: [],
+  createdAt: "1970-01-01T00:00:00.000Z",
+};
+
+const ensureDefaultTemplate = (templates: FormTemplate[]) => {
+  if (templates.some((template) => template.id === DEFAULT_TEMPLATE_ID)) {
+    return templates;
+  }
+  return [defaultTemplate, ...templates];
+};
 
 interface FormTemplateState {
   templates: FormTemplate[];
@@ -33,7 +48,7 @@ export const useFormTemplateStore = create<FormTemplateState>((set, get) => ({
   loadTemplates: async () => {
     set({ isLoading: true });
     const templates = await getTemplates();
-    set({ templates, isLoading: false });
+    set({ templates: ensureDefaultTemplate(templates), isLoading: false });
   },
   addTemplate: async (data) => {
     const template = await createTemplate(data);

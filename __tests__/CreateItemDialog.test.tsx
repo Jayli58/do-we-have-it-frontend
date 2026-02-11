@@ -19,4 +19,28 @@ describe("CreateItemDialog", () => {
 
     expect(createButton).toBeEnabled();
   });
+
+  it("prevents duplicate item names in a folder", async () => {
+    const user = userEvent.setup();
+
+    render(
+      <CreateItemDialog
+        open
+        onClose={jest.fn()}
+        onCreate={jest.fn()}
+        existingNames={["Widget"]}
+      />,
+    );
+
+    const nameField = screen.getByLabelText("Item name");
+    const commentsField = screen.getByLabelText("Comments");
+
+    await user.type(nameField, "Widget");
+    await user.click(commentsField);
+
+    expect(
+      screen.getByText("Item name must be unique in this folder."),
+    ).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Create" })).toBeDisabled();
+  });
 });

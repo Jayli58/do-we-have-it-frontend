@@ -212,6 +212,7 @@ export function useInventoryPage() {
         state: {
             breadcrumbs,
             folders,
+            items,
             listItems,
             query,
             isCreateFolderOpen,

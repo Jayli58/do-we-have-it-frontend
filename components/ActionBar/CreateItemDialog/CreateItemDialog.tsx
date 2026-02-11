@@ -22,6 +22,7 @@ interface CreateItemDialogProps {
   fields?: FormField[];
   templateName?: string | null;
   onOpenTemplateImport?: () => void;
+  existingNames?: string[];
   resetKey?: number;
   onClose: () => void;
   onCreate: (data: {
@@ -36,6 +37,7 @@ export default function CreateItemDialog({
   fields,
   templateName,
   onOpenTemplateImport,
+  existingNames,
   resetKey,
   onClose,
   onCreate,
@@ -84,7 +86,21 @@ export default function CreateItemDialog({
     });
   };
 
-  const nameError = nameTouched && !name.trim();
+  const trimmedName = name.trim();
+  const isDuplicateName = Boolean(
+    trimmedName &&
+      existingNames?.some(
+        (existing) => existing.toLowerCase() === trimmedName.toLowerCase(),
+      ),
+  );
+  const nameError = nameTouched && (!trimmedName || isDuplicateName);
+  const nameHelperText = nameTouched
+    ? !trimmedName
+      ? "Item name is required."
+      : isDuplicateName
+        ? "Item name must be unique in this folder."
+        : " "
+    : " ";
   return (
     <Dialog
       open={open}
@@ -132,7 +148,7 @@ export default function CreateItemDialog({
             onChange={(event) => setName(event.target.value)}
             onBlur={() => setNameTouched(true)}
             error={nameError}
-            helperText={nameError ? "Item name is required." : " "}
+            helperText={nameHelperText}
           />
           {(fields ?? []).length > 0 && (
             <Box>
@@ -186,7 +202,7 @@ export default function CreateItemDialog({
         <Button
           variant="contained"
           onClick={handleSubmit}
-          disabled={requiredMissing.length > 0}
+          disabled={requiredMissing.length > 0 || isDuplicateName}
         >
           Create
         </Button>

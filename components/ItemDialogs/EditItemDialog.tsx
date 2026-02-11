@@ -19,6 +19,7 @@ interface EditItemDialogProps {
   open: boolean;
   item: Item | null;
   fields?: FormField[];
+  existingNames?: string[];
   onClose: () => void;
   onSave: (data: {
     id: string;
@@ -32,6 +33,7 @@ export default function EditItemDialog({
   open,
   item,
   fields,
+  existingNames,
   onClose,
   onSave,
 }: EditItemDialogProps) {
@@ -43,6 +45,7 @@ export default function EditItemDialog({
     Record<string, boolean>
   >({});
   const lastItemId = useRef<string | null>(null);
+  const originalNameRef = useRef<string>("");
 
   useEffect(() => {
     if (item && open) {
@@ -56,6 +59,7 @@ export default function EditItemDialog({
       setNameTouched(false);
       setAttributeTouched({});
       lastItemId.current = item.id;
+      originalNameRef.current = item.name;
     }
   }, [item, open]);
 
@@ -74,6 +78,10 @@ export default function EditItemDialog({
 
   const handleSubmit = () => {
     if (!item) {
+      return;
+    }
+    if (isDuplicateName) {
+      setNameTouched(true);
       return;
     }
     if (requiredMissing.length > 0) {
@@ -102,7 +110,23 @@ export default function EditItemDialog({
     });
   };
 
-  const nameError = nameTouched && !name.trim();
+  const trimmedName = name.trim();
+  const originalName = originalNameRef.current.trim().toLowerCase();
+  const isDuplicateName = Boolean(
+    trimmedName &&
+      existingNames?.some(
+        (existing) => existing.toLowerCase() === trimmedName.toLowerCase(),
+      ) &&
+      trimmedName.toLowerCase() !== originalName,
+  );
+  const nameError = nameTouched && (!trimmedName || isDuplicateName);
+  const nameHelperText = nameTouched
+    ? !trimmedName
+      ? "Item name is required."
+      : isDuplicateName
+        ? "Item name must be unique in this folder."
+        : " "
+    : " ";
   return (
     <Dialog
       open={open}
@@ -135,7 +159,7 @@ export default function EditItemDialog({
             onChange={(event) => setName(event.target.value)}
             onBlur={() => setNameTouched(true)}
             error={nameError}
-            helperText={nameError ? "Item name is required." : " "}
+            helperText={nameHelperText}
           />
           {(fields ?? []).length > 0 && (
             <Box>
@@ -189,7 +213,7 @@ export default function EditItemDialog({
         <Button
           variant="contained"
           onClick={handleSubmit}
-          disabled={!item}
+          disabled={!item || isDuplicateName}
         >
           Save
         </Button>

@@ -92,6 +92,7 @@ export default function Home() {
         templateName={state.selectedTemplate?.name ?? null}
         onOpenTemplateImport={() => actions.setImportTemplateOpen(true)}
         resetKey={state.createItemResetKey}
+        existingNames={state.items.map((item) => item.name)}
       />
 
       <ViewItemDialog
@@ -106,6 +107,7 @@ export default function Home() {
         onClose={() => actions.setEditItemData(null)}
         onSave={actions.handleCreateEditItem}
         fields={state.editItemFields}
+        existingNames={state.items.map((item) => item.name)}
       />
 
       <EditFolderDialog

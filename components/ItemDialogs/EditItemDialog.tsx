@@ -44,6 +44,7 @@ export default function EditItemDialog({
   const [attributeTouched, setAttributeTouched] = useState<
     Record<string, boolean>
   >({});
+  const [isSaving, setIsSaving] = useState(false);
   const lastItemId = useRef<string | null>(null);
   const originalNameRef = useRef<string>("");
 
@@ -76,8 +77,11 @@ export default function EditItemDialog({
     return missing;
   }, [attributes, comments, fields, name]);
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!item) {
+      return;
+    }
+    if (isSaving) {
       return;
     }
     if (isDuplicateName) {
@@ -102,12 +106,19 @@ export default function EditItemDialog({
       fieldName: field.name,
       value: attributes[field.id] ?? "",
     }));
-    onSave({
-      id: item.id,
-      name: name.trim(),
-      comments: comments.trim(),
-      attributes: mappedAttributes,
-    });
+    setIsSaving(true);
+    try {
+      await Promise.resolve(
+        onSave({
+          id: item.id,
+          name: name.trim(),
+          comments: comments.trim(),
+          attributes: mappedAttributes,
+        }),
+      );
+    } catch (error) {
+      setIsSaving(false);
+    }
   };
 
   const trimmedName = name.trim();
@@ -134,6 +145,11 @@ export default function EditItemDialog({
       fullWidth
       maxWidth="sm"
       aria-labelledby="edit-item-title"
+      TransitionProps={{
+        onExited: () => {
+          setIsSaving(false);
+        },
+      }}
     >
       <DialogContent>
         <Box
@@ -213,9 +229,9 @@ export default function EditItemDialog({
         <Button
           variant="contained"
           onClick={handleSubmit}
-          disabled={!item || isDuplicateName}
+          disabled={!item || isDuplicateName || isSaving}
         >
-          Save
+          {isSaving ? "Saving..." : "Save"}
         </Button>
       </DialogActions>
     </Dialog>

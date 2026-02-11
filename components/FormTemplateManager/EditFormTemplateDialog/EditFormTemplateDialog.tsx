@@ -46,6 +46,7 @@ export default function EditFormTemplateDialog({
   const [fields, setFields] = useState<FormField[]>([]);
   const [nameTouched, setNameTouched] = useState(false);
   const [fieldTouched, setFieldTouched] = useState<Record<string, boolean>>({});
+  const [isSaving, setIsSaving] = useState(false);
   const lastTemplateId = useRef<string | null>(null);
 
   useEffect(() => {
@@ -79,6 +80,20 @@ export default function EditFormTemplateDialog({
   }, [existingNames, fields, name, template?.name]);
 
   const showNameError = nameTouched && !name.trim();
+  const handleSave = async () => {
+    if (!template || validation || isSaving) {
+      return;
+    }
+
+    setIsSaving(true);
+    try {
+      await Promise.resolve(
+        onSave({ id: template.id, name: name.trim(), fields }),
+      );
+    } catch (error) {
+      setIsSaving(false);
+    }
+  };
 
   return (
     <Dialog
@@ -87,6 +102,11 @@ export default function EditFormTemplateDialog({
       fullWidth
       maxWidth="sm"
       aria-labelledby="edit-template-title"
+      TransitionProps={{
+        onExited: () => {
+          setIsSaving(false);
+        },
+      }}
     >
       <DialogContent>
         <Box
@@ -201,12 +221,10 @@ export default function EditFormTemplateDialog({
         <Button onClick={onClose}>Cancel</Button>
         <Button
           variant="contained"
-          onClick={() =>
-            template && onSave({ id: template.id, name: name.trim(), fields })
-          }
-          disabled={Boolean(validation) || !template}
+          onClick={handleSave}
+          disabled={Boolean(validation) || !template || isSaving}
         >
-          Save
+          {isSaving ? "Saving..." : "Save"}
         </Button>
       </DialogActions>
     </Dialog>

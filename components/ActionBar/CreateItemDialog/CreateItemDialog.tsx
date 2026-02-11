@@ -49,6 +49,7 @@ export default function CreateItemDialog({
   const [attributeTouched, setAttributeTouched] = useState<
     Record<string, boolean>
   >({});
+  const [isSaving, setIsSaving] = useState(false);
 
   useEffect(() => {
     if (resetKey !== undefined) {
@@ -73,17 +74,28 @@ export default function CreateItemDialog({
     return missing;
   }, [attributes, comments, fields, name]);
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
+    if (isSaving || requiredMissing.length > 0 || isDuplicateName) {
+      return;
+    }
+
+    setIsSaving(true);
     const mappedAttributes: ItemAttribute[] = (fields ?? []).map((field) => ({
       fieldId: field.id,
       fieldName: field.name,
       value: attributes[field.id] ?? "",
     }));
-    onCreate({
-      name: name.trim(),
-      comments: comments.trim(),
-      attributes: mappedAttributes,
-    });
+    try {
+      await Promise.resolve(
+        onCreate({
+          name: name.trim(),
+          comments: comments.trim(),
+          attributes: mappedAttributes,
+        }),
+      );
+    } catch (error) {
+      setIsSaving(false);
+    }
   };
 
   const trimmedName = name.trim();
@@ -108,6 +120,11 @@ export default function CreateItemDialog({
       fullWidth
       maxWidth="sm"
       aria-labelledby="create-item-title"
+      TransitionProps={{
+        onExited: () => {
+          setIsSaving(false);
+        },
+      }}
     >
       <DialogContent>
         <Box
@@ -201,9 +218,9 @@ export default function CreateItemDialog({
         <Button
           variant="contained"
           onClick={handleSubmit}
-          disabled={requiredMissing.length > 0 || isDuplicateName}
+          disabled={requiredMissing.length > 0 || isDuplicateName || isSaving}
         >
-          Create
+          {isSaving ? "Creating..." : "Create"}
         </Button>
       </DialogActions>
     </Dialog>

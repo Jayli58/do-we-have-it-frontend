@@ -31,6 +31,7 @@ export default function EditFolderDialog({
 }: EditFolderDialogProps) {
   const [name, setName] = useState("");
   const [touched, setTouched] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
   const lastFolderId = useRef<string | null>(null);
 
   const handleClose = () => {
@@ -65,6 +66,18 @@ export default function EditFolderDialog({
   }, [existingNames, folder?.name, name]);
 
   const showError = touched && Boolean(validation);
+  const handleSubmit = async () => {
+    if (!folder || validation || isSaving) {
+      return;
+    }
+
+    setIsSaving(true);
+    try {
+      await Promise.resolve(onSave(folder.id, name.trim()));
+    } catch (error) {
+      setIsSaving(false);
+    }
+  };
 
   return (
     <Dialog
@@ -73,6 +86,11 @@ export default function EditFolderDialog({
       fullWidth
       maxWidth="sm"
       aria-labelledby="edit-folder-title"
+      TransitionProps={{
+        onExited: () => {
+          setIsSaving(false);
+        },
+      }}
     >
       <DialogContent>
         <Box
@@ -109,10 +127,10 @@ export default function EditFolderDialog({
         <Button onClick={handleClose}>Cancel</Button>
         <Button
           variant="contained"
-          onClick={() => folder && onSave(folder.id, name.trim())}
-          disabled={Boolean(validation) || !folder}
+          onClick={handleSubmit}
+          disabled={Boolean(validation) || !folder || isSaving}
         >
-          Save
+          {isSaving ? "Saving..." : "Save"}
         </Button>
       </DialogActions>
     </Dialog>

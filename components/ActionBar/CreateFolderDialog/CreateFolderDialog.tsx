@@ -157,7 +157,7 @@ export default function CreateFolderDialog({
           onClick={handleSubmit}
           disabled={Boolean(validation) || isSaving}
         >
-          Create
+          {isSaving ? "Creating..." : "Create"}
         </Button>
       </DialogActions>
     </Dialog>

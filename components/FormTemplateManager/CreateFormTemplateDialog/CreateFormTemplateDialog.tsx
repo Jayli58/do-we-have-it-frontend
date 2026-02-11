@@ -229,7 +229,7 @@ export default function CreateFormTemplateDialog({
           onClick={handleSave}
           disabled={Boolean(validation) || isSaving}
         >
-          Save
+          {isSaving ? "Saving..." : "Save"}
         </Button>
       </DialogActions>
     </Dialog>

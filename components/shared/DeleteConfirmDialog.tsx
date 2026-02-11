@@ -31,6 +31,7 @@ export default function DeleteConfirmDialog({
   const [displayTitle, setDisplayTitle] = useState<string | undefined>(title);
   const [displayDescription, setDisplayDescription] = useState<string | undefined>(description);
   const [displayConfirmLabel, setDisplayConfirmLabel] = useState<string | undefined>(confirmLabel);
+  const [isProcessing, setIsProcessing] = useState(false);
 
   useEffect(() => {
     if (open && title !== undefined) {
@@ -50,6 +51,19 @@ export default function DeleteConfirmDialog({
     }
   }, [confirmLabel, open]);
 
+  const handleConfirm = async () => {
+    if (isProcessing) {
+      return;
+    }
+
+    setIsProcessing(true);
+    try {
+      await Promise.resolve(onConfirm());
+    } catch (error) {
+      setIsProcessing(false);
+    }
+  };
+
   return (
     <Dialog
       open={open}
@@ -62,6 +76,7 @@ export default function DeleteConfirmDialog({
           setDisplayTitle(undefined);
           setDisplayDescription(undefined);
           setDisplayConfirmLabel(undefined);
+          setIsProcessing(false);
         },
       }}
     >
@@ -104,8 +119,13 @@ export default function DeleteConfirmDialog({
       </DialogContent>
       <DialogActions>
         <Button onClick={onCancel}>Cancel</Button>
-        <Button variant="contained" color="error" onClick={onConfirm}>
-          {displayConfirmLabel ?? "Delete"}
+        <Button
+          variant="contained"
+          color="error"
+          onClick={handleConfirm}
+          disabled={isProcessing}
+        >
+          {isProcessing ? "Deleting..." : displayConfirmLabel ?? "Delete"}
         </Button>
       </DialogActions>
     </Dialog>

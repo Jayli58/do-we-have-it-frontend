@@ -41,7 +41,10 @@ export default function Home() {
 
         <Box className="page-toolbar">
           <Box className="page-toolbar-breadcrumb">
-            <Breadcrumb items={state.breadcrumbs} onNavigate={actions.handleNavigate} />
+            <Breadcrumb
+              items={state.displayBreadcrumbs}
+              onNavigate={actions.handleNavigate}
+            />
           </Box>
           <IconButton
             aria-label="open search"
@@ -140,7 +143,7 @@ export default function Home() {
 
       <Dialog
         open={state.isSearchOpen}
-        onClose={() => actions.setSearchOpen(false)}
+        onClose={actions.handleSearchClose}
         fullWidth
         maxWidth="sm"
         aria-label="Search"

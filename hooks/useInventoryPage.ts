@@ -86,6 +86,17 @@ export function useInventoryPage() {
         return map;
     }, [templates]);
 
+    const displayBreadcrumbs = useMemo(() => {
+        const trimmedQuery = query.trim();
+        if (!trimmedQuery) {
+            return breadcrumbs;
+        }
+        return [
+            { id: null, name: "Home" },
+            { id: "search", name: `Searched results of ${trimmedQuery}` },
+        ];
+    }, [breadcrumbs, query]);
+
     const editItemFields = useMemo(() => {
         if (!editItemData) return [];
 
@@ -124,6 +135,13 @@ export function useInventoryPage() {
 
     const handleSearchSubmit = async () => {
         await handleSearch();
+        setSearchOpen(false);
+    };
+
+    const handleSearchClose = async () => {
+        if (query.trim()) {
+            await handleSearch();
+        }
         setSearchOpen(false);
     };
 
@@ -213,6 +231,7 @@ export function useInventoryPage() {
             items,
             listItems,
             query,
+            displayBreadcrumbs,
             isCreateFolderOpen,
             isCreateItemOpen,
             viewItem,
@@ -242,6 +261,7 @@ export function useInventoryPage() {
             handleNavigate,
             handleFolderOpen,
             handleSearchSubmit,
+            handleSearchClose,
             handleCreateFolder,
             handleCreateItem,
             handleEditFolder,

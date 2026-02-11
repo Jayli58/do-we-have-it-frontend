@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useRef } from "react";
 import { Box, IconButton, InputAdornment, TextField } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 
@@ -22,12 +23,20 @@ export default function SearchBar({
 }: SearchBarProps) {
   const wrapperClassName = variant === "card" ? "mat-card mat-card-compact" : undefined;
   const wrapperSx = variant === "card" ? { padding: 0 } : undefined;
+  const inputRef = useRef<HTMLInputElement | null>(null);
+
+  useEffect(() => {
+    if (autoFocus) {
+      inputRef.current?.focus();
+    }
+  }, [autoFocus]);
 
   return (
     <Box className={wrapperClassName} sx={wrapperSx}>
       <TextField
         fullWidth
         autoFocus={autoFocus}
+        inputRef={inputRef}
         value={value}
         placeholder={placeholder ?? "Search items and folders..."}
         onChange={(event) => onChange(event.target.value)}

@@ -9,6 +9,7 @@ import {
   Stack,
   Typography,
 } from "@mui/material";
+import { useEffect, useState } from "react";
 
 interface DeleteConfirmDialogProps {
   open: boolean;
@@ -27,6 +28,28 @@ export default function DeleteConfirmDialog({
   onCancel,
   onConfirm,
 }: DeleteConfirmDialogProps) {
+  const [displayTitle, setDisplayTitle] = useState<string | undefined>(title);
+  const [displayDescription, setDisplayDescription] = useState<string | undefined>(description);
+  const [displayConfirmLabel, setDisplayConfirmLabel] = useState<string | undefined>(confirmLabel);
+
+  useEffect(() => {
+    if (open && title !== undefined) {
+      setDisplayTitle(title);
+    }
+  }, [open, title]);
+
+  useEffect(() => {
+    if (open && description !== undefined) {
+      setDisplayDescription(description);
+    }
+  }, [description, open]);
+
+  useEffect(() => {
+    if (open && confirmLabel !== undefined) {
+      setDisplayConfirmLabel(confirmLabel);
+    }
+  }, [confirmLabel, open]);
+
   return (
     <Dialog
       open={open}
@@ -34,6 +57,13 @@ export default function DeleteConfirmDialog({
       fullWidth
       maxWidth="xs"
       aria-labelledby="delete-confirm-title"
+      TransitionProps={{
+        onExited: () => {
+          setDisplayTitle(undefined);
+          setDisplayDescription(undefined);
+          setDisplayConfirmLabel(undefined);
+        },
+      }}
     >
       <DialogContent>
         <Box
@@ -63,11 +93,11 @@ export default function DeleteConfirmDialog({
           </Box>
           <Box flex={1}>
             <Typography id="delete-confirm-title" variant="h6" fontWeight={700}>
-              {title ?? "Delete"}
+              {displayTitle ?? "Delete"}
             </Typography>
             <Stack paddingTop={2} />
             <Typography color="text.secondary">
-              {description ?? "Are you sure you want to delete this?"}
+              {displayDescription ?? "Are you sure you want to delete this?"}
             </Typography>
           </Box>
         </Box>
@@ -75,7 +105,7 @@ export default function DeleteConfirmDialog({
       <DialogActions>
         <Button onClick={onCancel}>Cancel</Button>
         <Button variant="contained" color="error" onClick={onConfirm}>
-          {confirmLabel ?? "Delete"}
+          {displayConfirmLabel ?? "Delete"}
         </Button>
       </DialogActions>
     </Dialog>

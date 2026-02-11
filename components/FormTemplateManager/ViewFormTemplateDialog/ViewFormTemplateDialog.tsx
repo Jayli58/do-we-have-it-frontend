@@ -13,6 +13,7 @@ import {
   Typography,
 } from "@mui/material";
 import VisibilityIcon from "@mui/icons-material/Visibility";
+import { useEffect, useState } from "react";
 
 import type { FormTemplate } from "@/types";
 
@@ -27,6 +28,14 @@ export default function ViewFormTemplateDialog({
   template,
   onClose,
 }: ViewFormTemplateDialogProps) {
+  const [displayTemplate, setDisplayTemplate] = useState<FormTemplate | null>(template);
+
+  useEffect(() => {
+    if (template) {
+      setDisplayTemplate(template);
+    }
+  }, [template]);
+
   return (
     <Dialog
       open={open}
@@ -34,6 +43,11 @@ export default function ViewFormTemplateDialog({
       fullWidth
       maxWidth="sm"
       aria-labelledby="view-template-title"
+      TransitionProps={{
+        onExited: () => {
+          setDisplayTemplate(null);
+        },
+      }}
     >
       <DialogContent>
         <Box
@@ -52,17 +66,17 @@ export default function ViewFormTemplateDialog({
             <Typography id="view-template-title" variant="h6" fontWeight={700}>
               Template details
             </Typography>
-            {template ? (
+            {displayTemplate ? (
               <>
                 <Stack paddingTop={2} />
                 <List dense>
                   <Typography fontWeight={600}>
-                    {template.name}
+                    {displayTemplate.name}
                   </Typography>
                   <ListItem disableGutters>
                     <ListItemText primary="Item name" secondary="Required" />
                   </ListItem>
-                  {template.fields.map((field) => (
+                  {displayTemplate.fields.map((field) => (
                     <ListItem key={field.id} disableGutters>
                       <ListItemText
                         primary={field.name}

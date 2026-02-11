@@ -41,7 +41,12 @@ export const useFormTemplateStore = create<FormTemplateState>((set, get) => ({
     return template;
   },
   editTemplate: async (id, data) => {
-    const template = await updateTemplate(id, data);
+    const { templates } = get();
+    const existing = templates.find((entry) => entry.id === id);
+    if (!existing) {
+      return null;
+    }
+    const template = await updateTemplate({ ...existing, ...data });
     if (template) {
       set((state) => ({
         templates: state.templates.map((entry) =>

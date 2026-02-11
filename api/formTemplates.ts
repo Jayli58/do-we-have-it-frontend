@@ -1,102 +1,73 @@
 import type { FormTemplate } from "@/types";
 
-const seedTimestamp = new Date().toISOString();
+import { apiFetch, parseErrorMessage, parseJson } from "@/api/client";
 
 export const DEFAULT_TEMPLATE_ID = "tmpl-default";
 
-const templates: FormTemplate[] = [
-  {
-    id: DEFAULT_TEMPLATE_ID,
-    name: "Default",
-    createdAt: seedTimestamp,
-    fields: [],
-  },
-  {
-    id: "tmpl-appliance",
-    name: "Appliance Details",
-    createdAt: seedTimestamp,
-    fields: [
-      {
-        id: "field-model",
-        name: "Model",
-        type: "text",
-        required: true,
-      },
-      {
-        id: "field-serial",
-        name: "Serial Number",
-        type: "text",
-        required: false,
-      },
-    ],
-  },
-  {
-    id: "tmpl-tool",
-    name: "Tool Specs",
-    createdAt: seedTimestamp,
-    fields: [
-      {
-        id: "field-brand",
-        name: "Brand",
-        type: "text",
-        required: true,
-      },
-      {
-        id: "field-voltage",
-        name: "Voltage",
-        type: "text",
-        required: false,
-      },
-    ],
-  },
-];
-
-const createId = () =>
-  `tmpl-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`;
-
-const now = () => new Date().toISOString();
-
 export const getTemplates = async () => {
-  return [...templates];
+  const response = await apiFetch("/templates");
+  if (!response.ok) {
+    throw new Error(await parseErrorMessage(response));
+  }
+  return parseJson<FormTemplate[]>(response);
 };
 
 export const createTemplate = async (
   data: Omit<FormTemplate, "id" | "createdAt">,
 ) => {
-  const template: FormTemplate = {
-    ...data,
-    id: createId(),
-    createdAt: now(),
-  };
-  templates.push(template);
-  return template;
+  const response = await apiFetch("/templates", {
+    method: "POST",
+    body: {
+      name: data.name,
+      fields: data.fields,
+    },
+  });
+  if (!response.ok) {
+    throw new Error(await parseErrorMessage(response));
+  }
+  return parseJson<FormTemplate>(response);
 };
 
 export const deleteTemplate = async (id: string) => {
   if (id === DEFAULT_TEMPLATE_ID) {
     return false;
   }
-  const index = templates.findIndex((entry) => entry.id === id);
-  if (index === -1) {
+  const response = await apiFetch(`/templates/${id}`, { method: "DELETE" });
+  if (response.status === 404) {
     return false;
   }
-  templates.splice(index, 1);
+  if (!response.ok) {
+    throw new Error(await parseErrorMessage(response));
+  }
   return true;
 };
 
-export const updateTemplate = async (
-  id: string,
-  data: Omit<FormTemplate, "id" | "createdAt">,
-) => {
-  const template = templates.find((entry) => entry.id === id);
-  if (!template) {
+export const updateTemplate = async (template: FormTemplate) => {
+  const response = await apiFetch(`/templates/${template.id}`, {
+    method: "PUT",
+    body: {
+      id: template.id,
+      name: template.name,
+      fields: template.fields,
+      createdAt: template.createdAt,
+    },
+  });
+  if (response.status === 404) {
     return null;
   }
-  template.name = data.name;
-  template.fields = data.fields;
-  return template;
+  if (!response.ok) {
+    throw new Error(await parseErrorMessage(response));
+  }
+  return parseJson<FormTemplate>(response);
 };
 
 export const importTemplate = async (id: string) => {
-  return templates.find((entry) => entry.id === id) ?? null;
+  const response = await apiFetch(`/templates/${id}`);
+  if (response.status === 404) {
+    return null;
+  }
+  if (!response.ok) {
+    throw new Error(await parseErrorMessage(response));
+  }
+  return parseJson<FormTemplate>(response);
 };

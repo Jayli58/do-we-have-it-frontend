@@ -1,109 +1,56 @@
 import type { Folder, Item } from "@/types";
 
-const seedTimestamp = new Date().toISOString();
-
-const folders: Folder[] = [
-  {
-    id: "folder-kitchen",
-    name: "Kitchen",
-    parentId: null,
-    createdAt: seedTimestamp,
-    updatedAt: seedTimestamp,
-  },
-  {
-    id: "folder-garage",
-    name: "Garage",
-    parentId: null,
-    createdAt: seedTimestamp,
-    updatedAt: seedTimestamp,
-  },
-  {
-    id: "folder-appliances",
-    name: "Appliances",
-    parentId: "folder-kitchen",
-    createdAt: seedTimestamp,
-    updatedAt: seedTimestamp,
-  },
-];
-const items: Item[] = [
-  {
-    id: "item-toaster",
-    name: "Toaster",
-    comments: "Bottom shelf",
-    parentId: "folder-appliances",
-    createdAt: seedTimestamp,
-    updatedAt: seedTimestamp,
-    attributes: [
-      {
-        fieldId: "field-model",
-        fieldName: "Model",
-        value: "ToastPro 2",
-      },
-      {
-        fieldId: "field-serial",
-        fieldName: "Serial Number",
-        value: "TP-221-8841",
-      },
-    ],
-  },
-  {
-    id: "item-drill",
-    name: "Cordless Drill",
-    comments: "Top drawer",
-    parentId: "folder-garage",
-    createdAt: seedTimestamp,
-    updatedAt: seedTimestamp,
-    attributes: [
-      {
-        fieldId: "field-brand",
-        fieldName: "Brand",
-        value: "ProTorque",
-      },
-    ],
-  },
-];
-
-const createId = () =>
-  `id-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`;
-
-const now = () => new Date().toISOString();
+import { apiFetch, parseErrorMessage, parseJson } from "@/api/client";
 
 export const getFolderContents = async (parentId: string | null) => {
-  return {
-    folders: folders.filter((folder) => folder.parentId === parentId),
-    items: items.filter((item) => item.parentId === parentId),
-  };
+  const response = await apiFetch("/folders", {
+    query: { parentId: parentId ?? undefined },
+  });
+  if (!response.ok) {
+    throw new Error(await parseErrorMessage(response));
+  }
+  return parseJson<{ folders: Folder[]; items: Item[] }>(response);
 };
 
 export const createFolder = async (name: string, parentId: string | null) => {
-  const timestamp = now();
-  const folder: Folder = {
-    id: createId(),
-    name,
-    parentId,
-    createdAt: timestamp,
-    updatedAt: timestamp,
-  };
-  folders.push(folder);
-  return folder;
+  const response = await apiFetch("/folders", {
+    method: "POST",
+    body: { name, parentId },
+  });
+  if (!response.ok) {
+    throw new Error(await parseErrorMessage(response));
+  }
+  return parseJson<Folder>(response);
 };
 
-export const updateFolder = async (id: string, name: string) => {
-  const folder = folders.find((entry) => entry.id === id);
-  if (!folder) {
+export const updateFolder = async (folder: Folder) => {
+  const response = await apiFetch(`/folders/${folder.id}`, {
+    method: "PUT",
+    body: {
+      id: folder.id,
+      name: folder.name,
+      parentId: folder.parentId,
+      createdAt: folder.createdAt,
+      updatedAt: folder.updatedAt,
+    },
+  });
+  if (response.status === 404) {
     return null;
   }
-  folder.name = name;
-  folder.updatedAt = now();
-  return folder;
+  if (!response.ok) {
+    throw new Error(await parseErrorMessage(response));
+  }
+  return parseJson<Folder>(response);
 };
 
 export const deleteFolder = async (id: string) => {
-  const index = folders.findIndex((entry) => entry.id === id);
-  if (index === -1) {
+  const response = await apiFetch(`/folders/${id}`, { method: "DELETE" });
+  if (response.status === 404) {
     return false;
   }
-  folders.splice(index, 1);
+  if (!response.ok) {
+    throw new Error(await parseErrorMessage(response));
+  }
   return true;
 };
 
@@ -111,59 +58,79 @@ export const createItem = async (
   data: Omit<Item, "id" | "createdAt" | "updatedAt">,
   parentId: string | null,
 ) => {
-  const timestamp = now();
-  const item: Item = {
-    ...data,
-    parentId,
-    id: createId(),
-    createdAt: timestamp,
-    updatedAt: timestamp,
-  };
-  items.push(item);
-  return item;
+  const response = await apiFetch("/items", {
+    method: "POST",
+    body: {
+      name: data.name,
+      comments: data.comments ?? "",
+      parentId,
+      attributes: data.attributes,
+    },
+  });
+  if (!response.ok) {
+    throw new Error(await parseErrorMessage(response));
+  }
+  return parseJson<Item>(response);
 };
 
 export const getItem = async (id: string) => {
-  return items.find((entry) => entry.id === id) ?? null;
-};
-
-export const updateItem = async (id: string, data: Partial<Item>) => {
-  const item = items.find((entry) => entry.id === id);
-  if (!item) {
+  const response = await apiFetch(`/items/${id}`);
+  if (response.status === 404) {
     return null;
   }
-  Object.assign(item, data, { updatedAt: now() });
-  return item;
+  if (!response.ok) {
+    throw new Error(await parseErrorMessage(response));
+  }
+  return parseJson<Item>(response);
 };
 
-export const deleteItem = async (id: string) => {
-  const index = items.findIndex((entry) => entry.id === id);
-  if (index === -1) {
+export const updateItem = async (item: Item) => {
+  const response = await apiFetch(`/items/${item.id}`, {
+    method: "PUT",
+    body: {
+      id: item.id,
+      name: item.name,
+      comments: item.comments ?? "",
+      parentId: item.parentId,
+      attributes: item.attributes,
+      createdAt: item.createdAt,
+      updatedAt: item.updatedAt,
+    },
+  });
+  if (response.status === 404) {
+    return null;
+  }
+  if (!response.ok) {
+    throw new Error(await parseErrorMessage(response));
+  }
+  return parseJson<Item>(response);
+};
+
+export const deleteItem = async (id: string, parentId: string | null) => {
+  const response = await apiFetch(`/items/${id}`, {
+    method: "DELETE",
+    query: { parentId: parentId ?? undefined },
+  });
+  if (response.status === 404) {
     return false;
   }
-  items.splice(index, 1);
+  if (!response.ok) {
+    throw new Error(await parseErrorMessage(response));
+  }
   return true;
 };
 
 export const searchItems = async (query: string, parentId: string | null) => {
-  const normalizedQuery = query.trim().toLowerCase();
-  if (!normalizedQuery) {
+  const trimmed = query.trim();
+  if (!trimmed) {
     return [];
   }
-  return items.filter((item) => {
-    if (item.parentId !== parentId) {
-      return false;
-    }
-    const nameMatch = item.name.toLowerCase().includes(normalizedQuery);
-    const commentMatch = item.comments
-      .toLowerCase()
-      .includes(normalizedQuery);
-    const attributeMatch = item.attributes.some((attribute) => {
-      return (
-        attribute.fieldName.toLowerCase().includes(normalizedQuery) ||
-        attribute.value.toLowerCase().includes(normalizedQuery)
-      );
-    });
-    return nameMatch || commentMatch || attributeMatch;
+  const response = await apiFetch("/items/search", {
+    query: { query: trimmed, parentId: parentId ?? undefined },
   });
+  if (!response.ok) {
+    throw new Error(await parseErrorMessage(response));
+  }
+  const data = await parseJson<{ items: Item[] }>(response);
+  return data.items ?? [];
 };

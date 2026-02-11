@@ -48,8 +48,12 @@ export const useInventoryStore = create<InventoryState>((set, get) => ({
     return folder;
   },
   renameFolder: async (id, name) => {
-    const { currentFolderId, loadContents } = get();
-    const folder = await updateFolder(id, name);
+    const { currentFolderId, folders, loadContents } = get();
+    const existing = folders.find((entry) => entry.id === id);
+    if (!existing) {
+      return null;
+    }
+    const folder = await updateFolder({ ...existing, name });
     await loadContents(currentFolderId);
     return folder;
   },
@@ -66,14 +70,19 @@ export const useInventoryStore = create<InventoryState>((set, get) => ({
     return item;
   },
   editItem: async (id, data) => {
-    const { currentFolderId, loadContents } = get();
-    const item = await updateItem(id, data);
+    const { currentFolderId, items, loadContents } = get();
+    const existing = items.find((entry) => entry.id === id);
+    if (!existing) {
+      return null;
+    }
+    const item = await updateItem({ ...existing, ...data });
     await loadContents(currentFolderId);
     return item;
   },
   removeItem: async (id) => {
-    const { currentFolderId, loadContents } = get();
-    const deleted = await deleteItem(id);
+    const { currentFolderId, items, loadContents } = get();
+    const existing = items.find((entry) => entry.id === id);
+    const deleted = await deleteItem(id, existing?.parentId ?? currentFolderId);
     await loadContents(currentFolderId);
     return deleted;
   },

@@ -4,15 +4,31 @@ import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as cloudfront from 'aws-cdk-lib/aws-cloudfront';
 import * as origins from 'aws-cdk-lib/aws-cloudfront-origins';
 import * as s3deploy from 'aws-cdk-lib/aws-s3-deployment';
-import * as path from "path";
 import * as acm from "aws-cdk-lib/aws-certificatemanager";
 import * as ssm from "aws-cdk-lib/aws-ssm";
 import * as iam from "aws-cdk-lib/aws-iam";
+import * as lambda from "aws-cdk-lib/aws-lambda";
 import { feConfig } from "../config/frontend/config.fe";
+
+interface FrontendStackProps extends cdk.StackProps {
+    authPaths: {
+        redirectPathSignIn: string;
+        redirectPathSignOut: string;
+        redirectPathAuthRefresh: string;
+        signOutUrl: string;
+    };
+    authLambdaArns: {
+        checkAuthHandlerArn: string;
+        parseAuthHandlerArn: string;
+        refreshAuthHandlerArn: string;
+        httpHeadersHandlerArn: string;
+        signOutHandlerArn: string;
+    };
+}
 
 
 export class FrontendStack extends cdk.Stack {
-    constructor(scope: Construct, id: string, props?: cdk.StackProps) {
+    constructor(scope: Construct, id: string, props: FrontendStackProps) {
         super(scope, id, {
             ...props,
             description: "DWHI frontend"
@@ -30,16 +46,91 @@ export class FrontendStack extends cdk.Stack {
         const certArn = ssm.StringParameter.valueForStringParameter(this, feConfig.ssmParamName4CertArn);
         const cert = acm.Certificate.fromCertificateArn(this, "ImportedFeCert", certArn);
 
+        const checkAuthHandler = lambda.Version.fromVersionArn(
+            this,
+            "AuthAtEdgeCheckAuthHandler",
+            props.authLambdaArns.checkAuthHandlerArn,
+        );
+        const parseAuthHandler = lambda.Version.fromVersionArn(
+            this,
+            "AuthAtEdgeParseAuthHandler",
+            props.authLambdaArns.parseAuthHandlerArn,
+        );
+        const refreshAuthHandler = lambda.Version.fromVersionArn(
+            this,
+            "AuthAtEdgeRefreshAuthHandler",
+            props.authLambdaArns.refreshAuthHandlerArn,
+        );
+        const httpHeadersHandler = lambda.Version.fromVersionArn(
+            this,
+            "AuthAtEdgeHttpHeadersHandler",
+            props.authLambdaArns.httpHeadersHandlerArn,
+        );
+        const signOutHandler = lambda.Version.fromVersionArn(
+            this,
+            "AuthAtEdgeSignOutHandler",
+            props.authLambdaArns.signOutHandlerArn,
+        );
+
+        const authBehaviorDefaults: cloudfront.BehaviorOptions = {
+            origin: origins.S3BucketOrigin.withOriginAccessControl(bucket),
+            viewerProtocolPolicy: cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
+            cachePolicy: cloudfront.CachePolicy.CACHING_DISABLED,
+            // let cloudfront forward all viewer headers, cookies, and query strings to the origin
+            // this is required for the auth at edge flow to work correctly
+            originRequestPolicy: cloudfront.OriginRequestPolicy.ALL_VIEWER,
+        };
+
         const cfDistro = new cloudfront.Distribution(this, 'DWHIFeDistro', {
             defaultRootObject: 'index.html',
             domainNames: [feConfig.domain],
             certificate: cert,
             // https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_cloudfront.ViewerProtocolPolicy.html
             defaultBehavior: {
-                origin: origins.S3BucketOrigin.withOriginAccessControl(bucket),
-                // not necessary as we only need GET method to access S3 index.html and GET is allowed by default
-                // allowedMethods: cloudfront.AllowedMethods.ALLOW_ALL,
-                viewerProtocolPolicy: cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
+                ...authBehaviorDefaults,
+                // enforce auth at edge
+                // https://github.com/aws-samples/cloudfront-authorization-at-edge/blob/master/example-serverless-app-reuse/reuse-auth-only.yaml
+                edgeLambdas: [
+                    {
+                        eventType: cloudfront.LambdaEdgeEventType.VIEWER_REQUEST,
+                        functionVersion: checkAuthHandler,
+                    },
+                    {
+                        eventType: cloudfront.LambdaEdgeEventType.ORIGIN_RESPONSE,
+                        functionVersion: httpHeadersHandler,
+                    },
+                ],
+            },
+            // additional auth paths for sign in, sign out, and refresh in cloudfront
+            // paths are defined in auth at edge stack
+            additionalBehaviors: {
+                [props.authPaths.redirectPathSignIn]: {
+                    ...authBehaviorDefaults,
+                    edgeLambdas: [
+                        {
+                            eventType: cloudfront.LambdaEdgeEventType.VIEWER_REQUEST,
+                            functionVersion: parseAuthHandler,
+                        },
+                    ],
+                },
+                [props.authPaths.redirectPathAuthRefresh]: {
+                    ...authBehaviorDefaults,
+                    edgeLambdas: [
+                        {
+                            eventType: cloudfront.LambdaEdgeEventType.VIEWER_REQUEST,
+                            functionVersion: refreshAuthHandler,
+                        },
+                    ],
+                },
+                [props.authPaths.signOutUrl]: {
+                    ...authBehaviorDefaults,
+                    edgeLambdas: [
+                        {
+                            eventType: cloudfront.LambdaEdgeEventType.VIEWER_REQUEST,
+                            functionVersion: signOutHandler,
+                        },
+                    ],
+                },
             },
         });
 

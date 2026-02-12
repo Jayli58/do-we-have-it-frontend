@@ -5,6 +5,11 @@ import * as cognito from 'aws-cdk-lib/aws-cognito';
 import { feConfig } from '../config/frontend/config.fe';
 
 export class BaseStack extends cdk.Stack {
+  // expose Cognito resources to other stacks
+  public readonly userPool: cognito.UserPool;
+  public readonly userPoolClient: cognito.UserPoolClient;
+  public readonly userPoolAuthDomain: string;
+
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
       super(scope, id, {
         ...props,
@@ -44,9 +49,10 @@ export class BaseStack extends cdk.Stack {
       // add cognito domain
       const stack = cdk.Stack.of(this);
   
-      const domain = userpool.addDomain('TodoAppUserpoolDomain', {
+      const domainPrefix = `dwhi-dev-jayli-${stack.region}`;
+      userpool.addDomain('DWHIUserpoolDomain', {
         cognitoDomain: {
-          domainPrefix: `todoapp-dev-jayli-${stack.region}`,
+          domainPrefix,
         },
         managedLoginVersion: cognito.ManagedLoginVersion.NEWER_MANAGED_LOGIN,
       });
@@ -68,10 +74,17 @@ export class BaseStack extends cdk.Stack {
           callbackUrls: [
             ...feConfig.callbackUrls,
           ],
+          logoutUrls: [
+            ...feConfig.logoutUrls,
+          ],
         },
         // PKCE
         generateSecret: false,
       });
+
+      this.userPool = userpool;
+      this.userPoolClient = appClient;
+      this.userPoolAuthDomain = `${domainPrefix}.auth.${stack.region}.amazoncognito.com`;
   
       // 2) enable login UI
       new cognito.CfnManagedLoginBranding(this, "TodoAppManagedLoginBranding", {

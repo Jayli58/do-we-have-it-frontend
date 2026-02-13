@@ -24,4 +24,11 @@ export const feConfig = {
         redirectPathAuthRefresh: "/refreshauth",
         signOutUrl: "/signout",
     },
+    authAtEdgeSsmParamNames: {
+        checkAuthHandlerArn: "/dwhi/auth-at-edge/checkAuthHandlerArn",
+        parseAuthHandlerArn: "/dwhi/auth-at-edge/parseAuthHandlerArn",
+        refreshAuthHandlerArn: "/dwhi/auth-at-edge/refreshAuthHandlerArn",
+        httpHeadersHandlerArn: "/dwhi/auth-at-edge/httpHeadersHandlerArn",
+        signOutHandlerArn: "/dwhi/auth-at-edge/signOutHandlerArn",
+    },
 }

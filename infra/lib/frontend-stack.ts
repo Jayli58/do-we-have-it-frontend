@@ -17,13 +17,6 @@ interface FrontendStackProps extends cdk.StackProps {
         redirectPathAuthRefresh: string;
         signOutUrl: string;
     };
-    authLambdaArns: {
-        checkAuthHandlerArn: string;
-        parseAuthHandlerArn: string;
-        refreshAuthHandlerArn: string;
-        httpHeadersHandlerArn: string;
-        signOutHandlerArn: string;
-    };
 }
 
 
@@ -46,30 +39,51 @@ export class FrontendStack extends cdk.Stack {
         const certArn = ssm.StringParameter.valueForStringParameter(this, feConfig.ssmParamName4CertArn);
         const cert = acm.Certificate.fromCertificateArn(this, "ImportedFeCert", certArn);
 
+        const checkAuthHandlerArn = ssm.StringParameter.valueForStringParameter(
+            this,
+            feConfig.authAtEdgeSsmParamNames.checkAuthHandlerArn,
+        );
+        const parseAuthHandlerArn = ssm.StringParameter.valueForStringParameter(
+            this,
+            feConfig.authAtEdgeSsmParamNames.parseAuthHandlerArn,
+        );
+        const refreshAuthHandlerArn = ssm.StringParameter.valueForStringParameter(
+            this,
+            feConfig.authAtEdgeSsmParamNames.refreshAuthHandlerArn,
+        );
+        const httpHeadersHandlerArn = ssm.StringParameter.valueForStringParameter(
+            this,
+            feConfig.authAtEdgeSsmParamNames.httpHeadersHandlerArn,
+        );
+        const signOutHandlerArn = ssm.StringParameter.valueForStringParameter(
+            this,
+            feConfig.authAtEdgeSsmParamNames.signOutHandlerArn,
+        );
+
         const checkAuthHandler = lambda.Version.fromVersionArn(
             this,
             "AuthAtEdgeCheckAuthHandler",
-            props.authLambdaArns.checkAuthHandlerArn,
+            checkAuthHandlerArn,
         );
         const parseAuthHandler = lambda.Version.fromVersionArn(
             this,
             "AuthAtEdgeParseAuthHandler",
-            props.authLambdaArns.parseAuthHandlerArn,
+            parseAuthHandlerArn,
         );
         const refreshAuthHandler = lambda.Version.fromVersionArn(
             this,
             "AuthAtEdgeRefreshAuthHandler",
-            props.authLambdaArns.refreshAuthHandlerArn,
+            refreshAuthHandlerArn,
         );
         const httpHeadersHandler = lambda.Version.fromVersionArn(
             this,
             "AuthAtEdgeHttpHeadersHandler",
-            props.authLambdaArns.httpHeadersHandlerArn,
+            httpHeadersHandlerArn,
         );
         const signOutHandler = lambda.Version.fromVersionArn(
             this,
             "AuthAtEdgeSignOutHandler",
-            props.authLambdaArns.signOutHandlerArn,
+            signOutHandlerArn,
         );
 
         const authBehaviorDefaults: cloudfront.BehaviorOptions = {

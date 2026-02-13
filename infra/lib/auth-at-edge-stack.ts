@@ -1,6 +1,8 @@
 import * as cdk from "aws-cdk-lib";
 import { Construct } from "constructs";
 import * as sam from "aws-cdk-lib/aws-sam";
+import * as ssm from "aws-cdk-lib/aws-ssm";
+import { feConfig } from "../config/frontend/config.fe";
 
 export interface AuthAtEdgeStackProps extends cdk.StackProps {
     userPoolArn: string;
@@ -45,6 +47,7 @@ export class AuthAtEdgeStack extends cdk.Stack {
                 UserPoolArn: props.userPoolArn,
                 UserPoolClientId: props.userPoolClientId,
                 UserPoolAuthDomain: props.userPoolAuthDomain,
+                OAuthScopes: "openid email profile",
                 RedirectPathSignIn: props.redirectPathSignIn,
                 RedirectPathSignOut: props.redirectPathSignOut,
                 RedirectPathAuthRefresh: props.redirectPathAuthRefresh,
@@ -80,6 +83,31 @@ export class AuthAtEdgeStack extends cdk.Stack {
 
         new cdk.CfnOutput(this, "AuthAtEdgeSignOutHandlerArn", {
             value: this.signOutHandlerArn,
+        });
+
+        new ssm.StringParameter(this, "AuthAtEdgeCheckAuthHandlerArnParam", {
+            parameterName: feConfig.authAtEdgeSsmParamNames.checkAuthHandlerArn,
+            stringValue: this.checkAuthHandlerArn,
+        });
+
+        new ssm.StringParameter(this, "AuthAtEdgeParseAuthHandlerArnParam", {
+            parameterName: feConfig.authAtEdgeSsmParamNames.parseAuthHandlerArn,
+            stringValue: this.parseAuthHandlerArn,
+        });
+
+        new ssm.StringParameter(this, "AuthAtEdgeRefreshAuthHandlerArnParam", {
+            parameterName: feConfig.authAtEdgeSsmParamNames.refreshAuthHandlerArn,
+            stringValue: this.refreshAuthHandlerArn,
+        });
+
+        new ssm.StringParameter(this, "AuthAtEdgeHttpHeadersHandlerArnParam", {
+            parameterName: feConfig.authAtEdgeSsmParamNames.httpHeadersHandlerArn,
+            stringValue: this.httpHeadersHandlerArn,
+        });
+
+        new ssm.StringParameter(this, "AuthAtEdgeSignOutHandlerArnParam", {
+            parameterName: feConfig.authAtEdgeSsmParamNames.signOutHandlerArn,
+            stringValue: this.signOutHandlerArn,
         });
     }
 }

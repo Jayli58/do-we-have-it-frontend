@@ -22,18 +22,11 @@ export class InfraStack extends cdk.Stack {
     });
     const frontendStack = new FrontendStack(this, 'DWHIFrontendStack', {
       authPaths: feConfig.authPaths,
-      authLambdaArns: {
-        checkAuthHandlerArn: authAtEdgeStack.checkAuthHandlerArn,
-        parseAuthHandlerArn: authAtEdgeStack.parseAuthHandlerArn,
-        refreshAuthHandlerArn: authAtEdgeStack.refreshAuthHandlerArn,
-        httpHeadersHandlerArn: authAtEdgeStack.httpHeadersHandlerArn,
-        signOutHandlerArn: authAtEdgeStack.signOutHandlerArn,
-      },
     });
 
     // stack dependencies
-    authAtEdgeStack.addDependency(baseStack);
-    frontendStack.addDependency(baseStack);
-    frontendStack.addDependency(authAtEdgeStack);
+    // authAtEdgeStack.addDependency(baseStack);
+    // frontendStack.addDependency(baseStack);
+    // frontendStack.addDependency(authAtEdgeStack);
   }
 }

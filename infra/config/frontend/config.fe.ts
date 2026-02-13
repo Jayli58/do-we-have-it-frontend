@@ -14,6 +14,8 @@ export const feConfig = {
     ],
     // GitHub repo for OIDC trust in frontend stack (owner/repo)
     githubOidcRepo: "Jayli58/do-we-have-it-frontend",
+    // existing GitHub OIDC provider ARN stored in SSM
+    ssmParamName4GithubOidcProviderArn: "/dwhi/github/oidc/providerArn",
     // Local-only path for CDK asset deployment
     localAssetPath: "C:/Users/Lee58/PhpstormProjects/do-we-have-it/frontend/out",
     authPaths: {

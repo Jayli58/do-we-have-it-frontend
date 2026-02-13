@@ -49,7 +49,6 @@ export class AuthAtEdgeStack extends cdk.Stack {
                 RedirectPathSignOut: props.redirectPathSignOut,
                 RedirectPathAuthRefresh: props.redirectPathAuthRefresh,
                 SignOutUrl: props.signOutUrl,
-                Aliases: props.frontendDomain,
             },
         });
 

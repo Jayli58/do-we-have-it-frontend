@@ -145,10 +145,15 @@ export class FrontendStack extends cdk.Stack {
         });
 
         // github oidc for github actions to deploy frontend
-        const githubOidcProvider = new iam.OpenIdConnectProvider(this, "GitHubOidcProvider", {
-            url: "https://token.actions.githubusercontent.com",
-            clientIds: ["sts.amazonaws.com"],
-        });
+        const githubOidcProviderArn = ssm.StringParameter.valueForStringParameter(
+            this,
+            feConfig.ssmParamName4GithubOidcProviderArn,
+        );
+        const githubOidcProvider = iam.OpenIdConnectProvider.fromOpenIdConnectProviderArn(
+            this,
+            "GitHubOidcProvider",
+            githubOidcProviderArn,
+        );
 
         const githubDeployRole = new iam.Role(this, "GitHubDWHIFeDeployRole", {
             description: "GitHub Actions role for DWHI frontend deploy",

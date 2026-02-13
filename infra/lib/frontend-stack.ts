@@ -86,13 +86,30 @@ export class FrontendStack extends cdk.Stack {
             signOutHandlerArn,
         );
 
+        // todo: temp solution that overrides csp to allow inline scripts and local fonts
+        const responseHeadersPolicy = new cloudfront.ResponseHeadersPolicy(this, "DwhiFrontendResponseHeadersPolicy", {
+            securityHeadersBehavior: {
+                contentSecurityPolicy: {
+                    contentSecurityPolicy: "default-src 'none'; img-src 'self'; script-src 'self' 'unsafe-inline' https://code.jquery.com https://stackpath.bootstrapcdn.com; style-src 'self' 'unsafe-inline' https://stackpath.bootstrapcdn.com; font-src 'self' data:; object-src 'none'; connect-src 'self' https://*.amazonaws.com https://*.amazoncognito.com",
+                    override: true,
+                },
+            },
+        });
+
         const authBehaviorDefaults: cloudfront.BehaviorOptions = {
             origin: origins.S3BucketOrigin.withOriginAccessControl(bucket),
             viewerProtocolPolicy: cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
             cachePolicy: cloudfront.CachePolicy.CACHING_DISABLED,
+            responseHeadersPolicy,
             // let cloudfront forward all viewer headers, cookies, and query strings to the origin
             // this is required for the auth at edge flow to work correctly
-            originRequestPolicy: cloudfront.OriginRequestPolicy.ALL_VIEWER,
+            originRequestPolicy: new cloudfront.OriginRequestPolicy(this, "DwhiAuthOriginRequestPolicy", {
+                // allow tokens to be passed to the frontend via cookie
+                cookieBehavior: cloudfront.OriginRequestCookieBehavior.all(),
+                queryStringBehavior: cloudfront.OriginRequestQueryStringBehavior.none(),
+                // do not forward headers as s3 would reject access
+                headerBehavior: cloudfront.OriginRequestHeaderBehavior.none(),
+            }),
         };
 
         const cfDistro = new cloudfront.Distribution(this, 'DWHIFeDistro', {

@@ -22,3 +22,6 @@ export const useAuthStore = create<AuthState>((set) => ({
     set({ idToken, user });
   },
 }));
+
+// Parse token eagerly so user info is available on first render
+useAuthStore.getState().init();

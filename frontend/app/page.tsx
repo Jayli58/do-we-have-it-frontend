@@ -9,7 +9,6 @@ import {
   Typography,
 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
-import { useEffect } from "react";
 
 import ActionBar from "@/components/ActionBar/ActionBar";
 import CreateFolderDialog from "@/components/ActionBar/CreateFolderDialog/CreateFolderDialog";
@@ -28,12 +27,7 @@ import { useAuthStore } from "@/store/authStore";
 
 export default function Home() {
   const { state, actions } = useInventoryPage();
-  const initAuth = useAuthStore((store) => store.init);
   const user = useAuthStore((store) => store.user);
-
-  useEffect(() => {
-    initAuth();
-  }, [initAuth]);
 
   return (
     <Box className="page-shell">

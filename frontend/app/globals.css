@@ -71,8 +71,21 @@ body {
   @apply font-bold;
 }
 
+.page-title-row {
+  @apply flex items-center justify-between gap-3;
+}
+
 .page-subtitle {
   @apply text-slate-500;
+}
+
+.user-tag {
+  @apply flex items-center gap-2 text-white font-bold px-3 py-1 mb-4 rounded-full w-fit;
+  background-color: #2563eb;
+}
+
+.user-tag-icon {
+  color: #ccfbf1;
 }
 
 .page-toolbar {

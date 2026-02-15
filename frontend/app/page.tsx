@@ -22,6 +22,7 @@ import EditItemDialog from "@/components/ItemDialogs/EditItemDialog";
 import ViewItemDialog from "@/components/ItemDialogs/ViewItemDialog";
 import SearchBar from "@/components/SearchBar/SearchBar";
 import DeleteConfirmDialog from "@/components/shared/DeleteConfirmDialog";
+import UserTag from "@/components/shared/UserTag";
 import { useInventoryPage } from "@/hooks/useInventoryPage";
 import { useAuthStore } from "@/store/authStore";
 
@@ -33,15 +34,15 @@ export default function Home() {
     <Box className="page-shell">
       <Container maxWidth="md" className="page-container">
         <Box className="page-header">
-          <Typography variant="h4" className="page-title">
-            Do we have it?
-          </Typography>
+          <Box className="page-title-row">
+            <Typography variant="h4" className="page-title">
+              Do we have it?
+            </Typography>
+            <UserTag name={user?.name ?? "Guest"} />
+          </Box>
           <Typography className="page-subtitle">
             Track folders, items, and custom attributes for everything you own.
           </Typography>
-          {user?.name && (
-            <Typography className="page-subtitle">Welcome, {user.name}.</Typography>
-          )}
         </Box>
 
         <Box className="page-toolbar">

@@ -52,6 +52,13 @@ export class AuthAtEdgeStack extends cdk.Stack {
                 RedirectPathSignOut: props.redirectPathSignOut,
                 RedirectPathAuthRefresh: props.redirectPathAuthRefresh,
                 SignOutUrl: props.signOutUrl,
+                // cookie settings for retaining tokens
+                CookieSettings: JSON.stringify({
+                    idToken: "Path=/; Secure; SameSite=Lax; Max-Age=3600",
+                    accessToken: "Path=/; Secure; SameSite=Lax; Max-Age=3600",
+                    refreshToken: "Path=/; Secure; SameSite=Lax; Max-Age=2592000",
+                    nonce: "Path=/; Secure; HttpOnly; SameSite=Lax; Max-Age=300",
+                }),
             },
         });
 

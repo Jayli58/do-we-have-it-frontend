@@ -1,11 +1,12 @@
+import { useAuthStore } from "@/store/authStore";
+
 const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
 if (!baseUrl) {
   throw new Error("NEXT_PUBLIC_API_BASE_URL is not set.");
 }
+const useDemoAuth = process.env.NEXT_PUBLIC_USE_DEMO_AUTH === "true";
 const defaultHeaders = {
   "Content-Type": "application/json",
-  // TODO: Remove this header when authentication is implemented
-  "X-User-Id": "demo-user",
 };
 
 type QueryParams = Record<string, string | number | boolean | null | undefined>;
@@ -30,9 +31,18 @@ const buildUrl = (path: string, query?: QueryParams) => {
 };
 
 export const apiFetch = (path: string, options: ApiRequestOptions = {}) => {
+  const headers: Record<string, string> = { ...defaultHeaders };
+  if (useDemoAuth) {
+    headers["X-User-Id"] = "demo-user";
+  } else {
+    const idToken = useAuthStore.getState().idToken;
+    if (idToken) {
+      headers.Authorization = `Bearer ${idToken}`;
+    }
+  }
   return fetch(buildUrl(path, options.query), {
     method: options.method ?? "GET",
-    headers: defaultHeaders,
+    headers,
     body: options.body ? JSON.stringify(options.body) : undefined,
   });
 };

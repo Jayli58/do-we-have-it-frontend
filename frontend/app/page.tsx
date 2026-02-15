@@ -9,6 +9,7 @@ import {
   Typography,
 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
+import { useEffect } from "react";
 
 import ActionBar from "@/components/ActionBar/ActionBar";
 import CreateFolderDialog from "@/components/ActionBar/CreateFolderDialog/CreateFolderDialog";
@@ -23,9 +24,16 @@ import ViewItemDialog from "@/components/ItemDialogs/ViewItemDialog";
 import SearchBar from "@/components/SearchBar/SearchBar";
 import DeleteConfirmDialog from "@/components/shared/DeleteConfirmDialog";
 import { useInventoryPage } from "@/hooks/useInventoryPage";
+import { useAuthStore } from "@/store/authStore";
 
 export default function Home() {
   const { state, actions } = useInventoryPage();
+  const initAuth = useAuthStore((store) => store.init);
+  const user = useAuthStore((store) => store.user);
+
+  useEffect(() => {
+    initAuth();
+  }, [initAuth]);
 
   return (
     <Box className="page-shell">
@@ -37,6 +45,9 @@ export default function Home() {
           <Typography className="page-subtitle">
             Track folders, items, and custom attributes for everything you own.
           </Typography>
+          {user?.name && (
+            <Typography className="page-subtitle">Welcome, {user.name}.</Typography>
+          )}
         </Box>
 
         <Box className="page-toolbar">

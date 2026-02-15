@@ -1,8 +1,9 @@
 import * as cdk from 'aws-cdk-lib/core';
 import { Construct } from 'constructs';
 import * as cognito from 'aws-cdk-lib/aws-cognito';
-// import * as ssm from 'aws-cdk-lib/aws-ssm';
+import * as ssm from 'aws-cdk-lib/aws-ssm';
 import { feConfig } from '../config/frontend/config.fe';
+import {sharedConfig} from "../config/shared";
 
 export class BaseStack extends cdk.Stack {
   // expose Cognito resources to other stacks
@@ -82,6 +83,9 @@ export class BaseStack extends cdk.Stack {
       generateSecret: false,
     });
 
+    // apply removal policy to app client
+    appClient.applyRemovalPolicy(cdk.RemovalPolicy.RETAIN);
+
     this.userPool = userpool;
     this.userPoolClient = appClient;
     this.userPoolAuthDomain = `${domainPrefix}.auth.${stack.region}.amazoncognito.com`;
@@ -94,19 +98,19 @@ export class BaseStack extends cdk.Stack {
     });
 
     // store cognito info into ssm
-    //   new ssm.StringParameter(this, "UserPoolIdParam", {
-    //     parameterName: `${apiConfig.Ssm__BasePath}/cognito/userPoolId`,
-    //     stringValue: userpool.userPoolId,
-    //   });
+      new ssm.StringParameter(this, "UserPoolIdParam", {
+        parameterName: `${sharedConfig.Ssm__BasePath}/cognito/userPoolId`,
+        stringValue: userpool.userPoolId,
+      });
 
-    //   new ssm.StringParameter(this, "UserPoolClientIdParam", {
-    //     parameterName: `${apiConfig.Ssm__BasePath}/cognito/clientId`,
-    //     stringValue: appClient.userPoolClientId,
-    //   });
+      new ssm.StringParameter(this, "UserPoolClientIdParam", {
+        parameterName: `${sharedConfig.Ssm__BasePath}/cognito/clientId`,
+        stringValue: appClient.userPoolClientId,
+      });
 
-    //   new ssm.StringParameter(this, "CognitoRegionParam", {
-    //     parameterName: `${apiConfig.Ssm__BasePath}/cognito/region`,
-    //     stringValue: cdk.Stack.of(this).region,
-    //   });
+      new ssm.StringParameter(this, "CognitoRegionParam", {
+        parameterName: `${sharedConfig.Ssm__BasePath}/cognito/region`,
+        stringValue: cdk.Stack.of(this).region,
+      });
   }
 }

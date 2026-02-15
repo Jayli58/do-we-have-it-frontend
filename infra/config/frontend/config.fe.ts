@@ -30,5 +30,5 @@ export const feConfig = {
         refreshAuthHandlerArn: "/dwhi/auth-at-edge/refreshAuthHandlerArn",
         httpHeadersHandlerArn: "/dwhi/auth-at-edge/httpHeadersHandlerArn",
         signOutHandlerArn: "/dwhi/auth-at-edge/signOutHandlerArn",
-    },
+    }
 }

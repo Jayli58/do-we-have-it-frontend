@@ -9,6 +9,7 @@ import * as ssm from "aws-cdk-lib/aws-ssm";
 import * as iam from "aws-cdk-lib/aws-iam";
 import * as lambda from "aws-cdk-lib/aws-lambda";
 import { feConfig } from "../config/frontend/config.fe";
+import { sharedConfig } from "../config/shared";
 
 interface FrontendStackProps extends cdk.StackProps {
     authPaths: {
@@ -90,7 +91,7 @@ export class FrontendStack extends cdk.Stack {
         const responseHeadersPolicy = new cloudfront.ResponseHeadersPolicy(this, "DwhiFrontendResponseHeadersPolicy", {
             securityHeadersBehavior: {
                 contentSecurityPolicy: {
-                    contentSecurityPolicy: "default-src 'none'; img-src 'self'; script-src 'self' 'unsafe-inline' https://code.jquery.com https://stackpath.bootstrapcdn.com; style-src 'self' 'unsafe-inline' https://stackpath.bootstrapcdn.com; font-src 'self' data:; object-src 'none'; connect-src 'self' https://*.amazonaws.com https://*.amazoncognito.com",
+                    contentSecurityPolicy: `default-src 'none'; img-src 'self'; script-src 'self' 'unsafe-inline' https://code.jquery.com https://stackpath.bootstrapcdn.com; style-src 'self' 'unsafe-inline' https://stackpath.bootstrapcdn.com; font-src 'self' data:; object-src 'none'; connect-src 'self' https://api.${sharedConfig.domain} https://*.amazonaws.com https://*.amazoncognito.com`,
                     override: true,
                 },
             },

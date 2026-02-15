@@ -10,6 +10,7 @@ export class InfraStack extends cdk.Stack {
     super(scope, id, props);
 
     const baseStack = new BaseStack(this, 'BaseStack4DWHI');
+
     const authAtEdgeStack = new AuthAtEdgeStack(this, "DWHIAuthAtEdgeStack", {
       userPoolArn: baseStack.userPool.userPoolArn,
       userPoolClientId: baseStack.userPoolClient.userPoolClientId,
@@ -20,6 +21,7 @@ export class InfraStack extends cdk.Stack {
       redirectPathAuthRefresh: feConfig.authPaths.redirectPathAuthRefresh,
       signOutUrl: feConfig.authPaths.signOutUrl,
     });
+
     const frontendStack = new FrontendStack(this, 'DWHIFrontendStack', {
       authPaths: feConfig.authPaths,
     });

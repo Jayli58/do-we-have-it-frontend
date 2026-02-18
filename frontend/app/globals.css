@@ -15,16 +15,12 @@
 }
 
 body {
-  background: radial-gradient(
-      circle at top,
+  background: radial-gradient(circle at top,
       rgba(147, 197, 253, 0.25),
-      transparent 45%
-    ),
-    radial-gradient(
-      circle at 80% 20%,
+      transparent 45%),
+    radial-gradient(circle at 80% 20%,
       rgba(16, 185, 129, 0.15),
-      transparent 40%
-    ),
+      transparent 40%),
     var(--background);
   color: var(--foreground);
   font-family: var(--font-geist-sans), "Segoe UI", sans-serif;
@@ -52,7 +48,7 @@ body {
 }
 
 .breadcrumb-chip {
-  @apply h-7 rounded-xl border px-2 font-semibold bg-[var(--surface)] border-[color:var(--mui-palette-divider,rgba(0,0,0,0.12))];
+  @apply h-7 rounded-xl border px-2 font-semibold bg-[var(--surface)] border-[color:var(--mui-palette-divider, rgba(0, 0, 0, 0.12))];
 }
 
 .breadcrumb-chip .MuiChip-icon {
@@ -109,7 +105,7 @@ body {
 }
 
 .page-shell {
-  @apply min-h-screen px-3 pb-16 pt-6 sm:px-4 sm:pt-10;
+  @apply min-h-screen px-3 pb-6 pt-6 sm:px-4 sm:pt-10;
 }
 
 .page-container {

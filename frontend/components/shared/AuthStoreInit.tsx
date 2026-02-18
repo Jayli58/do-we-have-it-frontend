@@ -6,6 +6,7 @@ import { useEffect, useRef, useState } from "react";
 import Box from "@mui/material/Box";
 import CircularProgress from "@mui/material/CircularProgress";
 
+import { getIdToken } from "@/lib/auth";
 import { useAuthStore } from "@/store/authStore";
 
 interface AuthStoreInitProps {
@@ -77,19 +78,20 @@ export default function AuthStoreInit({ children }: AuthStoreInitProps) {
     };
   }, []);
 
-  // background XHR keep-alive to trigger check-auth and refresh tokens if needed
+  // timed navigation to trigger check-auth and refresh tokens if needed
   useEffect(() => {
     if (!ready) {
       return;
     }
     const refreshUrl = "/";
-    const intervalMs = 5 * 60 * 1000 + 5000;
+    const intervalMs = 5 * 60 * 1000 + 5 * 1000;
     refreshIntervalRef.current = setInterval(() => {
-      void fetch(refreshUrl, {
-        method: "GET",
-        credentials: "include",
-        cache: "no-store",
-      });
+      const idToken = getIdToken();
+      if (!idToken) {
+        window.location.assign("/signout");
+        return;
+      }
+      window.location.assign(refreshUrl);
     }, intervalMs);
 
     return () => {

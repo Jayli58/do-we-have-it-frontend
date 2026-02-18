@@ -8,7 +8,7 @@ export default function UserTag({ name }: UserTagProps) {
   return (
     <div className="user-tag">
       <AccountBoxIcon fontSize="small" className="user-tag-icon" />
-      <span>{name}!</span>
+      <span>{name}</span>
     </div>
   );
 }

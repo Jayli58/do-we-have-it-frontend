@@ -1,3 +1,11 @@
+import {
+  clearPendingRequest,
+  isSameRequest,
+  loadPendingRequest,
+  replayPendingRequest,
+  savePendingRequest,
+} from "@/api/pendingRequest";
+import type { ApiRequestOptions, QueryParams } from "@/api/types";
 import { getIdToken, isTokenExpiringSoon } from "@/lib/auth";
 
 const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
@@ -6,14 +14,7 @@ const defaultHeaders = {
   "Content-Type": "application/json",
 };
 const refreshAttemptKey = "dwhi-refresh-attempted";
-
-type QueryParams = Record<string, string | number | boolean | null | undefined>;
-
-interface ApiRequestOptions {
-  method?: "GET" | "POST" | "PUT" | "DELETE";
-  body?: unknown;
-  query?: QueryParams;
-}
+const pendingRequestTtlMs = 2 * 60 * 1000;
 
 const buildUrl = (path: string, query?: QueryParams) => {
   const url = new URL(path, baseUrl);
@@ -40,19 +41,33 @@ export const apiFetch = (path: string, options: ApiRequestOptions = {}) => {
       const shouldRefresh = !idToken || isTokenExpiringSoon(idToken);
       if (shouldRefresh) {
         const hasAttempted = sessionStorage.getItem(refreshAttemptKey) === "true";
-        const requestedUri = `${window.location.pathname}${window.location.search}`;
+        if (!idToken) {
+          window.location.assign("/signout");
+          return Promise.reject(new Error("Auth token missing"));
+        }
         if (!hasAttempted) {
           sessionStorage.setItem(refreshAttemptKey, "true");
-          window.location.assign(
-            `/refreshauth?requestedUri=${encodeURIComponent(requestedUri)}`
-          );
-          // a guard to stop the current API call while the browser is about to redirect
+          savePendingRequest(path, options);
+          window.location.reload();
           return Promise.reject(new Error("Auth refresh in progress"));
         }
-        window.location.reload();
+        window.location.assign("/signout");
         return Promise.reject(new Error("Auth refresh failed"));
       }
       sessionStorage.removeItem(refreshAttemptKey);
+      // replay pending request if any
+      const pendingRequest = loadPendingRequest();
+      if (pendingRequest) {
+        const isExpired = Date.now() - pendingRequest.timestamp > pendingRequestTtlMs;
+        if (isExpired) {
+          clearPendingRequest();
+        } else if (isSameRequest(pendingRequest, path, options)) {
+          clearPendingRequest();
+        } else {
+          clearPendingRequest();
+          replayPendingRequest(pendingRequest, buildUrl, defaultHeaders);
+        }
+      }
     }
     if (idToken) {
       headers.Authorization = `Bearer ${idToken}`;

@@ -84,13 +84,16 @@ export default function AuthStoreInit({ children }: AuthStoreInitProps) {
       return;
     }
     const refreshUrl = "/";
-    const intervalMs = 5 * 60 * 1000 + 1 * 1000;
+    // 30 minutes + 1 second
+    const intervalMs = 30 * 60 * 1000 + 1 * 1000;
     refreshIntervalRef.current = setInterval(() => {
       const idToken = getIdToken();
       if (!idToken) {
+        console.log("No idToken found, redirecting to signout");
         window.location.assign("/signout");
         return;
       }
+      console.log("Refreshing token");
       window.location.assign(refreshUrl);
     }, intervalMs);
 

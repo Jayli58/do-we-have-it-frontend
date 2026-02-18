@@ -2,6 +2,7 @@ export interface UserInfo {
   name: string | null;
   email: string | null;
   sub: string | null;
+  exp: number | null;
 }
 
 const idTokenCookiePattern = /^CognitoIdentityServiceProvider\.[^.]+\.[^.]+\.idToken$/;
@@ -37,7 +38,7 @@ export const getIdToken = () => {
 export const parseUserInfo = (token: string): UserInfo => {
   const parts = token.split(".");
   if (parts.length < 2) {
-    return { name: null, email: null, sub: null };
+    return { name: null, email: null, sub: null, exp: null };
   }
   try {
     const payload = JSON.parse(decodeBase64Url(parts[1]));
@@ -45,8 +46,18 @@ export const parseUserInfo = (token: string): UserInfo => {
       name: typeof payload.name === "string" ? payload.name : null,
       email: typeof payload.email === "string" ? payload.email : null,
       sub: typeof payload.sub === "string" ? payload.sub : null,
+      exp: typeof payload.exp === "number" ? payload.exp : null,
     };
   } catch {
-    return { name: null, email: null, sub: null };
+    return { name: null, email: null, sub: null, exp: null };
   }
+};
+
+export const isTokenExpiringSoon = (token: string, bufferSeconds = 120) => {
+  const { exp } = parseUserInfo(token);
+  if (!exp) {
+    return false;
+  }
+  const nowSeconds = Math.floor(Date.now() / 1000);
+  return exp - nowSeconds <= bufferSeconds;
 };

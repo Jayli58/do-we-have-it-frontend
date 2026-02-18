@@ -1,10 +1,11 @@
-import { useAuthStore } from "@/store/authStore";
+import { getIdToken, isTokenExpiringSoon } from "@/lib/auth";
 
 const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
 const useDemoAuth = process.env.NEXT_PUBLIC_USE_DEMO_AUTH === "true";
 const defaultHeaders = {
   "Content-Type": "application/json",
 };
+const refreshAttemptKey = "dwhi-refresh-attempted";
 
 type QueryParams = Record<string, string | number | boolean | null | undefined>;
 
@@ -32,7 +33,27 @@ export const apiFetch = (path: string, options: ApiRequestOptions = {}) => {
   if (useDemoAuth) {
     headers["X-User-Id"] = "demo-user";
   } else {
-    const idToken = useAuthStore.getState().idToken;
+    // token expiry check and refresh logic
+    const idToken = getIdToken();
+    // ensure we only run in the browser
+    if (typeof window !== "undefined") {
+      const shouldRefresh = !idToken || isTokenExpiringSoon(idToken);
+      if (shouldRefresh) {
+        const hasAttempted = sessionStorage.getItem(refreshAttemptKey) === "true";
+        const requestedUri = `${window.location.pathname}${window.location.search}`;
+        if (!hasAttempted) {
+          sessionStorage.setItem(refreshAttemptKey, "true");
+          window.location.assign(
+            `/refreshauth?requestedUri=${encodeURIComponent(requestedUri)}`
+          );
+          // a guard to stop the current API call while the browser is about to redirect
+          return Promise.reject(new Error("Auth refresh in progress"));
+        }
+        window.location.reload();
+        return Promise.reject(new Error("Auth refresh failed"));
+      }
+      sessionStorage.removeItem(refreshAttemptKey);
+    }
     if (idToken) {
       headers.Authorization = `Bearer ${idToken}`;
     }

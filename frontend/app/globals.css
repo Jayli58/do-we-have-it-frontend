@@ -48,7 +48,8 @@ body {
 }
 
 .breadcrumb-chip {
-  @apply h-7 rounded-xl border px-2 font-semibold bg-[var(--surface)] border-[color:var(--mui-palette-divider, rgba(0, 0, 0, 0.12))];
+  @apply h-7 rounded-xl border px-2 font-semibold bg-[var(--surface)];
+  border-color: var(--mui-palette-divider, rgba(0, 0, 0, 0.12));
 }
 
 .breadcrumb-chip .MuiChip-icon {

@@ -54,6 +54,7 @@ describe("auth utilities", () => {
       name: "Ada Lovelace",
       email: "ada@example.com",
       sub: "user-123",
+      exp: 1700000000,
     };
     const token = `header.${base64UrlEncode(JSON.stringify(payload))}.sig`;
 

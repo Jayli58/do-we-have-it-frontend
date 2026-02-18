@@ -1,10 +1,3 @@
-import {
-  clearPendingRequest,
-  isSameRequest,
-  loadPendingRequest,
-  replayPendingRequest,
-  savePendingRequest,
-} from "@/api/pendingRequest";
 import type { ApiRequestOptions, QueryParams } from "@/api/types";
 import { getIdToken, isTokenExpiringSoon } from "@/lib/auth";
 
@@ -14,7 +7,6 @@ const defaultHeaders = {
   "Content-Type": "application/json",
 };
 const refreshAttemptKey = "dwhi-refresh-attempted";
-const pendingRequestTtlMs = 2 * 60 * 1000;
 
 const buildUrl = (path: string, query?: QueryParams) => {
   const url = new URL(path, baseUrl);
@@ -47,7 +39,6 @@ export const apiFetch = (path: string, options: ApiRequestOptions = {}) => {
         }
         if (!hasAttempted) {
           sessionStorage.setItem(refreshAttemptKey, "true");
-          savePendingRequest(path, options);
           window.location.reload();
           return Promise.reject(new Error("Auth refresh in progress"));
         }
@@ -55,19 +46,6 @@ export const apiFetch = (path: string, options: ApiRequestOptions = {}) => {
         return Promise.reject(new Error("Auth refresh failed"));
       }
       sessionStorage.removeItem(refreshAttemptKey);
-      // replay pending request if any
-      const pendingRequest = loadPendingRequest();
-      if (pendingRequest) {
-        const isExpired = Date.now() - pendingRequest.timestamp > pendingRequestTtlMs;
-        if (isExpired) {
-          clearPendingRequest();
-        } else if (isSameRequest(pendingRequest, path, options)) {
-          clearPendingRequest();
-        } else {
-          clearPendingRequest();
-          replayPendingRequest(pendingRequest, buildUrl, defaultHeaders);
-        }
-      }
     }
     if (idToken) {
       headers.Authorization = `Bearer ${idToken}`;

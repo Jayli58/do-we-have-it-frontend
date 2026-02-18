@@ -3,7 +3,6 @@
 import {
   Box,
   Container,
-  CircularProgress,
   Dialog,
   DialogContent,
   IconButton,
@@ -63,27 +62,22 @@ export default function Home() {
           </IconButton>
         </Box>
 
-        {state.isLoading ? (
-          <Box className="inventory-list-loading">
-            <CircularProgress />
-          </Box>
-        ) : (
-          <InventoryList
-            folders={state.query.trim() ? [] : state.folders}
-            items={state.listItems}
-            emptyMessage={
-              state.query.trim()
-                ? "No matches yet. Try a different keyword."
-                : "Create folders and items to start your inventory."
-            }
-            onOpenFolder={(folder) => actions.handleFolderOpen(folder.id, folder.name)}
-            onViewItem={(item) => actions.setViewItem(item)}
-            onEditFolder={(folder) => actions.setEditFolderData(folder)}
-            onEditItem={(item) => actions.setEditItemData(item)}
-            onDeleteFolder={actions.handleDeleteFolderPrompt}
-            onDeleteItem={actions.handleDeleteItemPrompt}
-          />
-        )}
+        <InventoryList
+          folders={state.query.trim() ? [] : state.folders}
+          items={state.listItems}
+          emptyMessage={
+            state.query.trim()
+              ? "No matches yet. Try a different keyword."
+              : "Create folders and items to start your inventory."
+          }
+          onOpenFolder={(folder) => actions.handleFolderOpen(folder.id, folder.name)}
+          onViewItem={(item) => actions.setViewItem(item)}
+          onEditFolder={(folder) => actions.setEditFolderData(folder)}
+          onEditItem={(item) => actions.setEditItemData(item)}
+          onDeleteFolder={actions.handleDeleteFolderPrompt}
+          onDeleteItem={actions.handleDeleteItemPrompt}
+          isLoading={state.isLoading}
+        />
 
         <ActionBar
           onCreateFolder={() => actions.setCreateFolderOpen(true)}

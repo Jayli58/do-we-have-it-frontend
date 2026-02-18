@@ -1,6 +1,6 @@
 "use client";
 
-import { Box, Stack, Typography } from "@mui/material";
+import { Box, CircularProgress, Stack, Typography } from "@mui/material";
 
 import type { Folder, Item } from "@/types";
 import FolderRow from "@/components/InventoryList/FolderRow/FolderRow";
@@ -9,6 +9,7 @@ import ItemRow from "@/components/InventoryList/ItemRow/ItemRow";
 interface InventoryListProps {
   folders: Folder[];
   items: Item[];
+  isLoading?: boolean;
   emptyMessage?: string;
   onOpenFolder?: (folder: Folder) => void;
   onViewItem?: (item: Item) => void;
@@ -21,6 +22,7 @@ interface InventoryListProps {
 export default function InventoryList({
   folders,
   items,
+  isLoading = false,
   emptyMessage,
   onOpenFolder,
   onViewItem,
@@ -37,7 +39,11 @@ export default function InventoryList({
 
   return (
     <Box className="mat-card" sx={{ padding: 2 }}>
-      {isEmpty ? (
+      {isLoading ? (
+        <Box className="inventory-list-loading">
+          <CircularProgress />
+        </Box>
+      ) : isEmpty ? (
         <Box
           display="flex"
           flexDirection="column"

@@ -116,6 +116,13 @@ body {
   @apply flex flex-col gap-4;
 }
 
+.auth-init-spinner {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 .folder-row-actions,
 .item-row-actions {
   @apply gap-0 md:gap-4;

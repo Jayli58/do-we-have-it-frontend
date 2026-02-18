@@ -84,7 +84,7 @@ export default function AuthStoreInit({ children }: AuthStoreInitProps) {
       return;
     }
     const refreshUrl = "/";
-    const intervalMs = 5 * 60 * 1000 + 5 * 1000;
+    const intervalMs = 4 * 60 * 1000 + 30 * 1000;
     refreshIntervalRef.current = setInterval(() => {
       const idToken = getIdToken();
       if (!idToken) {

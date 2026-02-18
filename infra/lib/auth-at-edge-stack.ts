@@ -53,9 +53,11 @@ export class AuthAtEdgeStack extends cdk.Stack {
                 RedirectPathAuthRefresh: props.redirectPathAuthRefresh,
                 SignOutUrl: props.signOutUrl,
                 // cookie settings for retaining tokens
+                // ttl for idToken, accessToken should also be 30 days 
+                // otherwise app would ask for login again without id token in cookie
                 CookieSettings: JSON.stringify({
-                    idToken: "Path=/; Secure; SameSite=Lax; Max-Age=3600",
-                    accessToken: "Path=/; Secure; SameSite=Lax; Max-Age=3600",
+                    idToken: "Path=/; Secure; SameSite=Lax; Max-Age=2592000",
+                    accessToken: "Path=/; Secure; SameSite=Lax; Max-Age=2592000",
                     refreshToken: "Path=/; Secure; SameSite=Lax; Max-Age=2592000",
                     nonce: "Path=/; Secure; HttpOnly; SameSite=Lax; Max-Age=300",
                 }),

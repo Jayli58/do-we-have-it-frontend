@@ -1,9 +1,6 @@
 import { useAuthStore } from "@/store/authStore";
 
 const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
-if (!baseUrl) {
-  throw new Error("NEXT_PUBLIC_API_BASE_URL is not set.");
-}
 const useDemoAuth = process.env.NEXT_PUBLIC_USE_DEMO_AUTH === "true";
 const defaultHeaders = {
   "Content-Type": "application/json",

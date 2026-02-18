@@ -14,6 +14,7 @@ interface AuthStoreInitProps {
 
 export default function AuthStoreInit({ children }: AuthStoreInitProps) {
   const hasInitialized = useRef(false);
+  const hasRefreshed = useRef(false);
   const retryCount = useRef(0);
   const [ready, setReady] = useState(false);
   // a ref to store the retry timeout ID
@@ -26,14 +27,27 @@ export default function AuthStoreInit({ children }: AuthStoreInitProps) {
     }
 
     // retry auth store initialization
-    const startTime = Date.now();
     const maxWaitMs = 3000;
     const retryDelayMs = 150;
+    const maxRetries = Math.ceil(maxWaitMs / retryDelayMs);
 
     const attemptInit = () => {
       useAuthStore.getState().init();
       const { idToken } = useAuthStore.getState();
-      if (idToken || Date.now() - startTime >= maxWaitMs) {
+      if (idToken) {
+        if (retryTimeoutRef.current) {
+          clearTimeout(retryTimeoutRef.current);
+          retryTimeoutRef.current = null;
+        }
+        setReady(true);
+        return;
+      }
+      // if max retries is reached, reload the page
+      if (retryCount.current >= maxRetries) {
+        if (!hasRefreshed.current) {
+          hasRefreshed.current = true;
+          window.location.reload();
+        }
         setReady(true);
         return;
       }

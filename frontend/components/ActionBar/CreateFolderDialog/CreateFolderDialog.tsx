@@ -131,7 +131,7 @@ export default function CreateFolderDialog({
           >
             <CreateNewFolderIcon sx={{ color: "#2563eb" }} />
           </Box>
-          <Box flex={1}>
+          <Box className="dialog-content-column">
             <Typography id="create-folder-title" variant="h6" fontWeight={700}>
               Create folder
             </Typography>

@@ -140,7 +140,7 @@ export default function CreateItemDialog({
           >
             <InventoryIcon sx={{ color: "#2563eb" }} />
           </Box>
-          <Box flex={1}>
+          <Box className="dialog-content-column">
             <Box display="flex" alignItems="flex-start" justifyContent="space-between">
               <Typography id="create-item-title" variant="h6" fontWeight={700}>
                 Create item

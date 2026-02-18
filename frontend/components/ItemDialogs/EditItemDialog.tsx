@@ -165,7 +165,7 @@ export default function EditItemDialog({
           >
             <EditNoteIcon sx={{ color: "#2563eb" }} />
           </Box>
-          <Box flex={1}>
+          <Box className="dialog-content-column">
             <Typography id="edit-item-title" variant="h6" fontWeight={700}>
               Edit item
             </Typography>

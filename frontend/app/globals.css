@@ -117,17 +117,15 @@ body {
 }
 
 .auth-init-spinner {
-  min-height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  @apply min-h-screen flex items-center justify-center;
 }
 
 .inventory-list-loading {
-  min-height: 240px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  @apply min-h-[240px] flex items-center justify-center;
+}
+
+.dialog-content-column {
+  @apply flex-1 w-full sm:w-auto;
 }
 
 .folder-row-actions,

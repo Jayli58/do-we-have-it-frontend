@@ -13,6 +13,12 @@ interface AuthStoreInitProps {
 }
 
 export default function AuthStoreInit({ children }: AuthStoreInitProps) {
+  // for local development
+  const useDemoAuth = process.env.NEXT_PUBLIC_USE_DEMO_AUTH === "true";
+  if (useDemoAuth) {
+    return <>{children}</>;
+  }
+
   const hasInitialized = useRef(false);
   const hasRefreshed = useRef(false);
   const retryCount = useRef(0);

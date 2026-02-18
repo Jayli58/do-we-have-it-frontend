@@ -23,6 +23,7 @@ export default function AuthStoreInit({ children }: AuthStoreInitProps) {
   const hasRefreshed = useRef(false);
   const retryCount = useRef(0);
   const [ready, setReady] = useState(false);
+  const refreshIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   // a ref to store the retry timeout ID
   const retryTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -75,6 +76,30 @@ export default function AuthStoreInit({ children }: AuthStoreInitProps) {
       }
     };
   }, []);
+
+  // background XHR keep-alive to trigger check-auth and refresh tokens if needed
+  useEffect(() => {
+    if (!ready) {
+      return;
+    }
+    const refreshUrl = "/";
+    // 4 minutes 30 seconds
+    const intervalMs = 4 * 60 * 1000 + 30 * 1000;
+    refreshIntervalRef.current = setInterval(() => {
+      void fetch(refreshUrl, {
+        method: "GET",
+        credentials: "include",
+        cache: "no-store",
+      });
+    }, intervalMs);
+
+    return () => {
+      if (refreshIntervalRef.current) {
+        clearInterval(refreshIntervalRef.current);
+        refreshIntervalRef.current = null;
+      }
+    };
+  }, [ready]);
 
   // show loading spinner while auth store is initializing
   if (!ready) {

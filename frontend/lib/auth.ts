@@ -52,12 +52,3 @@ export const parseUserInfo = (token: string): UserInfo => {
     return { name: null, email: null, sub: null, exp: null };
   }
 };
-
-export const isTokenExpiringSoon = (token: string, bufferSeconds = 120) => {
-  const { exp } = parseUserInfo(token);
-  if (!exp) {
-    return false;
-  }
-  const nowSeconds = Math.floor(Date.now() / 1000);
-  return exp - nowSeconds <= bufferSeconds;
-};

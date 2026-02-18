@@ -123,6 +123,13 @@ body {
   justify-content: center;
 }
 
+.inventory-list-loading {
+  min-height: 240px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 .folder-row-actions,
 .item-row-actions {
   @apply gap-0 md:gap-4;

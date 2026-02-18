@@ -113,6 +113,14 @@ export class FrontendStack extends cdk.Stack {
             }),
         };
 
+        const staticAssetBehaviorDefaults: cloudfront.BehaviorOptions = {
+            origin: origins.S3BucketOrigin.withOriginAccessControl(bucket),
+            viewerProtocolPolicy: cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
+            cachePolicy: cloudfront.CachePolicy.CACHING_OPTIMIZED,
+            responseHeadersPolicy,
+            originRequestPolicy: cloudfront.OriginRequestPolicy.CORS_S3_ORIGIN,
+        };
+
         const cfDistro = new cloudfront.Distribution(this, 'DWHIFeDistro', {
             defaultRootObject: 'index.html',
             domainNames: [feConfig.domain],
@@ -136,6 +144,13 @@ export class FrontendStack extends cdk.Stack {
             // additional auth paths for sign in, sign out, and refresh in cloudfront
             // paths are defined in auth at edge stack
             additionalBehaviors: {
+                // bypass auth at edge for static assets
+                "_next/static/*": {
+                    ...staticAssetBehaviorDefaults,
+                },
+                "_next/image/*": {
+                    ...staticAssetBehaviorDefaults,
+                },
                 [props.authPaths.redirectPathSignIn]: {
                     ...authBehaviorDefaults,
                     edgeLambdas: [

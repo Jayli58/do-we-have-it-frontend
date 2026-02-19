@@ -36,6 +36,14 @@ export class FrontendStack extends cdk.Stack {
             autoDeleteObjects: true,
         });
 
+        const accessLogBucket = new s3.Bucket(this, "DWHIFeAccessLogsBucket", {
+            blockPublicAccess: s3.BlockPublicAccess.BLOCK_ALL,
+            encryption: s3.BucketEncryption.S3_MANAGED,
+            removalPolicy: cdk.RemovalPolicy.DESTROY,
+            autoDeleteObjects: true,
+            enforceSSL: true,
+        });
+
         // cert
         const certArn = ssm.StringParameter.valueForStringParameter(this, feConfig.ssmParamName4CertArn);
         const cert = acm.Certificate.fromCertificateArn(this, "ImportedFeCert", certArn);
@@ -116,6 +124,8 @@ export class FrontendStack extends cdk.Stack {
             defaultRootObject: 'index.html',
             domainNames: [feConfig.domain],
             certificate: cert,
+            logBucket: accessLogBucket,
+            logFilePrefix: "cloudfront/",
             // https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_cloudfront.ViewerProtocolPolicy.html
             defaultBehavior: {
                 ...authBehaviorDefaults,

@@ -42,6 +42,8 @@ export class FrontendStack extends cdk.Stack {
             removalPolicy: cdk.RemovalPolicy.DESTROY,
             autoDeleteObjects: true,
             enforceSSL: true,
+            objectOwnership: s3.ObjectOwnership.OBJECT_WRITER,
+            accessControl: s3.BucketAccessControl.LOG_DELIVERY_WRITE,
         });
 
         // cert

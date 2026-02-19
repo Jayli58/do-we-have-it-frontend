@@ -2,7 +2,7 @@ import { sharedConfig } from "../shared";
 
 import * as path from "path";
 
-const repoRoot = path.resolve(__dirname, "..", "..", "..");
+const repoRoot = path.resolve(__dirname, "..", "..", "..", "..");
 
 export const feConfig = {
     domain: sharedConfig.domain,

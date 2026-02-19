@@ -1,5 +1,9 @@
 import { sharedConfig } from "../shared";
 
+import * as path from "path";
+
+const repoRoot = path.resolve(__dirname, "..", "..", "..");
+
 export const feConfig = {
     domain: sharedConfig.domain,
     // obtain from FrontendCertStack output in us-east-1 for cloudfront
@@ -19,7 +23,7 @@ export const feConfig = {
     // Local-only path for CDK asset deployment
     localAssetPath:
         process.env.FE_LOCAL_ASSET_PATH ??
-        "C:/Users/Lee58/PhpstormProjects/do-we-have-it/frontend/out",
+        path.join(repoRoot, "frontend", "out"),
     authPaths: {
         redirectPathSignIn: "/parseauth",
         redirectPathSignOut: "/",

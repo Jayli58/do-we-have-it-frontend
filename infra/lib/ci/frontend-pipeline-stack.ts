@@ -61,6 +61,7 @@ export class FrontendPipelineStack extends cdk.Stack {
                     build: {
                         commands: [
                             'cd "$infra_dir"',
+                            'npx cdk list',
                             'npx cdk deploy InfraStack/DWHIFrontendStack --require-approval never',
                         ],
                     },

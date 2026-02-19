@@ -17,7 +17,9 @@ export const feConfig = {
     // existing GitHub OIDC provider ARN stored in SSM
     ssmParamName4GithubOidcProviderArn: "/dwhi/github/oidc/providerArn",
     // Local-only path for CDK asset deployment
-    localAssetPath: "C:/Users/Lee58/PhpstormProjects/do-we-have-it/frontend/out",
+    localAssetPath:
+        process.env.FE_LOCAL_ASSET_PATH ??
+        "C:/Users/Lee58/PhpstormProjects/do-we-have-it/frontend/out",
     authPaths: {
         redirectPathSignIn: "/parseauth",
         redirectPathSignOut: "/",

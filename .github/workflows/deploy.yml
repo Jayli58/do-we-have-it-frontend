@@ -67,6 +67,8 @@ jobs:
       - name: Deploy frontend CDK stack
         run: npx cdk deploy InfraStack/DWHIFrontendStack --require-approval never
         working-directory: infra
+        env:
+          FE_LOCAL_ASSET_PATH: ${{ github.workspace }}/frontend/out
 
       - name: Deploy to S3
         run: aws s3 sync ./out "s3://${{ secrets.FRONTEND_BUCKET }}/" --delete

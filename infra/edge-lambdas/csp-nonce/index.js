@@ -23,7 +23,7 @@ const buildCsp = (hashes) => {
     "style-src 'self' 'unsafe-inline'",
     "img-src 'self' data: blob:",
     "font-src 'self' data:",
-    "connect-src 'self'",
+    "connect-src 'self' https://api.dwhi.823252.xyz",
     "object-src 'none'",
     "base-uri 'self'",
     "frame-ancestors 'none'",

@@ -44,10 +44,12 @@ jobs:
         run: zip -r "${{ vars.PIPELINE_FRONTEND_KEY }}" out
         working-directory: frontend
 
+        # infra should be zipped after the build of frontend to get latest hash (script-hashes.json) for csp nonce
       - name: Create infra zip
         run: zip -r "${{ vars.PIPELINE_INFRA_KEY }}" . -x "node_modules/**" "cdk.out/**" ".git/**"
         working-directory: infra
 
+        # make sure to upload infra zip first before frontend triggers ci
       - name: Upload infra zip
         run: aws s3 cp "${{ vars.PIPELINE_INFRA_KEY }}" "s3://${{ vars.PIPELINE_SOURCE_BUCKET }}/${{ vars.PIPELINE_INFRA_KEY }}"
         working-directory: infra

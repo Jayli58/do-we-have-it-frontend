@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
+    "postbuild": "node scripts/generate-csp-hashes.js",
     "start": "next start",
     "lint": "eslint",
     "test": "jest"

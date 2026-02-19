@@ -78,9 +78,6 @@ export class FrontendStack extends cdk.Stack {
             handler: "index.handler",
             code: lambda.Code.fromAsset(path.join(__dirname, "..", "edge-lambdas", "csp-nonce")),
             description: "Inject CSP nonces and security headers",
-            environment: {
-                API_DOMAIN: `api.${sharedConfig.domain}`,
-            },
         });
 
         const cspHeadersHandlerVersion = cspHeadersHandler.currentVersion;
@@ -127,7 +124,7 @@ export class FrontendStack extends cdk.Stack {
                         functionVersion: checkAuthHandler,
                     },
                     {
-                        eventType: cloudfront.LambdaEdgeEventType.ORIGIN_RESPONSE,
+                        eventType: cloudfront.LambdaEdgeEventType.VIEWER_RESPONSE,
                         functionVersion: cspHeadersHandlerVersion,
                     },
                 ],
@@ -140,7 +137,7 @@ export class FrontendStack extends cdk.Stack {
                     ...staticAssetBehaviorDefaults,
                     edgeLambdas: [
                         {
-                            eventType: cloudfront.LambdaEdgeEventType.ORIGIN_RESPONSE,
+                            eventType: cloudfront.LambdaEdgeEventType.VIEWER_RESPONSE,
                             functionVersion: cspHeadersHandlerVersion,
                         },
                     ],
@@ -149,7 +146,7 @@ export class FrontendStack extends cdk.Stack {
                     ...staticAssetBehaviorDefaults,
                     edgeLambdas: [
                         {
-                            eventType: cloudfront.LambdaEdgeEventType.ORIGIN_RESPONSE,
+                            eventType: cloudfront.LambdaEdgeEventType.VIEWER_RESPONSE,
                             functionVersion: cspHeadersHandlerVersion,
                         },
                     ],
@@ -162,7 +159,7 @@ export class FrontendStack extends cdk.Stack {
                             functionVersion: parseAuthHandler,
                         },
                         {
-                            eventType: cloudfront.LambdaEdgeEventType.ORIGIN_RESPONSE,
+                            eventType: cloudfront.LambdaEdgeEventType.VIEWER_RESPONSE,
                             functionVersion: cspHeadersHandlerVersion,
                         },
                     ],
@@ -175,7 +172,7 @@ export class FrontendStack extends cdk.Stack {
                             functionVersion: refreshAuthHandler,
                         },
                         {
-                            eventType: cloudfront.LambdaEdgeEventType.ORIGIN_RESPONSE,
+                            eventType: cloudfront.LambdaEdgeEventType.VIEWER_RESPONSE,
                             functionVersion: cspHeadersHandlerVersion,
                         },
                     ],
@@ -188,7 +185,7 @@ export class FrontendStack extends cdk.Stack {
                             functionVersion: signOutHandler,
                         },
                         {
-                            eventType: cloudfront.LambdaEdgeEventType.ORIGIN_RESPONSE,
+                            eventType: cloudfront.LambdaEdgeEventType.VIEWER_RESPONSE,
                             functionVersion: cspHeadersHandlerVersion,
                         },
                     ],

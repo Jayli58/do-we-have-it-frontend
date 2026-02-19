@@ -9,9 +9,14 @@ export class InfraStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
-    const baseStack = new BaseStack(this, 'BaseStack4DWHI');
+    const stackEnv = props?.env;
+
+    const baseStack = new BaseStack(this, "BaseStack4DWHI", {
+      env: stackEnv,
+    });
 
     const authAtEdgeStack = new AuthAtEdgeStack(this, "DWHIAuthAtEdgeStack", {
+      env: stackEnv,
       userPoolArn: baseStack.userPool.userPoolArn,
       userPoolClientId: baseStack.userPoolClient.userPoolClientId,
       userPoolAuthDomain: baseStack.userPoolAuthDomain,
@@ -23,6 +28,7 @@ export class InfraStack extends cdk.Stack {
     });
 
     const frontendStack = new FrontendStack(this, 'DWHIFrontendStack', {
+      env: stackEnv,
       authPaths: feConfig.authPaths,
     });
 

@@ -1,13 +1,14 @@
 import * as cdk from 'aws-cdk-lib';
 import { Construct } from "constructs";
-import * as s3 from 'aws-cdk-lib/aws-s3';
-import * as cloudfront from 'aws-cdk-lib/aws-cloudfront';
-import * as origins from 'aws-cdk-lib/aws-cloudfront-origins';
-import * as s3deploy from 'aws-cdk-lib/aws-s3-deployment';
+import * as s3 from "aws-cdk-lib/aws-s3";
+import * as cloudfront from "aws-cdk-lib/aws-cloudfront";
+import * as origins from "aws-cdk-lib/aws-cloudfront-origins";
+import * as s3deploy from "aws-cdk-lib/aws-s3-deployment";
 import * as acm from "aws-cdk-lib/aws-certificatemanager";
 import * as ssm from "aws-cdk-lib/aws-ssm";
 import * as iam from "aws-cdk-lib/aws-iam";
 import * as lambda from "aws-cdk-lib/aws-lambda";
+import * as path from "path";
 import { feConfig } from "../config/frontend/config.fe";
 import { sharedConfig } from "../config/shared";
 
@@ -52,10 +53,6 @@ export class FrontendStack extends cdk.Stack {
             this,
             feConfig.authAtEdgeSsmParamNames.refreshAuthHandlerArn,
         );
-        const httpHeadersHandlerArn = ssm.StringParameter.valueForStringParameter(
-            this,
-            feConfig.authAtEdgeSsmParamNames.httpHeadersHandlerArn,
-        );
         const signOutHandlerArn = ssm.StringParameter.valueForStringParameter(
             this,
             feConfig.authAtEdgeSsmParamNames.signOutHandlerArn,
@@ -76,32 +73,27 @@ export class FrontendStack extends cdk.Stack {
             "AuthAtEdgeRefreshAuthHandler",
             refreshAuthHandlerArn,
         );
-        const httpHeadersHandler = lambda.Version.fromVersionArn(
-            this,
-            "AuthAtEdgeHttpHeadersHandler",
-            httpHeadersHandlerArn,
-        );
+        const cspHeadersHandler = new cloudfront.experimental.EdgeFunction(this, "DwhiCspHeadersHandler", {
+            runtime: lambda.Runtime.NODEJS_22_X,
+            handler: "index.handler",
+            code: lambda.Code.fromAsset(path.join(__dirname, "..", "edge-lambdas", "csp-nonce")),
+            description: "Inject CSP nonces and security headers",
+            environment: {
+                API_DOMAIN: `api.${sharedConfig.domain}`,
+            },
+        });
+
+        const cspHeadersHandlerVersion = cspHeadersHandler.currentVersion;
         const signOutHandler = lambda.Version.fromVersionArn(
             this,
             "AuthAtEdgeSignOutHandler",
             signOutHandlerArn,
         );
 
-        // todo: temp solution that overrides csp to allow inline scripts and local fonts
-        const responseHeadersPolicy = new cloudfront.ResponseHeadersPolicy(this, "DwhiFrontendResponseHeadersPolicy", {
-            securityHeadersBehavior: {
-                contentSecurityPolicy: {
-                    contentSecurityPolicy: `default-src 'none'; img-src 'self'; script-src 'self' 'unsafe-inline' https://code.jquery.com https://stackpath.bootstrapcdn.com; style-src 'self' 'unsafe-inline' https://stackpath.bootstrapcdn.com; font-src 'self' data:; object-src 'none'; connect-src 'self' https://api.${sharedConfig.domain} https://*.amazonaws.com https://*.amazoncognito.com`,
-                    override: true,
-                },
-            },
-        });
-
         const authBehaviorDefaults: cloudfront.BehaviorOptions = {
             origin: origins.S3BucketOrigin.withOriginAccessControl(bucket),
             viewerProtocolPolicy: cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
             cachePolicy: cloudfront.CachePolicy.CACHING_DISABLED,
-            responseHeadersPolicy,
             // let cloudfront forward all viewer headers, cookies, and query strings to the origin
             // this is required for the auth at edge flow to work correctly
             originRequestPolicy: new cloudfront.OriginRequestPolicy(this, "DwhiAuthOriginRequestPolicy", {
@@ -117,7 +109,6 @@ export class FrontendStack extends cdk.Stack {
             origin: origins.S3BucketOrigin.withOriginAccessControl(bucket),
             viewerProtocolPolicy: cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
             cachePolicy: cloudfront.CachePolicy.CACHING_OPTIMIZED,
-            responseHeadersPolicy,
             originRequestPolicy: cloudfront.OriginRequestPolicy.CORS_S3_ORIGIN,
         };
 
@@ -137,7 +128,7 @@ export class FrontendStack extends cdk.Stack {
                     },
                     {
                         eventType: cloudfront.LambdaEdgeEventType.ORIGIN_RESPONSE,
-                        functionVersion: httpHeadersHandler,
+                        functionVersion: cspHeadersHandlerVersion,
                     },
                 ],
             },
@@ -147,9 +138,21 @@ export class FrontendStack extends cdk.Stack {
                 // bypass auth at edge for static assets
                 "_next/static/*": {
                     ...staticAssetBehaviorDefaults,
+                    edgeLambdas: [
+                        {
+                            eventType: cloudfront.LambdaEdgeEventType.ORIGIN_RESPONSE,
+                            functionVersion: cspHeadersHandlerVersion,
+                        },
+                    ],
                 },
                 "_next/image/*": {
                     ...staticAssetBehaviorDefaults,
+                    edgeLambdas: [
+                        {
+                            eventType: cloudfront.LambdaEdgeEventType.ORIGIN_RESPONSE,
+                            functionVersion: cspHeadersHandlerVersion,
+                        },
+                    ],
                 },
                 [props.authPaths.redirectPathSignIn]: {
                     ...authBehaviorDefaults,
@@ -157,6 +160,10 @@ export class FrontendStack extends cdk.Stack {
                         {
                             eventType: cloudfront.LambdaEdgeEventType.VIEWER_REQUEST,
                             functionVersion: parseAuthHandler,
+                        },
+                        {
+                            eventType: cloudfront.LambdaEdgeEventType.ORIGIN_RESPONSE,
+                            functionVersion: cspHeadersHandlerVersion,
                         },
                     ],
                 },
@@ -167,6 +174,10 @@ export class FrontendStack extends cdk.Stack {
                             eventType: cloudfront.LambdaEdgeEventType.VIEWER_REQUEST,
                             functionVersion: refreshAuthHandler,
                         },
+                        {
+                            eventType: cloudfront.LambdaEdgeEventType.ORIGIN_RESPONSE,
+                            functionVersion: cspHeadersHandlerVersion,
+                        },
                     ],
                 },
                 [props.authPaths.signOutUrl]: {
@@ -175,6 +186,10 @@ export class FrontendStack extends cdk.Stack {
                         {
                             eventType: cloudfront.LambdaEdgeEventType.VIEWER_REQUEST,
                             functionVersion: signOutHandler,
+                        },
+                        {
+                            eventType: cloudfront.LambdaEdgeEventType.ORIGIN_RESPONSE,
+                            functionVersion: cspHeadersHandlerVersion,
                         },
                     ],
                 },

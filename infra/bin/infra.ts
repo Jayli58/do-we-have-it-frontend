@@ -13,7 +13,7 @@ new FrontendCertStack(app, "DWHIFrontendCertStack", {
   env: { account, region: "us-east-1" },
 });
 
-new InfraStack(app, 'DWHIInfraStack', {
+new InfraStack(app, 'InfraStack', {
   env: { account: account, region: region },
 });
 

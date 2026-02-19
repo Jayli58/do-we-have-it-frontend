@@ -4,9 +4,6 @@ on:
   push:
     branches:
       - main
-    paths:
-      - 'infra/**'
-      - '.github/workflows/upload-pipeline-artifacts.yml'
 
 jobs:
   upload-artifacts:

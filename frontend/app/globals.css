@@ -106,7 +106,8 @@ body {
 }
 
 .page-shell {
-  @apply min-h-screen px-3 pb-6 pt-6 sm:px-4 sm:pt-10;
+  @apply min-h-screen px-3 pb-6 pt-6 sm:px-6 sm:pt-10;
+  min-height: 100svh;
 }
 
 .page-container {
@@ -115,6 +116,7 @@ body {
 
 .auth-init-spinner {
   @apply min-h-screen flex items-center justify-center;
+  min-height: 100svh;
 }
 
 .inventory-list-loading {

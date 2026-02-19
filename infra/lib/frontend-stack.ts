@@ -86,6 +86,10 @@ export class FrontendStack extends cdk.Stack {
             signOutHandlerArn,
         );
 
+        const frontendAssetPath = process.env.MYAPP_ROOT
+            ? path.resolve(process.env.MYAPP_ROOT, "out")
+            : feConfig.localAssetPath;
+
         const authBehaviorDefaults: cloudfront.BehaviorOptions = {
             origin: origins.S3BucketOrigin.withOriginAccessControl(bucket),
             viewerProtocolPolicy: cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
@@ -194,12 +198,12 @@ export class FrontendStack extends cdk.Stack {
 
         // deploy next static codes onto s3 bucket (local-only)
         // ci does not use this; ci is in github actions
-        new s3deploy.BucketDeployment(this, 'DeployDWHIFe', {
-            sources: [s3deploy.Source.asset(feConfig.localAssetPath)],
+        new s3deploy.BucketDeployment(this, "DeployDWHIFe", {
+            sources: [s3deploy.Source.asset(frontendAssetPath)],
             destinationBucket: bucket,
             distribution: cfDistro,
             // to invalidate cloudfront cache
-            distributionPaths: ['/*']
+            distributionPaths: ["/*"],
         });
 
         // github oidc for github actions to deploy frontend

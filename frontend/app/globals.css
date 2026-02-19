@@ -106,8 +106,7 @@ body {
 }
 
 .page-shell {
-  @apply min-h-screen px-3 pb-6 pt-6 sm:px-6 sm:pt-10;
-  min-height: 100svh;
+  @apply px-3 pb-6 pt-6 sm:px-6 sm:pt-10;
 }
 
 .page-container {
@@ -116,11 +115,10 @@ body {
 
 .auth-init-spinner {
   @apply min-h-screen flex items-center justify-center;
-  min-height: 100svh;
 }
 
 .inventory-list-loading {
-  @apply min-h-[240px] flex items-center justify-center;
+  @apply flex items-center justify-center;
 }
 
 .dialog-content-column {

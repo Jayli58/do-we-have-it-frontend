@@ -16,7 +16,6 @@ jobs:
   deploy:
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
-    environment: production
     steps:
       # for debugging OIDC token
       # - name: Show OIDC context

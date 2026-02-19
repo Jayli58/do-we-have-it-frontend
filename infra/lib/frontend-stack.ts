@@ -10,7 +10,6 @@ import * as iam from "aws-cdk-lib/aws-iam";
 import * as lambda from "aws-cdk-lib/aws-lambda";
 import * as path from "path";
 import { feConfig } from "../config/frontend/config.fe";
-import { sharedConfig } from "../config/shared";
 
 interface FrontendStackProps extends cdk.StackProps {
     authPaths: {

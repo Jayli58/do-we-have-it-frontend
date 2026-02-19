@@ -1,0 +1,57 @@
+name: Upload pipeline artifacts
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  upload-artifacts:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - name: Checkout infra
+        uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: |
+            frontend/package-lock.json
+
+      - name: Build frontend for CSP hashes
+        run: |
+          npm ci
+          npm test --if-present
+          npm run build
+        working-directory: frontend
+        env:
+          NEXT_PUBLIC_FIELD_MAX: ${{ secrets.NEXT_PUBLIC_FIELD_MAX }}
+          NEXT_PUBLIC_COMMENT_MAX: ${{ secrets.NEXT_PUBLIC_COMMENT_MAX }}
+          NEXT_PUBLIC_API_BASE_URL: ${{ secrets.NEXT_PUBLIC_API_BASE_URL }}
+          NEXT_PUBLIC_USE_DEMO_AUTH: ${{ secrets.NEXT_PUBLIC_USE_DEMO_AUTH }}
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Create frontend zip
+        run: zip -r "${{ vars.PIPELINE_FRONTEND_KEY }}" out
+        working-directory: frontend
+
+      - name: Create infra zip
+        run: zip -r "${{ vars.PIPELINE_INFRA_KEY }}" . -x "node_modules/**" "cdk.out/**" ".git/**"
+        working-directory: infra
+
+      - name: Upload infra zip
+        run: aws s3 cp "${{ vars.PIPELINE_INFRA_KEY }}" "s3://${{ vars.PIPELINE_SOURCE_BUCKET }}/${{ vars.PIPELINE_INFRA_KEY }}"
+        working-directory: infra
+
+      - name: Upload frontend zip
+        run: aws s3 cp "${{ vars.PIPELINE_FRONTEND_KEY }}" "s3://${{ vars.PIPELINE_SOURCE_BUCKET }}/${{ vars.PIPELINE_FRONTEND_KEY }}"
+        working-directory: frontend

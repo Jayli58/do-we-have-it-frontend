@@ -83,7 +83,7 @@ export class FrontendStack extends cdk.Stack {
             refreshAuthHandlerArn,
         );
         const cspHeadersHandler = new cloudfront.experimental.EdgeFunction(this, "DwhiCspHeadersHandler", {
-            runtime: lambda.Runtime.NODEJS_20_X,
+            runtime: lambda.Runtime.NODEJS_22_X,
             handler: "index.handler",
             code: lambda.Code.fromAsset(path.join(__dirname, "..", "edge-lambdas", "csp-nonce")),
             description: "Inject CSP nonces and security headers",

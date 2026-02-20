@@ -1,5 +1,6 @@
 *.js
 !edge-lambdas/csp-nonce/index.js
+!edge-lambdas/api-rewrite/index.js
 !jest.config.js
 *.d.ts
 node_modules

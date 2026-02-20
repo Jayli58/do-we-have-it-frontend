@@ -90,6 +90,14 @@ export class FrontendStack extends cdk.Stack {
         });
 
         const cspHeadersHandlerVersion = cspHeadersHandler.currentVersion;
+        const apiRewriteHandler = new cloudfront.experimental.EdgeFunction(this, "DwhiApiRewriteHandler", {
+            runtime: lambda.Runtime.NODEJS_18_X,
+            handler: "index.handler",
+            code: lambda.Code.fromAsset(path.join(__dirname, "..", "edge-lambdas", "api-rewrite")),
+            description: "Rewrite /api prefix for backend origin",
+        });
+
+        const apiRewriteHandlerVersion = apiRewriteHandler.currentVersion;
         const signOutHandler = lambda.Version.fromVersionArn(
             this,
             "AuthAtEdgeSignOutHandler",
@@ -170,13 +178,17 @@ export class FrontendStack extends cdk.Stack {
                     viewerProtocolPolicy: cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
                     allowedMethods: cloudfront.AllowedMethods.ALLOW_ALL,
                     cachePolicy: cloudfront.CachePolicy.CACHING_DISABLED,
-                    // forward all headers, cookies, and query strings to the api
-                    originRequestPolicy: cloudfront.OriginRequestPolicy.ALL_VIEWER,
+                    // forward all headers except host, plus cookies and query strings
+                    originRequestPolicy: cloudfront.OriginRequestPolicy.ALL_VIEWER_EXCEPT_HOST_HEADER,
                     // run auth at edge to check if the user is authenticated
                     edgeLambdas: [
                         {
                             eventType: cloudfront.LambdaEdgeEventType.VIEWER_REQUEST,
                             functionVersion: checkAuthHandler,
+                        },
+                        {
+                            eventType: cloudfront.LambdaEdgeEventType.ORIGIN_REQUEST,
+                            functionVersion: apiRewriteHandlerVersion,
                         },
                     ],
                 },

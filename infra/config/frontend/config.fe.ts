@@ -6,6 +6,7 @@ const repoRoot = path.resolve(__dirname, "..", "..", "..");
 
 export const feConfig = {
     domain: sharedConfig.domain,
+    apiDomain: sharedConfig.apiDomain,
     // obtain from FrontendCertStack output in us-east-1 for cloudfront
     ssmParamName4CertArn: '/dwhi/fe/certArn',
     // url for cognito callback

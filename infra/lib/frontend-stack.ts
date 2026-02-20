@@ -122,6 +122,11 @@ export class FrontendStack extends cdk.Stack {
             originRequestPolicy: cloudfront.OriginRequestPolicy.CORS_S3_ORIGIN,
         };
 
+        // forward api requests to api domain
+        const apiOrigin = new origins.HttpOrigin(feConfig.apiDomain, {
+            protocolPolicy: cloudfront.OriginProtocolPolicy.HTTPS_ONLY,
+        });
+
         const cfDistro = new cloudfront.Distribution(this, 'DWHIFeDistro', {
             defaultRootObject: 'index.html',
             domainNames: [feConfig.domain],
@@ -154,6 +159,24 @@ export class FrontendStack extends cdk.Stack {
                         {
                             eventType: cloudfront.LambdaEdgeEventType.VIEWER_RESPONSE,
                             functionVersion: cspHeadersHandlerVersion,
+                        },
+                    ],
+                },
+                // this is to enable auto refresh of auth token when sending requests to api
+                "api/*": {
+                    // forward api requests to api domain
+                    origin: apiOrigin,
+                    // enforce https
+                    viewerProtocolPolicy: cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
+                    allowedMethods: cloudfront.AllowedMethods.ALLOW_ALL,
+                    cachePolicy: cloudfront.CachePolicy.CACHING_DISABLED,
+                    // forward all headers, cookies, and query strings to the api
+                    originRequestPolicy: cloudfront.OriginRequestPolicy.ALL_VIEWER,
+                    // run auth at edge to check if the user is authenticated
+                    edgeLambdas: [
+                        {
+                            eventType: cloudfront.LambdaEdgeEventType.VIEWER_REQUEST,
+                            functionVersion: checkAuthHandler,
                         },
                     ],
                 },

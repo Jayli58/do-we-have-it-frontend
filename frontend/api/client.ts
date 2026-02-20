@@ -7,7 +7,10 @@ const defaultHeaders = {
 };
 
 const buildUrl = (path: string, query?: QueryParams) => {
-  const url = new URL(path, baseUrl);
+  const normalizedBaseUrl = baseUrl?.endsWith("/") ? baseUrl : `${baseUrl}/`;
+  const normalizedPath = path.startsWith("/") ? path.slice(1) : path;
+  const url = new URL(normalizedPath, normalizedBaseUrl);
+
   if (query) {
     Object.entries(query).forEach(([key, value]) => {
       if (value === null || value === undefined || value === "") {

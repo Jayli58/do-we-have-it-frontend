@@ -91,7 +91,7 @@ export class FrontendStack extends cdk.Stack {
 
         const cspHeadersHandlerVersion = cspHeadersHandler.currentVersion;
         const apiRewriteHandler = new cloudfront.experimental.EdgeFunction(this, "DwhiApiRewriteHandler", {
-            runtime: lambda.Runtime.NODEJS_18_X,
+            runtime: lambda.Runtime.NODEJS_22_X,
             handler: "index.handler",
             code: lambda.Code.fromAsset(path.join(__dirname, "..", "edge-lambdas", "api-rewrite")),
             description: "Rewrite /api prefix for backend origin",
@@ -186,6 +186,8 @@ export class FrontendStack extends cdk.Stack {
                             eventType: cloudfront.LambdaEdgeEventType.VIEWER_REQUEST,
                             functionVersion: checkAuthHandler,
                         },
+                        // rewrite /api prefix for backend origin
+                        // e.g. /api/users -> /users
                         {
                             eventType: cloudfront.LambdaEdgeEventType.ORIGIN_REQUEST,
                             functionVersion: apiRewriteHandlerVersion,

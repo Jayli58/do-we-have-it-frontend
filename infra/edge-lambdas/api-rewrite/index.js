@@ -1,5 +1,7 @@
 "use strict";
 
+// rewrite /api prefix for backend origin
+// e.g. /api/users -> /users
 exports.handler = async (event) => {
   const request = event.Records[0].cf.request;
 

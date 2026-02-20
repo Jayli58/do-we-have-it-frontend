@@ -22,17 +22,41 @@ const buildUrl = (path: string, query?: QueryParams) => {
   return url.toString();
 };
 
-export const apiFetch = (path: string, options: ApiRequestOptions = {}) => {
-  const headers: Record<string, string> = { ...defaultHeaders };
-  const idToken = getIdToken();
-  if (idToken) {
-    headers.Authorization = `Bearer ${idToken}`;
+// delay for smooth token refresh
+const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+
+export const apiFetch = async (path: string, options: ApiRequestOptions = {}) => {
+  const url = buildUrl(path, options.query);
+  const body = options.body ? JSON.stringify(options.body) : undefined;
+  const buildRequestInit = () => {
+    const headers: Record<string, string> = { ...defaultHeaders };
+    const idToken = getIdToken();
+    if (idToken) {
+      headers.Authorization = `Bearer ${idToken}`;
+    }
+    return {
+      method: options.method ?? "GET",
+      headers,
+      body,
+    } satisfies RequestInit;
+  };
+  const requestInit = buildRequestInit();
+
+  const response = await fetch(url, requestInit);
+  // if not 401 or not in browser, return response
+  if (response.status !== 401 || typeof window === "undefined") {
+    return response;
   }
-  return fetch(buildUrl(path, options.query), {
-    method: options.method ?? "GET",
-    headers,
-    body: options.body ? JSON.stringify(options.body) : undefined,
-  });
+  // delay for smooth token refresh
+  await delay(200);
+  // re-build request with new token
+  const retryResponse = await fetch(url, buildRequestInit());
+  // if still 401, reload the page
+  if (retryResponse.status === 401) {
+    window.location.reload();
+  }
+
+  return retryResponse;
 };
 
 export const parseJson = async <T>(response: Response) => {

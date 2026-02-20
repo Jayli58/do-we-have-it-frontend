@@ -24,7 +24,7 @@ body {
     var(--background);
   color: var(--foreground);
   font-family: var(--font-geist-sans), "Segoe UI", sans-serif;
-  min-height: 100vh;
+  /* min-height: 100vh; */
 }
 
 .mat-card {

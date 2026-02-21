@@ -153,12 +153,13 @@ export default function CreateFolderDialog({
           </Box>
         </Box>
       </DialogContent>
-      <DialogActions>
-        <Button onClick={onClose}>Cancel</Button>
+      <DialogActions className="dialog-footer">
+        <Button onClick={onClose} className="dialog-btn-secondary">Cancel</Button>
         <Button
           variant="contained"
           onClick={handleSubmit}
           disabled={Boolean(validation) || isSaving}
+          className="dialog-btn-secondary"
         >
           {isSaving ? "Creating..." : "Create"}
         </Button>

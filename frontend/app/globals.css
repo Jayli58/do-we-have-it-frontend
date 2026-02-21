@@ -129,3 +129,20 @@ body {
 .item-row-actions {
   @apply gap-0 md:gap-4;
 }
+
+.dialog-footer {
+  @apply w-full flex-col-reverse gap-1 px-6 sm:flex-row sm:items-center sm:justify-end;
+}
+
+/* Remove MUI's default left margin on the second action */
+.dialog-footer > :not(style) ~ :not(style) {
+  margin-left: 0;
+}
+
+.dialog-btn-secondary {
+  @apply inline-flex w-full rounded-md py-1 sm:w-auto;
+}
+
+.dialog-btn-primary {
+  @apply inline-flex w-full rounded-md sm:w-auto;
+}

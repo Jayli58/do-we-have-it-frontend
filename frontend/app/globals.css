@@ -131,7 +131,7 @@ body {
 }
 
 .dialog-footer {
-  @apply w-full flex-col-reverse gap-1 px-6 sm:flex-row sm:items-center sm:justify-end;
+  @apply w-full flex-col-reverse gap-2 px-6 mb-2 sm:flex-row sm:items-center sm:justify-end sm:gap-1;
 }
 
 /* Remove MUI's default left margin on the second action */
@@ -151,6 +151,10 @@ body {
   .dialog-btn-secondary,
   .dialog-btn-primary {
     @apply rounded-md;
+  }
+
+  .dialog-btn-secondary {
+    @apply border border-slate-300 transition-colors hover:bg-slate-50 active:bg-slate-100;
   }
 }
 

@@ -75,8 +75,10 @@ export default function ImportTemplateDialog({
           </Box>
         </Box>
       </DialogContent>
-      <DialogActions>
-        <Button onClick={onClose}>Cancel</Button>
+      <DialogActions className="dialog-footer">
+        <Button onClick={onClose} className="dialog-btn-secondary">
+          Cancel
+        </Button>
       </DialogActions>
     </Dialog>
   );

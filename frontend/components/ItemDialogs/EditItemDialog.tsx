@@ -228,12 +228,15 @@ export default function EditItemDialog({
           </Box>
         </Box>
       </DialogContent>
-      <DialogActions>
-        <Button onClick={onClose}>Cancel</Button>
+      <DialogActions className="dialog-footer">
+        <Button onClick={onClose} className="dialog-btn-secondary">
+          Cancel
+        </Button>
         <Button
           variant="contained"
           onClick={handleSubmit}
           disabled={!item || isDuplicateName || isSaving}
+          className="dialog-btn-primary"
         >
           {isSaving ? "Saving..." : "Save"}
         </Button>

@@ -125,12 +125,15 @@ export default function EditFolderDialog({
           </Box>
         </Box>
       </DialogContent>
-      <DialogActions>
-        <Button onClick={handleClose}>Cancel</Button>
+      <DialogActions className="dialog-footer">
+        <Button onClick={handleClose} className="dialog-btn-secondary">
+          Cancel
+        </Button>
         <Button
           variant="contained"
           onClick={handleSubmit}
           disabled={Boolean(validation) || !folder || isSaving}
+          className="dialog-btn-primary"
         >
           {isSaving ? "Saving..." : "Save"}
         </Button>

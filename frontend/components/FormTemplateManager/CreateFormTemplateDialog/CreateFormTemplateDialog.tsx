@@ -225,12 +225,15 @@ export default function CreateFormTemplateDialog({
           </Box>
         </Box>
       </DialogContent>
-      <DialogActions>
-        <Button onClick={onClose}>Cancel</Button>
+      <DialogActions className="dialog-footer">
+        <Button onClick={onClose} className="dialog-btn-secondary">
+          Cancel
+        </Button>
         <Button
           variant="contained"
           onClick={handleSave}
           disabled={Boolean(validation) || isSaving}
+          className="dialog-btn-primary"
         >
           {isSaving ? "Saving..." : "Save"}
         </Button>

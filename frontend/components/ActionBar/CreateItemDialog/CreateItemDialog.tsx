@@ -213,12 +213,15 @@ export default function CreateItemDialog({
           </Box>
         </Box>
       </DialogContent>
-      <DialogActions>
-        <Button onClick={onClose}>Cancel</Button>
+      <DialogActions className="dialog-footer">
+        <Button onClick={onClose} className="dialog-btn-secondary">
+          Cancel
+        </Button>
         <Button
           variant="contained"
           onClick={handleSubmit}
           disabled={requiredMissing.length > 0 || isDuplicateName || isSaving}
+          className="dialog-btn-primary"
         >
           {isSaving ? "Creating..." : "Create"}
         </Button>

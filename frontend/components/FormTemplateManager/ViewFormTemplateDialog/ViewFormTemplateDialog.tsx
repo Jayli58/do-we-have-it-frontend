@@ -97,8 +97,10 @@ export default function ViewFormTemplateDialog({
           </Box>
         </Box>
       </DialogContent>
-      <DialogActions>
-        <Button onClick={onClose}>Close</Button>
+      <DialogActions className="dialog-footer">
+        <Button onClick={onClose} className="dialog-btn-secondary">
+          Close
+        </Button>
       </DialogActions>
     </Dialog>
   );

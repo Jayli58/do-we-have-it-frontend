@@ -117,13 +117,16 @@ export default function DeleteConfirmDialog({
           </Box>
         </Box>
       </DialogContent>
-      <DialogActions>
-        <Button onClick={onCancel}>Cancel</Button>
+      <DialogActions className="dialog-footer">
+        <Button onClick={onCancel} className="dialog-btn-secondary">
+          Cancel
+        </Button>
         <Button
           variant="contained"
           color="error"
           onClick={handleConfirm}
           disabled={isProcessing}
+          className="dialog-btn-primary"
         >
           {isProcessing ? "Deleting..." : displayConfirmLabel ?? "Delete"}
         </Button>

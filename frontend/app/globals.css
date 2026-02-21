@@ -140,9 +140,16 @@ body {
 }
 
 .dialog-btn-secondary {
-  @apply inline-flex w-full rounded-md py-1 sm:w-auto;
+  @apply inline-flex w-full py-1 sm:w-auto;
 }
 
 .dialog-btn-primary {
-  @apply inline-flex w-full rounded-md sm:w-auto;
+  @apply inline-flex w-full sm:w-auto;
+}
+
+@media (max-width: 639px) {
+  .dialog-btn-secondary,
+  .dialog-btn-primary {
+    @apply rounded-md;
+  }
 }

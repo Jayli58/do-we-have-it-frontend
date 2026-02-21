@@ -154,13 +154,17 @@ export default function FormTemplateManager({
           </Box>
         </Box>
       </DialogContent>
-      <DialogActions>
-        <Stack width="100%" direction="row" justifyContent="flex-end" gap={1.5}>
-          <Button onClick={onClose}>Close</Button>
-          <Button variant="contained" onClick={() => setCreateOpen(true)}>
-            Create template
-          </Button>
-        </Stack>
+      <DialogActions className="dialog-footer">
+        <Button onClick={onClose} className="dialog-btn-secondary">
+          Close
+        </Button>
+        <Button
+          variant="contained"
+          onClick={() => setCreateOpen(true)}
+          className="dialog-btn-primary"
+        >
+          Create template
+        </Button>
       </DialogActions>
 
       <CreateFormTemplateDialog

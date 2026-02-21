@@ -148,6 +148,10 @@ body {
 }
 
 @media (max-width: 639px) {
+  .user-tag {
+    @apply rounded-md;
+  }
+
   .dialog-btn-secondary,
   .dialog-btn-primary {
     @apply rounded-md;

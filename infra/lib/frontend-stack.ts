@@ -163,12 +163,6 @@ export class FrontendStack extends cdk.Stack {
                 // bypass auth at edge for static assets
                 "_next/static/*": {
                     ...staticAssetBehaviorDefaults,
-                    edgeLambdas: [
-                        {
-                            eventType: cloudfront.LambdaEdgeEventType.VIEWER_RESPONSE,
-                            functionVersion: cspHeadersHandlerVersion,
-                        },
-                    ],
                 },
                 // this is to enable auto refresh of auth token when sending requests to api
                 "api/*": {
@@ -196,12 +190,6 @@ export class FrontendStack extends cdk.Stack {
                 },
                 "_next/image/*": {
                     ...staticAssetBehaviorDefaults,
-                    edgeLambdas: [
-                        {
-                            eventType: cloudfront.LambdaEdgeEventType.VIEWER_RESPONSE,
-                            functionVersion: cspHeadersHandlerVersion,
-                        },
-                    ],
                 },
                 [props.authPaths.redirectPathSignIn]: {
                     ...authBehaviorDefaults,

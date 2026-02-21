@@ -27,19 +27,14 @@ export default function ActionBar({
         zIndex: 10,
       }}
     >
-      <Box
-        display="flex"
-        flexWrap="wrap"
-        alignItems="center"
-        justifyContent="space-between"
-        gap={2}
-      >
-        <Box display="flex" flexWrap="wrap" alignItems="center" gap={2}>
+      <Box className="mainpage-actionbar">
+        <Box className="mainpage-actions-items">
           <Button
             variant="outlined"
             startIcon={<CreateNewFolderIcon />}
             onClick={onCreateFolder}
             disabled={!onCreateFolder}
+            className="dialog-btn-secondary order-1"
           >
             + Folder
           </Button>
@@ -48,15 +43,17 @@ export default function ActionBar({
             startIcon={<Inventory2OutlinedIcon />}
             onClick={onCreateItem}
             disabled={!onCreateItem}
+            className="dialog-btn-primary order-2"
           >
             + Item
           </Button>
         </Box>
         <Button
-          variant="text"
+          variant="outlined"
           startIcon={<ViewListIcon />}
           onClick={onManageTemplates}
           disabled={!onManageTemplates}
+          className="dialog-btn-secondary actionbar-template-btn order-3"
         >
           Templates
         </Button>

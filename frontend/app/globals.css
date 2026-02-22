@@ -151,6 +151,19 @@ body {
   @apply max-w-full max-h-[300px] rounded-lg sm:max-h-[420px];
 }
 
+.image-upload-row {
+  @apply flex flex-col justify-between sm:flex-row;
+}
+
+/* When an image is present */
+.image-upload-row-alternative {
+  @apply flex flex-col;
+}
+
+.image-upload-name-row {
+  @apply flex flex-row items-center justify-between;
+}
+
 @media (max-width: 639px) {
   .user-tag {
     @apply rounded-md;
@@ -163,6 +176,16 @@ body {
 
   .dialog-btn-secondary {
     @apply border border-slate-300 transition-colors hover:bg-slate-50 active:bg-slate-100;
+  }
+
+  .image-upload-btn {
+    @apply flex flex-col w-full !rounded-md;
+  }
+}
+
+@media (min-width: 640px) {
+  .image-upload-btn {
+    @apply inline-flex items-center whitespace-nowrap;
   }
 }
 

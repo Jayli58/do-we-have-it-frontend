@@ -1,7 +1,8 @@
 "use client";
 
-import { Box, Button, Stack, Typography } from "@mui/material";
-import type { ChangeEvent } from "react";
+import { Box, Button, IconButton, Stack, Typography } from "@mui/material";
+import DeleteIcon from "@mui/icons-material/Delete";
+import { useRef, type ChangeEvent } from "react";
 
 interface ImageUploadFieldProps {
   imageName: string | null;
@@ -36,6 +37,7 @@ export default function ImageUploadField({
   onFileChange,
   onRemove,
 }: ImageUploadFieldProps) {
+  const inputRef = useRef<HTMLInputElement | null>(null);
   const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (!file) {
@@ -54,31 +56,64 @@ export default function ImageUploadField({
     onFileChange({ file, name: file.name, error: "" });
   };
 
+  const handleInputClick = () => {
+    if (inputRef.current) {
+      inputRef.current.value = "";
+    }
+  };
+
+  const handleRemove = () => {
+    onRemove();
+    if (inputRef.current) {
+      inputRef.current.value = "";
+    }
+  };
+
   return (
-    <Stack spacing={0.5}>
-      <Typography variant="body2" fontWeight={600}>
+    <Stack sx={{ pt: 0.5 }} spacing={0.5}>
+      {/* <Typography variant="body2" fontWeight={600}>
         Image
-      </Typography>
-      <Stack direction={{ xs: "column", sm: "row" }} spacing={1}>
-        <Button variant="outlined" component="label">
+      </Typography> */}
+      <Stack
+        className={
+          imageName ? "image-upload-row-alternative" : "image-upload-row"
+        }
+        spacing={1}
+      >
+        <Button variant="outlined" component="label" className="image-upload-btn">
           {imageName ? "Replace image" : "Upload image"}
           <input
             hidden
             type="file"
             aria-label="Item image"
             accept={IMAGE_TYPES.join(",")}
+            ref={inputRef}
             onChange={handleFileChange}
+            onClick={handleInputClick}
           />
         </Button>
-        <Box display="flex" alignItems="center" gap={1} flexWrap="wrap">
-          <Typography variant="body2" color="text.secondary">
+        <Box className="image-upload-name-row">
+          <Typography
+            variant="body2"
+            color="text.secondary"
+            sx={{
+              flex: 1,
+              minWidth: 0,
+              wordBreak: "break-word",
+              pl: { xs: 0, sm: imageName ? 0 : 2 },
+            }}
+          >
             {imageName ?? "No image selected"}
           </Typography>
-          {imageName && (
-            <Button size="small" onClick={onRemove}>
-              Remove
-            </Button>
-          )}
+          {imageName && <IconButton
+            aria-label="Remove image"
+            onClick={imageName ? handleRemove : undefined}
+            className="image-upload-icon"
+            size="small"
+            disabled={!imageName}
+          >
+            <DeleteIcon fontSize="inherit" />
+          </IconButton>}
         </Box>
       </Stack>
       <Typography

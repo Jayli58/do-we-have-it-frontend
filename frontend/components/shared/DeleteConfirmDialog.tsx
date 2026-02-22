@@ -85,12 +85,9 @@ export default function DeleteConfirmDialog({
           display="flex"
           gap={2}
           alignItems="flex-start"
-          flexDirection={{ xs: "column", sm: "row" }}
+          className="dialog-flex-direction"
         >
-          <Box
-            className="dialog-icon"
-            sx={{ alignSelf: { xs: "center", sm: "flex-start" } }}
-          >
+          <Box className="dialog-icon dialog-icon-align">
             <svg
               viewBox="0 0 24 24"
               fill="none"

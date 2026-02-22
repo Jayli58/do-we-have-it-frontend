@@ -96,12 +96,11 @@ export default function ImageUploadField({
           <Typography
             variant="body2"
             color="text.secondary"
-            sx={{
-              flex: 1,
-              minWidth: 0,
-              wordBreak: "break-word",
-              pl: { xs: 0, sm: imageName ? 0 : 2 },
-            }}
+            className={
+              imageName
+                ? "image-upload-name"
+                : "image-upload-name image-upload-name-empty"
+            }
           >
             {imageName ?? "No image selected"}
           </Typography>

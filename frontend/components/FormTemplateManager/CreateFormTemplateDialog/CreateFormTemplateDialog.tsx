@@ -112,12 +112,9 @@ export default function CreateFormTemplateDialog({
           display="flex"
           gap={2}
           alignItems="flex-start"
-          flexDirection={{ xs: "column", sm: "row" }}
+          className="dialog-flex-direction"
         >
-          <Box
-            className="dialog-icon-blue"
-            sx={{ alignSelf: { xs: "center", sm: "flex-start" } }}
-          >
+          <Box className="dialog-icon-blue dialog-icon-align">
             <PostAddIcon sx={{ color: "#2563eb" }} />
           </Box>
           <Box flex={1}>

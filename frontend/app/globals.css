@@ -43,6 +43,16 @@ body {
   @apply flex size-10 shrink-0 items-center justify-center rounded-full bg-blue-100;
 }
 
+.dialog-icon-align {
+  align-self: center;
+}
+
+@media (min-width: 640px) {
+  .dialog-icon-align {
+    align-self: flex-start;
+  }
+}
+
 .form-template-meta {
   @apply flex flex-1 flex-col items-start py-3 pl-4;
 }
@@ -147,6 +157,10 @@ body {
   @apply inline-flex w-full sm:w-auto;
 }
 
+.dialog-flex-direction {
+  @apply flex-col sm:flex-row;
+}
+
 .item-image-preview {
   @apply max-w-full max-h-[300px] rounded-lg sm:max-h-[420px];
 }
@@ -161,7 +175,15 @@ body {
 }
 
 .image-upload-name-row {
-  @apply flex flex-row items-center justify-between;
+  @apply flex flex-col gap-1 w-full sm:flex-row sm:items-center sm:justify-between;
+}
+
+.image-upload-name {
+  @apply flex-1 min-w-0 break-words;
+}
+
+.image-upload-name-empty {
+  @apply sm:pl-2;
 }
 
 @media (max-width: 639px) {

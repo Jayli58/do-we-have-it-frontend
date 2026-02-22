@@ -60,6 +60,13 @@ export default function EditFormTemplateDialog({
     }
   }, [template]);
 
+  useEffect(() => {
+    if (!open) {
+      setNameTouched(false);
+      setFieldTouched({});
+    }
+  }, [open]);
+
   const validation = useMemo(() => {
     if (!name.trim()) {
       return "Template name is required.";
@@ -80,12 +87,14 @@ export default function EditFormTemplateDialog({
     return "";
   }, [existingNames, fields, name, template?.name]);
 
-  const showNameError = nameTouched && !name.trim();
+  const showNameError = open && nameTouched && !name.trim() && !isSaving;
   const handleSave = async () => {
     if (!template || validation || isSaving) {
       return;
     }
 
+    setNameTouched(false);
+    setFieldTouched({});
     setIsSaving(true);
     try {
       await Promise.resolve(
@@ -106,6 +115,8 @@ export default function EditFormTemplateDialog({
       TransitionProps={{
         onExited: () => {
           setIsSaving(false);
+          setNameTouched(false);
+          setFieldTouched({});
         },
       }}
     >
@@ -132,8 +143,11 @@ export default function EditFormTemplateDialog({
             value={name}
             onChange={(event) => setName(event.target.value)}
             onBlur={() => setNameTouched(true)}
-            error={showNameError || (nameTouched && validation.includes("unique"))}
-            helperText={nameTouched && validation ? validation : " "}
+            error={
+              (showNameError || (nameTouched && validation.includes("unique"))) &&
+              !isSaving
+            }
+            helperText={nameTouched && validation && !isSaving ? validation : " "}
             slotProps={{ htmlInput: { maxLength: FIELD_MAX } }}
           />
           <Stack spacing={1}>
@@ -164,10 +178,14 @@ export default function EditFormTemplateDialog({
                     }))
                   }
                   error={
-                    Boolean(fieldTouched[field.id]) && !field.name.trim()
+                    Boolean(fieldTouched[field.id]) &&
+                    !field.name.trim() &&
+                    !isSaving
                   }
                   helperText={
-                    Boolean(fieldTouched[field.id]) && !field.name.trim()
+                    Boolean(fieldTouched[field.id]) &&
+                    !field.name.trim() &&
+                    !isSaving
                       ? "Field name is required."
                       : " "
                   }

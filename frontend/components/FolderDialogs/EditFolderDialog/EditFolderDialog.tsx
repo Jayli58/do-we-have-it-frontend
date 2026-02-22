@@ -48,6 +48,12 @@ export default function EditFolderDialog({
     }
   }, [folder]);
 
+  useEffect(() => {
+    if (!open) {
+      setTouched(false);
+    }
+  }, [open]);
+
   const validation = useMemo(() => {
     const trimmed = name.trim();
     if (!trimmed) {
@@ -66,12 +72,13 @@ export default function EditFolderDialog({
     return "";
   }, [existingNames, folder?.name, name]);
 
-  const showError = touched && Boolean(validation);
+  const showError = open && touched && Boolean(validation) && !isSaving;
   const handleSubmit = async () => {
     if (!folder || validation || isSaving) {
       return;
     }
 
+    setTouched(false);
     setIsSaving(true);
     try {
       await Promise.resolve(onSave(folder.id, name.trim()));
@@ -90,6 +97,7 @@ export default function EditFolderDialog({
       TransitionProps={{
         onExited: () => {
           setIsSaving(false);
+          setTouched(false);
         },
       }}
     >

@@ -65,6 +65,13 @@ export default function EditItemDialog({
     }
   }, [item, open]);
 
+  useEffect(() => {
+    if (!open) {
+      setNameTouched(false);
+      setAttributeTouched({});
+    }
+  }, [open]);
+
   const requiredMissing = useMemo(() => {
     const missing: string[] = [];
     if (!name.trim()) {
@@ -107,6 +114,8 @@ export default function EditItemDialog({
       fieldName: field.name,
       value: attributes[field.id] ?? "",
     }));
+    setNameTouched(false);
+    setAttributeTouched({});
     setIsSaving(true);
     try {
       await Promise.resolve(
@@ -131,8 +140,9 @@ export default function EditItemDialog({
       ) &&
       trimmedName.toLowerCase() !== originalName,
   );
-  const nameError = nameTouched && (!trimmedName || isDuplicateName);
-  const nameHelperText = nameTouched
+  const nameError =
+    open && nameTouched && (!trimmedName || isDuplicateName) && !isSaving;
+  const nameHelperText = nameTouched && !isSaving
     ? !trimmedName
       ? "Item name is required."
       : isDuplicateName
@@ -149,6 +159,8 @@ export default function EditItemDialog({
       TransitionProps={{
         onExited: () => {
           setIsSaving(false);
+          setNameTouched(false);
+          setAttributeTouched({});
         },
       }}
     >
@@ -201,11 +213,13 @@ export default function EditItemDialog({
                     }
                     error={
                       Boolean(attributeTouched[field.id]) &&
-                      requiredMissing.includes(field.id)
+                      requiredMissing.includes(field.id) &&
+                      !isSaving
                     }
                     helperText={
                       Boolean(attributeTouched[field.id]) &&
-                      requiredMissing.includes(field.id)
+                      requiredMissing.includes(field.id) &&
+                      !isSaving
                         ? "Required"
                         : " "
                     }

@@ -163,6 +163,32 @@ graph TB
 
 ## Proposed Changes
 
+### [NEW] Optional Image Upload Field (Default Template)
+
+Add a single optional image upload field to the default item form, positioned directly under the Comments input. Each item supports at most one image.
+
+- **Data model**
+  - Extend `Item` or `ItemAttribute` to store an image reference (e.g., `imageUrl`, `imageName`).
+  - If modeled as a field, add `FormField.type = "image"` with `maxCount: 1` and `required: false`.
+- **Default template behavior**
+  - Treat the image field like Item name and Comments: always present in create/edit flows regardless of selected template.
+  - Enforce at most one image field in template creation/edit flows (templates should not add their own image fields).
+- **Create/Edit item dialogs**
+  - Add an image upload control under `Comments` with "Optional" helper text.
+  - Single-slot behavior: selecting a new file replaces the previous one.
+  - Allow users to remove the current image in edit mode.
+  - Map the image value into the item save payload.
+- **View item dialog**
+  - Show a clickable image filename under Comments when present (no inline preview in view/edit).
+  - Clicking the filename opens a pop-up dialog to display the image.
+- **Validation**
+  - Enforce max image size of 10 MB.
+  - Restrict selection to image file types only (e.g., jpeg, png, webp).
+  - No additional validation needed beyond the single-file selection control.
+- **Storage handling (frontend-only)**
+  - Keep the selected file reference/metadata in state for submission; no client-side preview.
+  - After backend upload is implemented, store the returned file URL for later viewing.
+
 ### Dependencies to Install
 
 ```bash

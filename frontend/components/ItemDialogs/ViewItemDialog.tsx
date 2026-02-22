@@ -12,6 +12,7 @@ import {
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import { useEffect, useState } from "react";
 
+import ItemImageDialog from "@/components/ItemDialogs/ItemImageDialog/ItemImageDialog";
 import type { Item } from "@/types";
 
 interface ViewItemDialogProps {
@@ -26,12 +27,31 @@ export default function ViewItemDialog({
   onClose,
 }: ViewItemDialogProps) {
   const [displayItem, setDisplayItem] = useState<Item | null>(item);
+  const [imageDialogOpen, setImageDialogOpen] = useState(false);
 
   useEffect(() => {
     if (item) {
       setDisplayItem(item);
     }
   }, [item]);
+
+  useEffect(() => {
+    if (!open) {
+      setImageDialogOpen(false);
+    }
+  }, [open]);
+
+  const handleImageOpen = () => {
+    // if no displayItem or no image, return
+    if (!displayItem?.imageName) {
+      return;
+    }
+    setImageDialogOpen(true);
+  };
+
+  const handleImageClose = () => {
+    setImageDialogOpen(false);
+  };
 
   return (
     <Dialog
@@ -86,6 +106,16 @@ export default function ViewItemDialog({
                     {displayItem.comments || "—"}
                   </Typography>
                 </Stack>
+                <Stack direction="row" spacing={4}>
+                  <Typography sx={{ minWidth: 110 }}>Image:</Typography>
+                  {displayItem.imageName ? (
+                    <Button variant="text" onClick={handleImageOpen}>
+                      {displayItem.imageName}
+                    </Button>
+                  ) : (
+                    <Typography color="text.secondary">—</Typography>
+                  )}
+                </Stack>
               </Stack>
             ) : (
               <Typography color="text.secondary">No item selected.</Typography>
@@ -98,6 +128,12 @@ export default function ViewItemDialog({
           Close
         </Button>
       </DialogActions>
+      <ItemImageDialog
+        open={imageDialogOpen}
+        itemId={displayItem?.id}
+        imageName={displayItem?.imageName}
+        onClose={handleImageClose}
+      />
     </Dialog>
   );
 }

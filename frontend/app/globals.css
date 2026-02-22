@@ -147,6 +147,10 @@ body {
   @apply inline-flex w-full sm:w-auto;
 }
 
+.item-image-preview {
+  @apply max-w-full max-h-[300px] rounded-lg sm:max-h-[420px];
+}
+
 @media (max-width: 639px) {
   .user-tag {
     @apply rounded-md;

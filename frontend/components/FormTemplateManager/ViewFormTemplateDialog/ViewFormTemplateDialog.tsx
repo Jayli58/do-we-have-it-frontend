@@ -87,6 +87,9 @@ export default function ViewFormTemplateDialog({
                   <ListItem disableGutters>
                     <ListItemText primary="Comments" secondary="Optional" />
                   </ListItem>
+                  <ListItem disableGutters>
+                    <ListItemText primary="Image" secondary="Optional" />
+                  </ListItem>
                 </List>
               </>
             ) : (

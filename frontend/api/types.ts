@@ -2,6 +2,6 @@ export type QueryParams = Record<string, string | number | boolean | null | unde
 
 export interface ApiRequestOptions {
   method?: "GET" | "POST" | "PUT" | "DELETE";
-  body?: unknown;
+  body?: Record<string, unknown> | FormData;
   query?: QueryParams;
 }

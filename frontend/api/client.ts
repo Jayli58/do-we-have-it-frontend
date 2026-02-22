@@ -27,9 +27,20 @@ const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 export const apiFetch = async (path: string, options: ApiRequestOptions = {}) => {
   const url = buildUrl(path, options.query);
-  const body = options.body ? JSON.stringify(options.body) : undefined;
+  // normalize body for fetch (either FormData or JSON)
+  const bodySource = options.body;
+  const isFormData =
+    typeof FormData !== "undefined" && bodySource instanceof FormData;
+  let body: BodyInit | undefined;
+  if (isFormData) {
+    body = bodySource;
+  } else if (bodySource) {
+    body = JSON.stringify(bodySource);
+  }
   const buildRequestInit = () => {
-    const headers: Record<string, string> = { ...defaultHeaders };
+    const headers: Record<string, string> = isFormData
+      ? {}
+      : { ...defaultHeaders };
     const idToken = getIdToken();
     if (idToken) {
       headers.Authorization = `Bearer ${idToken}`;

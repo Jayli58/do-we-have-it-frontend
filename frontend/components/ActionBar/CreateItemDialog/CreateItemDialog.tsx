@@ -16,6 +16,7 @@ import FileUploadIcon from "@mui/icons-material/FileUpload";
 import InventoryIcon from "@mui/icons-material/Inventory2";
 
 import { COMMENT_MAX, FIELD_MAX } from "@/constants/limits";
+import ImageUploadField from "@/components/shared/ImageUploadField/ImageUploadField";
 import type { FormField, ItemAttribute } from "@/types";
 
 interface CreateItemDialogProps {
@@ -30,6 +31,8 @@ interface CreateItemDialogProps {
     name: string;
     comments: string;
     attributes: ItemAttribute[];
+    imageName: string | null;
+    imageFile: File | null;
   }) => void;
 }
 
@@ -46,6 +49,9 @@ export default function CreateItemDialog({
   const [name, setName] = useState("");
   const [comments, setComments] = useState("");
   const [attributes, setAttributes] = useState<Record<string, string>>({});
+  const [imageName, setImageName] = useState<string | null>(null);
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [imageError, setImageError] = useState("");
   const [nameTouched, setNameTouched] = useState(false);
   const [attributeTouched, setAttributeTouched] = useState<
     Record<string, boolean>
@@ -57,6 +63,9 @@ export default function CreateItemDialog({
       setName("");
       setComments("");
       setAttributes({});
+      setImageName(null);
+      setImageFile(null);
+      setImageError("");
       setNameTouched(false);
       setAttributeTouched({});
     }
@@ -76,7 +85,7 @@ export default function CreateItemDialog({
   }, [attributes, comments, fields, name]);
 
   const handleSubmit = async () => {
-    if (isSaving || requiredMissing.length > 0 || isDuplicateName) {
+    if (isSaving || requiredMissing.length > 0 || isDuplicateName || imageError) {
       return;
     }
 
@@ -92,6 +101,8 @@ export default function CreateItemDialog({
           name: name.trim(),
           comments: comments.trim(),
           attributes: mappedAttributes,
+          imageName,
+          imageFile,
         }),
       );
     } catch (error) {
@@ -114,6 +125,22 @@ export default function CreateItemDialog({
         ? "Item name must be unique in this folder."
         : " "
     : " ";
+
+  const handleImageChange = (payload: {
+    file: File | null;
+    name: string | null;
+    error: string;
+  }) => {
+    setImageError(payload.error);
+    setImageFile(payload.file);
+    setImageName(payload.name ?? null);
+  };
+
+  const handleImageRemove = () => {
+    setImageName(null);
+    setImageFile(null);
+    setImageError("");
+  };
   return (
     <Dialog
       open={open}
@@ -209,6 +236,12 @@ export default function CreateItemDialog({
               minRows={3}
               slotProps={{ htmlInput: { maxLength: COMMENT_MAX } }}
             />
+            <ImageUploadField
+              imageName={imageName}
+              imageError={imageError}
+              onFileChange={handleImageChange}
+              onRemove={handleImageRemove}
+            />
             </Stack>
           </Box>
         </Box>
@@ -220,7 +253,12 @@ export default function CreateItemDialog({
         <Button
           variant="contained"
           onClick={handleSubmit}
-          disabled={requiredMissing.length > 0 || isDuplicateName || isSaving}
+          disabled={
+            requiredMissing.length > 0 ||
+            isDuplicateName ||
+            isSaving ||
+            Boolean(imageError)
+          }
           className="dialog-btn-primary"
         >
           {isSaving ? "Creating..." : "Create"}

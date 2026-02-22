@@ -1,6 +1,7 @@
 import type { Folder, Item } from "@/types";
 
 import { apiFetch, parseErrorMessage, parseJson } from "@/api/client";
+import { buildItemFormData, type ItemFormPayload } from "@/api/itemFormData";
 
 export const getFolderContents = async (parentId: string | null) => {
   const response = await apiFetch("/folders", {
@@ -54,18 +55,11 @@ export const deleteFolder = async (id: string) => {
   return true;
 };
 
-export const createItem = async (
-  data: Omit<Item, "id" | "createdAt" | "updatedAt">,
-  parentId: string | null,
-) => {
+export const createItem = async (data: ItemFormPayload, parentId: string | null) => {
+  const body = buildItemFormData({ ...data, parentId });
   const response = await apiFetch("/items", {
     method: "POST",
-    body: {
-      name: data.name,
-      comments: data.comments ?? "",
-      parentId,
-      attributes: data.attributes,
-    },
+    body,
   });
   if (!response.ok) {
     throw new Error(await parseErrorMessage(response));
@@ -84,18 +78,11 @@ export const getItem = async (id: string) => {
   return parseJson<Item>(response);
 };
 
-export const updateItem = async (item: Item) => {
+export const updateItem = async (item: ItemFormPayload & { id: string }) => {
+  const body = buildItemFormData(item);
   const response = await apiFetch(`/items/${item.id}`, {
     method: "PUT",
-    body: {
-      id: item.id,
-      name: item.name,
-      comments: item.comments ?? "",
-      parentId: item.parentId,
-      attributes: item.attributes,
-      createdAt: item.createdAt,
-      updatedAt: item.updatedAt,
-    },
+    body,
   });
   if (response.status === 404) {
     return null;
@@ -104,6 +91,14 @@ export const updateItem = async (item: Item) => {
     throw new Error(await parseErrorMessage(response));
   }
   return parseJson<Item>(response);
+};
+
+export const getItemImage = async (itemId: string) => {
+  const response = await apiFetch(`/items/${itemId}/image`);
+  if (!response.ok) {
+    throw new Error(await parseErrorMessage(response));
+  }
+  return response.blob();
 };
 
 export const deleteItem = async (id: string, parentId: string | null) => {

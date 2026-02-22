@@ -11,6 +11,16 @@ import {
   updateItem,
 } from "@/api/inventory";
 
+interface ItemPayload extends Omit<Item, "id" | "createdAt" | "updatedAt"> {
+  imageFile?: File | null;
+  imageRemoved?: boolean;
+}
+
+interface ItemUpdatePayload extends Partial<Item> {
+  imageFile?: File | null;
+  imageRemoved?: boolean;
+}
+
 interface InventoryState {
   currentFolderId: string | null;
   breadcrumbs: BreadcrumbItem[];
@@ -22,8 +32,8 @@ interface InventoryState {
   addFolder: (name: string) => Promise<Folder | null>;
   renameFolder: (id: string, name: string) => Promise<Folder | null>;
   removeFolder: (id: string) => Promise<boolean>;
-  addItem: (data: Omit<Item, "id" | "createdAt" | "updatedAt">) => Promise<Item | null>;
-  editItem: (id: string, data: Partial<Item>) => Promise<Item | null>;
+  addItem: (data: ItemPayload) => Promise<Item | null>;
+  editItem: (id: string, data: ItemUpdatePayload) => Promise<Item | null>;
   removeItem: (id: string) => Promise<boolean>;
 }
 

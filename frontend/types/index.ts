@@ -18,6 +18,7 @@ export interface Item {
   comments: string;
   parentId: string | null;
   attributes: ItemAttribute[];
+  imageName?: string | null;
   createdAt: string;
   updatedAt: string;
 }

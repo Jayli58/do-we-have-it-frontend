@@ -156,11 +156,15 @@ export function useInventoryPage() {
         name: string;
         comments: string;
         attributes: Item["attributes"];
+        imageName: Item["imageName"];
+        imageFile: File | null;
     }) => {
         await addItem({
             name: data.name,
             comments: data.comments,
             attributes: data.attributes,
+            imageName: data.imageName,
+            imageFile: data.imageFile,
             parentId: currentFolderId,
         });
         setCreateItemResetKey((prev) => prev + 1);
@@ -179,11 +183,17 @@ export function useInventoryPage() {
         name: string;
         comments: string;
         attributes: Item["attributes"];
+        imageName: Item["imageName"];
+        imageFile: File | null;
+        imageRemoved: boolean;
     }) => {
         await editItem(data.id, {
             name: data.name,
             comments: data.comments,
             attributes: data.attributes,
+            imageName: data.imageName,
+            imageFile: data.imageFile,
+            imageRemoved: data.imageRemoved,
         });
         setEditItemData(null);
     };

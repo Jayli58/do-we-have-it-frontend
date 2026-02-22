@@ -14,6 +14,7 @@ import {
 import EditNoteIcon from "@mui/icons-material/EditNote";
 
 import { COMMENT_MAX, FIELD_MAX } from "@/constants/limits";
+import ImageUploadField from "@/components/shared/ImageUploadField/ImageUploadField";
 import type { FormField, Item, ItemAttribute } from "@/types";
 
 interface EditItemDialogProps {
@@ -27,6 +28,9 @@ interface EditItemDialogProps {
     name: string;
     comments: string;
     attributes: ItemAttribute[];
+    imageName: string | null;
+    imageFile: File | null;
+    imageRemoved: boolean;
   }) => void;
 }
 
@@ -41,6 +45,10 @@ export default function EditItemDialog({
   const [name, setName] = useState("");
   const [comments, setComments] = useState("");
   const [attributes, setAttributes] = useState<Record<string, string>>({});
+  const [imageName, setImageName] = useState<string | null>(null);
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [imageError, setImageError] = useState("");
+  const [imageRemoved, setImageRemoved] = useState(false);
   const [nameTouched, setNameTouched] = useState(false);
   const [attributeTouched, setAttributeTouched] = useState<
     Record<string, boolean>
@@ -58,6 +66,10 @@ export default function EditItemDialog({
         nextAttributes[attribute.fieldId] = attribute.value;
       });
       setAttributes(nextAttributes);
+      setImageName(item.imageName ?? null);
+      setImageFile(null);
+      setImageError("");
+      setImageRemoved(false);
       setNameTouched(false);
       setAttributeTouched({});
       lastItemId.current = item.id;
@@ -69,6 +81,8 @@ export default function EditItemDialog({
     if (!open) {
       setNameTouched(false);
       setAttributeTouched({});
+      setImageError("");
+      setImageRemoved(false);
     }
   }, [open]);
 
@@ -94,6 +108,9 @@ export default function EditItemDialog({
     }
     if (isDuplicateName) {
       setNameTouched(true);
+      return;
+    }
+    if (imageError) {
       return;
     }
     if (requiredMissing.length > 0) {
@@ -124,6 +141,9 @@ export default function EditItemDialog({
           name: name.trim(),
           comments: comments.trim(),
           attributes: mappedAttributes,
+          imageName,
+          imageFile,
+          imageRemoved,
         }),
       );
     } catch (error) {
@@ -149,6 +169,26 @@ export default function EditItemDialog({
         ? "Item name must be unique in this folder."
         : " "
     : " ";
+
+  const handleImageChange = (payload: {
+    file: File | null;
+    name: string | null;
+    error: string;
+  }) => {
+    setImageError(payload.error);
+    setImageFile(payload.file);
+    setImageName(payload.name ?? null);
+    if (payload.file) {
+      setImageRemoved(false);
+    }
+  };
+
+  const handleImageRemove = () => {
+    setImageName(null);
+    setImageFile(null);
+    setImageError("");
+    setImageRemoved(true);
+  };
   return (
     <Dialog
       open={open}
@@ -238,6 +278,12 @@ export default function EditItemDialog({
             minRows={3}
             slotProps={{ htmlInput: { maxLength: COMMENT_MAX } }}
           />
+          <ImageUploadField
+            imageName={imageName}
+            imageError={imageError}
+            onFileChange={handleImageChange}
+            onRemove={handleImageRemove}
+          />
             </Stack>
           </Box>
         </Box>
@@ -249,7 +295,7 @@ export default function EditItemDialog({
         <Button
           variant="contained"
           onClick={handleSubmit}
-          disabled={!item || isDuplicateName || isSaving}
+          disabled={!item || isDuplicateName || isSaving || Boolean(imageError)}
           className="dialog-btn-primary"
         >
           {isSaving ? "Saving..." : "Save"}

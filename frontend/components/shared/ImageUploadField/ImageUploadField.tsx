@@ -78,7 +78,7 @@ export default function ImageUploadField({
         className={
           imageName ? "image-upload-row-alternative" : "image-upload-row"
         }
-        spacing={1}
+        spacing={0}
       >
         <Button variant="outlined" component="label" className="image-upload-btn">
           {imageName ? "Replace image" : "Upload image"}

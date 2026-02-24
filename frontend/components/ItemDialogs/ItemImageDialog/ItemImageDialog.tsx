@@ -70,22 +70,23 @@ export default function ItemImageDialog({
     };
   }, [imageName, itemId, open]);
 
-  useEffect(() => {
-    if (!open) {
-      setImageError("");
-      if (imageSrc) {
-        URL.revokeObjectURL(imageSrc);
+  const handleExited = () => {
+    setImageError("");
+    setIsLoading(false);
+    setIsZoomed(false);
+    setImageSrc((previousSrc) => {
+      if (previousSrc) {
+        URL.revokeObjectURL(previousSrc);
       }
-      setImageSrc(null);
-      setIsLoading(false);
-      setIsZoomed(false);
-    }
-  }, [imageSrc, open]);
+      return null;
+    });
+  };
 
   return (
     <Dialog
       open={open}
       onClose={onClose}
+      TransitionProps={{ onExited: handleExited }}
       fullScreen={isZoomed && isSmDown}
       fullWidth
       maxWidth={isZoomed ? "lg" : "sm"}

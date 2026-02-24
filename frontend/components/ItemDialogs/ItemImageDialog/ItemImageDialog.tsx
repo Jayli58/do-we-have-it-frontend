@@ -1,6 +1,16 @@
 "use client";
 
-import { Box, Button, Dialog, DialogActions, DialogContent, Stack, Typography } from "@mui/material";
+import {
+  Box,
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  Stack,
+  Typography,
+  useMediaQuery,
+  useTheme,
+} from "@mui/material";
 import { useEffect, useState } from "react";
 
 import { getItemImage } from "@/api/inventory";
@@ -21,6 +31,9 @@ export default function ItemImageDialog({
   const [imageSrc, setImageSrc] = useState<string | null>(null);
   const [imageError, setImageError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [isZoomed, setIsZoomed] = useState(false);
+  const theme = useTheme();
+  const isSmDown = useMediaQuery(theme.breakpoints.down("sm"));
 
   useEffect(() => {
     if (!open || !itemId || !imageName) {
@@ -65,6 +78,7 @@ export default function ItemImageDialog({
       }
       setImageSrc(null);
       setIsLoading(false);
+      setIsZoomed(false);
     }
   }, [imageSrc, open]);
 
@@ -72,8 +86,9 @@ export default function ItemImageDialog({
     <Dialog
       open={open}
       onClose={onClose}
+      fullScreen={isZoomed && isSmDown}
       fullWidth
-      maxWidth="sm"
+      maxWidth={isZoomed ? "lg" : "sm"}
       aria-labelledby="view-item-image-title"
     >
       <DialogContent>
@@ -85,11 +100,16 @@ export default function ItemImageDialog({
             <Typography color="text.secondary">Loading image...</Typography>
           ) : imageSrc ? (
             <Box
-              component="img"
-              src={imageSrc}
-              alt={imageName ?? "Item image"}
-              className="item-image-preview"
-            />
+              className={`item-image-preview-frame${isZoomed ? " item-image-preview-frame-zoomed" : ""}`}
+            >
+              <Box
+                component="img"
+                src={imageSrc}
+                alt={imageName ?? "Item image"}
+                className={`item-image-preview${isZoomed ? " item-image-preview-zoomed" : ""}`}
+                onClick={() => setIsZoomed((prev) => !prev)}
+              />
+            </Box>
           ) : (
             <Typography color="text.secondary">
               {imageError || "Image preview is not available yet."}

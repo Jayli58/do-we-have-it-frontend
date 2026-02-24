@@ -4,6 +4,7 @@ export type ItemFormPayload = Omit<Item, "id" | "createdAt" | "updatedAt"> & {
   id?: string;
   createdAt?: string;
   updatedAt?: string;
+  imageName?: string | null;
   imageFile?: File | null;
   imageRemoved?: boolean;
 };

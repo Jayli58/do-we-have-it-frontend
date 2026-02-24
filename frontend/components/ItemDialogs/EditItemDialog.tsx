@@ -66,7 +66,7 @@ export default function EditItemDialog({
         nextAttributes[attribute.fieldId] = attribute.value;
       });
       setAttributes(nextAttributes);
-      setImageName(item.imageName ?? null);
+      setImageName(item.image?.name ?? null);
       setImageFile(null);
       setImageError("");
       setImageRemoved(false);

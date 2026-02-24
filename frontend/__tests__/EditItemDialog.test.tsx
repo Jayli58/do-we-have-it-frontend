@@ -9,7 +9,7 @@ const item: Item = {
   name: "Toaster",
   comments: "Counter",
   parentId: null,
-  imageName: "manual.png",
+  image: { name: "manual.png" },
   createdAt: "2025-01-01",
   updatedAt: "2025-01-01",
   attributes: [
@@ -64,7 +64,7 @@ describe("EditItemDialog", () => {
       />,
     );
 
-    await user.click(screen.getByRole("button", { name: "Remove" }));
+    await user.click(screen.getByRole("button", { name: "Remove image" }));
     await user.click(screen.getByRole("button", { name: "Save" }));
 
     expect(onSave).toHaveBeenCalledWith(

@@ -94,7 +94,7 @@ export const updateItem = async (item: ItemFormPayload & { id: string }) => {
 };
 
 export const getItemImage = async (itemId: string) => {
-  const response = await apiFetch(`/items/${itemId}/image`);
+  const response = await apiFetch(`/items/${itemId}/img`);
   if (!response.ok) {
     throw new Error(await parseErrorMessage(response));
   }

@@ -144,8 +144,37 @@ body {
   @apply w-full flex-col-reverse gap-2 px-6 mb-2 sm:flex-row sm:items-center sm:justify-end sm:gap-1;
 }
 
+.dialog-text-link {
+  @apply inline-flex items-center justify-center rounded py-1 font-medium;
+  color: var(--accent);
+  background-color: transparent;
+  font-size: 0.875rem;
+  line-height: 1.75;
+  letter-spacing: 0.02857em;
+  text-transform: uppercase;
+  text-decoration: none;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+.dialog-text-link:focus-visible {
+  outline: 2px solid rgba(37, 99, 235, 0.35);
+  outline-offset: 2px;
+}
+
+.dialog-text-link:active {
+  background-color: rgba(37, 99, 235, 0.18);
+}
+
+@media (hover: hover) {
+  .dialog-text-link:hover {
+    background-color: rgba(37, 99, 235, 0.12);
+  }
+}
+
 /* Remove MUI's default left margin on the second action */
-.dialog-footer > :not(style) ~ :not(style) {
+.dialog-footer> :not(style)~ :not(style) {
   margin-left: 0;
 }
 
@@ -175,7 +204,7 @@ body {
 
 /* When an image is present */
 .image-upload-row-alternative {
-  @apply flex flex-col gap-2 sm:!items-start sm:gap-2;
+  @apply flex flex-col gap-2 sm: !items-start sm:gap-2;
 }
 
 .image-upload-name-row {

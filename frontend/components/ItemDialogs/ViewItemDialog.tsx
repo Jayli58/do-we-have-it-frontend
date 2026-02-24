@@ -41,9 +41,12 @@ export default function ViewItemDialog({
     }
   }, [open]);
 
-  const handleImageOpen = () => {
+  const displayImageName = displayItem?.image?.name ?? null;
+
+  const handleImageOpen = (event: React.MouseEvent<HTMLAnchorElement>) => {
+    event.preventDefault();
     // if no displayItem or no image, return
-    if (!displayItem?.imageName) {
+    if (!displayImageName) {
       return;
     }
     setImageDialogOpen(true);
@@ -108,10 +111,14 @@ export default function ViewItemDialog({
                 </Stack>
                 <Stack direction="row" spacing={4}>
                   <Typography sx={{ minWidth: 110 }}>Image:</Typography>
-                  {displayItem.imageName ? (
-                    <Button variant="text" onClick={handleImageOpen}>
-                      {displayItem.imageName}
-                    </Button>
+                  {displayImageName ? (
+                    <a
+                      className="dialog-text-link"
+                      href="#"
+                      onClick={handleImageOpen}
+                    >
+                      {displayImageName}
+                    </a>
                   ) : (
                     <Typography color="text.secondary">—</Typography>
                   )}
@@ -131,7 +138,7 @@ export default function ViewItemDialog({
       <ItemImageDialog
         open={imageDialogOpen}
         itemId={displayItem?.id}
-        imageName={displayItem?.imageName}
+        imageName={displayImageName}
         onClose={handleImageClose}
       />
     </Dialog>

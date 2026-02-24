@@ -12,13 +12,17 @@ export interface ItemAttribute {
   value: string;
 }
 
+export interface ItemImage {
+  name: string;
+}
+
 export interface Item {
   id: string;
   name: string;
   comments: string;
   parentId: string | null;
   attributes: ItemAttribute[];
-  imageName?: string | null;
+  image?: ItemImage | null;
   createdAt: string;
   updatedAt: string;
 }

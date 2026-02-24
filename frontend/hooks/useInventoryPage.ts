@@ -156,7 +156,7 @@ export function useInventoryPage() {
         name: string;
         comments: string;
         attributes: Item["attributes"];
-        imageName: Item["imageName"];
+        imageName: string | null;
         imageFile: File | null;
     }) => {
         await addItem({
@@ -183,7 +183,7 @@ export function useInventoryPage() {
         name: string;
         comments: string;
         attributes: Item["attributes"];
-        imageName: Item["imageName"];
+        imageName: string | null;
         imageFile: File | null;
         imageRemoved: boolean;
     }) => {

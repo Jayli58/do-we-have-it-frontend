@@ -12,11 +12,13 @@ import {
 } from "@/api/inventory";
 
 interface ItemPayload extends Omit<Item, "id" | "createdAt" | "updatedAt"> {
+  imageName?: string | null;
   imageFile?: File | null;
   imageRemoved?: boolean;
 }
 
 interface ItemUpdatePayload extends Partial<Item> {
+  imageName?: string | null;
   imageFile?: File | null;
   imageRemoved?: boolean;
 }

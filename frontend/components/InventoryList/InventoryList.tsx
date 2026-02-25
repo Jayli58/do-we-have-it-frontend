@@ -38,7 +38,7 @@ export default function InventoryList({
   const isEmpty = sortedFolders.length === 0 && sortedItems.length === 0;
 
   return (
-    <Box className="mat-card" sx={{ padding: 2 }}>
+    <Box className="mat-card inventory-list-card">
       {isLoading ? (
         <Box className="inventory-list-loading">
           <CircularProgress />
@@ -62,7 +62,7 @@ export default function InventoryList({
           </Typography>
         </Box>
       ) : (
-        <Stack spacing={2}>
+        <Stack className="inventory-list-stack">
           {sortedFolders.map((folder) => (
             <FolderRow
               key={folder.id}

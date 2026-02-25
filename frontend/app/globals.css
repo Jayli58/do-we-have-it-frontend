@@ -32,7 +32,7 @@ body {
 }
 
 .mat-card-compact {
-  @apply px-3 py-2 sm:px-5;
+  @apply px-3 py-1 sm:px-5 sm:py-2;
 }
 
 .dialog-icon {
@@ -116,7 +116,7 @@ body {
 }
 
 .page-shell {
-  @apply px-3 pb-6 pt-6 sm:px-6 sm:pt-10;
+  @apply px-3 pb-3 pt-3 sm:px-6 sm:pt-10;
 }
 
 .page-container {
@@ -129,6 +129,14 @@ body {
 
 .inventory-list-loading {
   @apply flex items-center justify-center;
+}
+
+.inventory-list-card {
+  @apply px-4 py-2;
+}
+
+.inventory-list-stack {
+  @apply gap-2;
 }
 
 .dialog-content-column {
@@ -257,15 +265,19 @@ body {
 }
 
 .mainpage-actions-items {
-  @apply flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-2;
+  @apply flex flex-col gap-1.5 sm:flex-row sm:items-center sm:gap-2;
 }
 
 .mainpage-actionbar {
-  @apply flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between;
+  @apply flex flex-col gap-1.5 sm:flex-row sm:items-center sm:justify-between;
 }
 
 .actionbar-template-btn {
   @apply w-full sm:w-auto;
+}
+
+.actionbar-sticky {
+  @apply sticky bottom-5 px-4 py-2 z-10;
 }
 
 @media (min-width: 640px) {

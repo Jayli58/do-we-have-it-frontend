@@ -18,14 +18,8 @@ export default function ActionBar({
 }: ActionBarProps) {
   return (
     <Paper
-      className="mat-card"
+      className="mat-card actionbar-sticky"
       elevation={0}
-      sx={{
-        position: "sticky",
-        bottom: 20,
-        padding: 2,
-        zIndex: 10,
-      }}
     >
       <Box className="mainpage-actionbar">
         <Box className="mainpage-actions-items">

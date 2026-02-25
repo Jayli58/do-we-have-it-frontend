@@ -10,7 +10,6 @@ import {
   IconButton,
   List,
   ListItem,
-  Stack,
   Typography,
 } from "@mui/material";
 import VisibilityIcon from "@mui/icons-material/Visibility";
@@ -23,7 +22,10 @@ import EditFormTemplateDialog from "@/components/FormTemplateManager/EditFormTem
 import ViewFormTemplateDialog from "@/components/FormTemplateManager/ViewFormTemplateDialog/ViewFormTemplateDialog";
 import DeleteConfirmDialog from "@/components/shared/DeleteConfirmDialog";
 import { DEFAULT_TEMPLATE_ID } from "@/api/formTemplates";
-import { useFormTemplateStore } from "@/store/formTemplateStore";
+import {
+  DEFAULT_BASE_FIELD_COUNT,
+  useFormTemplateStore,
+} from "@/store/formTemplateStore";
 import type { FormTemplate } from "@/types";
 
 interface FormTemplateManagerProps {
@@ -114,7 +116,8 @@ export default function FormTemplateManager({
                           onClick={() => setViewTemplate(template)}
                           sx={{ cursor: "pointer" }}
                         >
-                          {`${template.fields.length + 2} fields`}
+                          {`${template.fields.length +
+                            DEFAULT_BASE_FIELD_COUNT} fields`}
                         </Typography>
                       </Box>
                       <Box display="flex" gap={1} paddingRight={1.5}>

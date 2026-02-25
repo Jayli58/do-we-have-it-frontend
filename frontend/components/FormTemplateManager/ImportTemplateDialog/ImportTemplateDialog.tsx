@@ -14,6 +14,7 @@ import {
 import FileUploadIcon from "@mui/icons-material/FileUpload";
 
 import type { FormTemplate } from "@/types";
+import { DEFAULT_BASE_FIELD_COUNT } from "@/store/formTemplateStore";
 
 interface ImportTemplateDialogProps {
   open: boolean;
@@ -63,7 +64,8 @@ export default function ImportTemplateDialog({
                   >
                     <ListItemText
                       primary={template.name}
-                      secondary={`${template.fields.length + 2} fields`}
+                      secondary={`${template.fields.length +
+                        DEFAULT_BASE_FIELD_COUNT} fields`}
                     />
                   </ListItemButton>
                 ))}

@@ -17,6 +17,8 @@ const defaultTemplate: FormTemplate = {
   createdAt: "1970-01-01T00:00:00.000Z",
 };
 
+export const DEFAULT_BASE_FIELD_COUNT = 3;
+
 const ensureDefaultTemplate = (templates: FormTemplate[]) => {
   if (templates.some((template) => template.id === DEFAULT_TEMPLATE_ID)) {
     return templates;

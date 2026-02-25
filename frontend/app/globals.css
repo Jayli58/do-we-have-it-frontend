@@ -116,7 +116,7 @@ body {
 }
 
 .page-shell {
-  @apply px-3 pb-3 pt-3 sm:px-6 sm:pt-10;
+  @apply px-3 pb-3 pt-3 sm:px-6 sm:py-10;
 }
 
 .page-container {
@@ -132,11 +132,11 @@ body {
 }
 
 .inventory-list-card {
-  @apply px-4 py-2;
+  @apply px-4 py-2 sm:py-4;
 }
 
 .inventory-list-stack {
-  @apply gap-2;
+  @apply gap-2 sm:gap-4;
 }
 
 .dialog-content-column {
@@ -277,7 +277,7 @@ body {
 }
 
 .actionbar-sticky {
-  @apply sticky bottom-5 px-4 py-2 z-10;
+  @apply sticky bottom-5 px-4 py-2 z-10 sm:py-4;
 }
 
 @media (min-width: 640px) {

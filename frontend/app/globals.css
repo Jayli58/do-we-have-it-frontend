@@ -282,7 +282,6 @@ body {
 
 @media (min-width: 640px) {
   .actionbar-template-btn {
-    border: 0;
-    border-color: transparent;
+    @apply border-0 border-transparent;
   }
 }

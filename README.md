@@ -2,17 +2,24 @@
 
 This repo contains the DWHI frontend application and its AWS infrastructure. The frontend is a static-exported Next.js app deployed to S3 and CloudFront, protected by Cognito and Lambda@Edge auth (via the [cloudfront-authorization-at-edge](https://github.com/aws-samples/cloudfront-authorization-at-edge) Serverless Application).
 
-Do We Have It is an inventory tracker for folders and items, with custom attributes, templates, and image uploads to describe what you own.
+Do We Have It is an inventory tracker for folders and items, with custom attributes, templates, and image uploads to describe what you own. The UI is mobile compatible.
+
+<table>
+  <tr>
+    <td><img src="./docs/app-screenshot.png" alt="App screenshot" width="320" /></td>
+    <td><img src="./docs/app-screenshot-2.png" alt="App screenshot" width="320" /></td>
+  </tr>
+</table>
 
 ### TL;DR
 
-![Architecture](./dwhi-arch-layout.svg)
+![Architecture](./docs/dwhi-arch-layout.svg)
 
 ### Repo contents
 
 - `frontend/`: Next.js (React) app (static export) with MUI and Tailwind styles.
 - `infra/`: AWS CDK stacks for Cognito, Lambda@Edge auth, CloudFront, S3 hosting, and CI/CD.
-- `dwhi-arch-layout.svg`: Architecture diagram for the stack.
+- `docs/`: Architecture diagram and app screenshots used by the README.
 
 ## Frontend
 

@@ -153,17 +153,15 @@ body {
 }
 
 .dialog-text-link {
-  @apply inline-flex items-center justify-center rounded py-1 font-medium;
-  color: var(--accent);
-  background-color: transparent;
-  font-size: 0.875rem;
-  line-height: 1.75;
-  letter-spacing: 0.02857em;
-  text-transform: uppercase;
-  text-decoration: none;
-  cursor: pointer;
-  -webkit-tap-highlight-color: transparent;
-  touch-action: manipulation;
+  @apply inline-flex items-center justify-center rounded py-1 font-medium text-[var(--accent)] text-sm leading-7 tracking-[0.02857em] uppercase no-underline cursor-pointer touch-manipulation bg-transparent;
+  @apply [-webkit-tap-highlight-color:transparent];
+}
+
+.dialog-content-wrap {
+  @apply break-words;
+  /* raw css */
+  /* allows long string to break at any point to prevent horizontal overflow */
+  @apply [overflow-wrap:anywhere];
 }
 
 .dialog-text-link:focus-visible {

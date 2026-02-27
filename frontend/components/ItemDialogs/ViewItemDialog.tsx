@@ -69,7 +69,7 @@ export default function ViewItemDialog({
         },
       }}
     >
-      <DialogContent>
+      <DialogContent className="dialog-content-wrap">
         <Box
           display="flex"
           gap={2}

@@ -1,8 +1,8 @@
 ## Do We Have It
 
-This repo contains the DWHI frontend application and its AWS infrastructure. The frontend is a static-exported Next.js app deployed to S3 and CloudFront, protected by Cognito and Lambda@Edge auth (via the [cloudfront-authorization-at-edge](https://github.com/aws-samples/cloudfront-authorization-at-edge) Serverless Application).
-
 Do We Have It is an inventory tracker for folders and items, with custom attributes, templates, and image uploads to describe what you own. The UI is mobile compatible.
+
+This repo contains the DWHI frontend application and its AWS infrastructure. The frontend is a static-exported Next.js app deployed to S3 and CloudFront, protected by Cognito and Lambda@Edge auth (via the [cloudfront-authorization-at-edge](https://github.com/aws-samples/cloudfront-authorization-at-edge) Serverless Application).
 
 <table>
   <tr>

@@ -89,6 +89,14 @@ export default function ViewItemDialog({
                   <Typography sx={{ minWidth: 110 }}>Item name:</Typography>
                   <Typography fontWeight={600}>{displayItem.name}</Typography>
                 </Stack>
+                {displayItem.parentPath ? (
+                  <Stack direction="row" spacing={4}>
+                    <Typography sx={{ minWidth: 110 }}>Item path:</Typography>
+                    <Typography color="text.secondary">
+                      {displayItem.parentPath}
+                    </Typography>
+                  </Stack>
+                ) : null}
                 {displayItem.attributes.length > 0 && (
                   <Stack spacing={1}>                
                     {displayItem.attributes.map((attribute) => (

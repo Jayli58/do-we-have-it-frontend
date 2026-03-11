@@ -21,6 +21,7 @@ export interface Item {
   name: string;
   comments: string;
   parentId: string | null;
+  parentPath?: string | null;
   attributes: ItemAttribute[];
   image?: ItemImage | null;
   createdAt: string;
